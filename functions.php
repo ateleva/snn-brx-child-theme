@@ -199,3 +199,6 @@ if (!empty($options['enqueue_gsap'])) {
 
 // Load Translations
 load_theme_textdomain('snn', SNN_PATH . '/languages');
+
+// Custom project-specific code (never touched by upstream updates)
+require_once SNN_PATH . 'custom/hooks.php';
