@@ -9,6 +9,34 @@
  * Bricks Builder Editor Settings.
  */
 
+// ── AJAX: read / write Bricks global customCss ───────────────────────────────
+
+add_action( 'wp_ajax_snn_get_global_css', function() {
+    if ( ! current_user_can( 'manage_options' ) ) {
+        wp_send_json_error( 'Unauthorized' );
+    }
+    $bricks_settings = get_option( 'bricks_global_settings', [] );
+    $css = ( is_array( $bricks_settings ) && isset( $bricks_settings['customCss'] ) )
+        ? $bricks_settings['customCss']
+        : '';
+    wp_send_json_success( [ 'css' => $css ] );
+} );
+
+add_action( 'wp_ajax_snn_save_global_css', function() {
+    if ( ! current_user_can( 'manage_options' ) ) {
+        wp_send_json_error( 'Unauthorized' );
+    }
+    check_ajax_referer( 'snn_save_global_css', 'nonce' );
+    $css = isset( $_POST['css'] ) ? wp_unslash( $_POST['css'] ) : '';
+    $bricks_settings = get_option( 'bricks_global_settings', [] );
+    if ( ! is_array( $bricks_settings ) ) {
+        $bricks_settings = [];
+    }
+    $bricks_settings['customCss'] = $css;
+    update_option( 'bricks_global_settings', $bricks_settings );
+    wp_send_json_success();
+} );
+
 // ── Frontend script + style enqueue ──────────────────────────────────────────
 
 add_action( 'wp_enqueue_scripts', 'snn_custom_css_overlay_enqueue' );
@@ -79,11 +107,8 @@ function snn_custom_css_overlay_output() {
     $snn_css_ai_enabled = false;
     $snn_css_ai_config  = [];
     if ( get_option( 'snn_ai_enabled', 'no' ) === 'yes' && function_exists( 'snn_get_ai_api_config' ) ) {
-        $ai_cfg = snn_get_ai_api_config();
-        if ( ! empty( $ai_cfg['apiKey'] ) && ! empty( $ai_cfg['apiEndpoint'] ) ) {
-            $snn_css_ai_enabled = true;
-            $snn_css_ai_config  = $ai_cfg;
-        }
+        $snn_css_ai_enabled = true;
+        $snn_css_ai_config  = snn_get_ai_api_config();
     }
     ?>
     <style id="snn-custom-css-overlay-styles">
@@ -300,6 +325,14 @@ function snn_custom_css_overlay_output() {
             background: black !important;
             color: #fff !important;
         }
+        .snn-var-hint {
+            color: #89dceb !important;
+        }
+        .snn-var-hint::before {
+            content: 'var ';
+            opacity: .4;
+            font-size: 10px;
+        }
 
         /* ── AI Sidebar ── */
         #snn-css-body {
@@ -424,6 +457,30 @@ function snn_custom_css_overlay_output() {
             color: var(--builder-color-accent, #7b68ee);
             background: rgba(123,104,238,.15);
         }
+        #snn-css-global-btn {
+            font-size: 10px;
+            font-family: monospace;
+            font-weight: 600;
+            padding: 1px 6px;
+            border-radius: 3px;
+            border: 1px solid rgba(255,255,255,.12);
+            color: rgba(255,255,255,.55);
+            background: rgba(255,255,255,.05);
+            cursor: pointer;
+            flex-shrink: 0;
+            white-space: nowrap;
+            transition: background .15s, color .15s, border-color .15s;
+        }
+        #snn-css-global-btn:hover {
+            color: #fff;
+            border-color: rgba(255,255,255,.3);
+            background: rgba(255,255,255,.1);
+        }
+        #snn-css-global-btn.active {
+            color: #f38ba8;
+            border-color: rgba(243,139,168,.3);
+            background: rgba(243,139,168,.08);
+        }
     </style>
 
     <!-- SNN Custom CSS Overlay -->
@@ -434,6 +491,7 @@ function snn_custom_css_overlay_output() {
         <!-- Top bar -->
         <div id="snn-css-topbar">
             <span id="snn-css-title">CSS – Page</span>
+            <button id="snn-css-global-btn" title="Toggle Global CSS (site-wide)">Global</button>
             <span id="snn-css-bp-indicator" data-bp="desktop" title="Active breakpoint">Desktop</span>
             <div id="snn-css-topbar-actions">
                 <?php if ( $snn_css_ai_enabled ) : ?>
@@ -502,17 +560,24 @@ function snn_custom_css_overlay_output() {
         }
 
         /* ── State ── */
-        var overlay        = null;
-        var editorWrap     = null;
-        var titleEl        = null;
-        var bpIndicatorEl  = null;
-        var cmInstance     = null;
-        var isCollapsed    = false;
-        var lastFullHeight = 260;
-        var currentMode    = 'page';
-        var currentElemId  = null;
-        var isSyncing      = false;
-        var writeCssTimer  = null;
+        var overlay            = null;
+        var editorWrap         = null;
+        var titleEl            = null;
+        var bpIndicatorEl      = null;
+        var cmInstance         = null;
+        var isCollapsed        = false;
+        var lastFullHeight     = 260;
+        var currentMode        = 'page';
+        var currentElemId      = null;
+        var isSyncing          = false;
+        var writeCssTimer      = null;
+        var isGlobalMode       = false;
+        var rootShortcutActive = false;
+        var globalCssDirty     = false;
+
+        /* ── PHP-supplied constants ── */
+        var snnGlobalCssNonce = '<?php echo wp_create_nonce( "snn_save_global_css" ); ?>';
+        var snnAjaxUrl        = '<?php echo esc_url( admin_url( "admin-ajax.php" ) ); ?>';
 
         /* ── Breakpoint helpers ── */
         var BP_LABELS = {
@@ -694,6 +759,10 @@ function snn_custom_css_overlay_output() {
         /* ── Update title + breakpoint indicator ── */
         function updateTitle() {
             if (!titleEl) return;
+            if (isGlobalMode) {
+                titleEl.textContent = 'CSS – Global (site-wide)';
+                return;
+            }
             var bp       = getActiveBreakpoint();
             var bpLabel  = BP_FULL_LABELS[bp] || bp;
             var activeClass = getActiveClass();
@@ -722,7 +791,7 @@ function snn_custom_css_overlay_output() {
 
         /* ── Sync from Bricks ── */
         function syncFromBricks() {
-            if (isSyncing || !cmInstance) return;
+            if (isSyncing || !cmInstance || isGlobalMode) return;
             var val = readCurrentCss();
             if (cmInstance.getValue() !== val) {
                 isSyncing = true;
@@ -780,19 +849,29 @@ function snn_custom_css_overlay_output() {
 
         /* ── r+Tab shortcut ── */
         function handleRootShortcut(cm) {
+            // Close any open hint popup so it can't intercept the insertion
+            if (cm.state.completionActive) {
+                cm.state.completionActive.close();
+            }
             var activeClass = getActiveClass();
             var activeEl    = getActiveElement();
             var snippet;
             if (activeClass && activeClass.name) {
-                snippet = '.' + activeClass.name + ' {\n  \n}';
+                snippet = '.' + activeClass.name;
             } else if (activeEl && activeEl.id) {
-                snippet = '#brxe-' + activeEl.id + ' {\n  \n}';
+                snippet = '#brxe-' + activeEl.id;
             } else {
-                snippet = '%root% {\n  \n}';
+                snippet = '%root%';
             }
             var cur = cm.getCursor();
+            // Suppress autocomplete during and briefly after insertion so no {} is added
+            rootShortcutActive = true;
             cm.replaceRange(snippet, cur);
-            cm.setCursor({ line: cur.line + 1, ch: 2 });
+            cm.setCursor({ line: cur.line, ch: cur.ch + snippet.length });
+            setTimeout(function() {
+                rootShortcutActive = false;
+                if (cm.state.completionActive) cm.state.completionActive.close();
+            }, 150);
             cm.focus();
         }
 
@@ -824,8 +903,11 @@ function snn_custom_css_overlay_output() {
                 matchBrackets   : true,
                 extraKeys       : {
                     'Ctrl-Space' : function (editor) {
-                        // safe: only call autocomplete if the addon is loaded
-                        if (typeof CM.showHint === 'function') {
+                        if (typeof CM.showHint !== 'function') return;
+                        var textBefore = editor.getLine(editor.getCursor().line).slice(0, editor.getCursor().ch);
+                        if (/var\(--[\w-]*$/.test(textBefore)) {
+                            CM.showHint(editor, snnCssVarHint, { completeSingle: false });
+                        } else {
                             CM.showHint(editor, CM.hint && CM.hint.css ? CM.hint.css : undefined, { completeSingle: false });
                         }
                     },
@@ -844,12 +926,21 @@ function snn_custom_css_overlay_output() {
                 hintOptions : { completeSingle: false }
             });
             
-            // Enable CSS autocomplete — only trigger on meaningful CSS characters,
-            // not on Enter, Space, backspace, etc.
-            if (typeof CM.showHint === 'function' && CM.hint && CM.hint.css) {
+            // Enable CSS autocomplete — var(-- triggers Bricks variable list, other chars use CSS hints.
+            if (typeof CM.showHint === 'function') {
                 cmInstance.on('inputRead', function(cm, change) {
+                    if (rootShortcutActive) return;
                     var ch = change.text && change.text[0];
-                    if (ch && /^[a-zA-Z:\-\(]$/.test(ch) && !cm.state.completionActive) {
+                    if (!ch) return;
+                    var cursor     = cm.getCursor();
+                    var textBefore = cm.getLine(cursor.line).slice(0, cursor.ch);
+                    // Inside var context: show Bricks variable list (triggers on "var" or "var(")
+                    if (/(?:^|[^\w-])var\(?(--[\w-]*|)$/.test(textBefore)) {
+                        CM.showHint(cm, snnCssVarHint, { completeSingle: false });
+                        return;
+                    }
+                    // Regular CSS autocomplete for other characters
+                    if (!cm.state.completionActive && /^[a-zA-Z:\-\(]$/.test(ch) && CM.hint && CM.hint.css) {
                         CM.showHint(cm, CM.hint.css, { completeSingle: false });
                     }
                 });
@@ -858,6 +949,7 @@ function snn_custom_css_overlay_output() {
             console.log('CodeMirror editor initialized successfully');
             cmInstance.on('change', function(cm) {
                 if (isSyncing) return;
+                if (isGlobalMode) { globalCssDirty = true; return; }
                 clearTimeout(writeCssTimer);
                 writeCssTimer = setTimeout(function() {
                     isSyncing = true;
@@ -1166,6 +1258,81 @@ function snn_custom_css_overlay_output() {
             }
         }
 
+        /* ── CSS variable autocomplete ── */
+        function getBricksVarList() {
+            var vars = [];
+            try {
+                var app   = document.querySelector('[data-v-app]');
+                var state = app && app.__vue_app__ && app.__vue_app__.config.globalProperties.$_state;
+                if (state) {
+                    if (state.colorPalette) {
+                        Array.from(state.colorPalette).forEach(function(palette) {
+                            if (palette && palette.colors) {
+                                Array.from(palette.colors).forEach(function(c) {
+                                    if (c && c.raw) {
+                                        var name = c.raw.replace(/^var\(|\)$/g, '');
+                                        if (name.indexOf('--') === 0) {
+                                            vars.push({ name: name, value: c.light || '' });
+                                        }
+                                    }
+                                });
+                            }
+                        });
+                    }
+                    if (state.globalVariables) {
+                        Array.from(state.globalVariables).forEach(function(v) {
+                            if (v && v.name) vars.push({ name: '--' + v.name, value: v.value || '' });
+                        });
+                    }
+                }
+            } catch(e) {}
+            return vars;
+        }
+
+        function snnCssVarHint(cm) {
+            var cursor     = cm.getCursor();
+            var line       = cm.getLine(cursor.line);
+            var textBefore = line.slice(0, cursor.ch);
+            
+            // Match "var" preceded by non-word char, followed by optional "(" and optional "--..."
+            var match = textBefore.match(/(?:^|[^\w-])var(\()?(--[\w-]*)?$/);
+            if (!match) return null;
+            
+            var hasParen = !!match[1];
+            var typed    = match[2] || '';
+            
+            var allVars = getBricksVarList();
+            var filtered = allVars.filter(function(v) { 
+                return v.name.indexOf(typed) === 0; 
+            });
+            
+            if (!filtered.length) return null;
+            
+            var CM = window.wp && window.wp.CodeMirror ? window.wp.CodeMirror : window.CodeMirror;
+            
+            return {
+                list: filtered.map(function(v) {
+                    var insertText = v.name;
+                    if (!hasParen) {
+                        // If user just typed "var", wrap the whole thing
+                        insertText = 'var(' + v.name + ')';
+                    } else {
+                        // If user typed "var(", just add the name and closing paren if needed
+                        var suffix = line.charAt(cursor.ch) === ')' ? '' : ')';
+                        insertText = v.name + suffix;
+                    }
+                    
+                    return {
+                        text: insertText,
+                        displayText: v.name + (v.value ? '  ' + v.value : ''),
+                        className: 'snn-var-hint'
+                    };
+                }),
+                from: CM.Pos(cursor.line, cursor.ch - (hasParen ? typed.length : 3 + typed.length)),
+                to: CM.Pos(cursor.line, cursor.ch)
+            };
+        }
+
         /* ── AI Sidebar ── */
         <?php if ( $snn_css_ai_enabled ) : ?>
         var snnCssAiConfig = <?php echo wp_json_encode( [
@@ -1330,10 +1497,117 @@ function snn_custom_css_overlay_output() {
         }
         <?php endif; ?>
 
+        /* ── Global CSS mode ── */
+        function fetchGlobalCss(callback) {
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', snnAjaxUrl, true);
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            xhr.onload = function() {
+                try {
+                    var data = JSON.parse(xhr.responseText);
+                    callback(data.success && data.data ? data.data.css : '');
+                } catch(e) { callback(''); }
+            };
+            xhr.onerror = function() { callback(''); };
+            xhr.send('action=snn_get_global_css');
+        }
+
+        function saveGlobalCss(callback) {
+            if (!isGlobalMode) { if (callback) callback(); return; }
+            var css = cmInstance ? cmInstance.getValue() : '';
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', snnAjaxUrl, true);
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            xhr.onload = function() {
+                globalCssDirty = false;
+                showGlobalSavedFeedback();
+                if (callback) callback();
+            };
+            xhr.onerror = function() { if (callback) callback(); };
+            xhr.send(
+                'action=snn_save_global_css'
+                + '&nonce=' + encodeURIComponent(snnGlobalCssNonce)
+                + '&css='   + encodeURIComponent(css)
+            );
+        }
+
+        function showGlobalSavedFeedback() {
+            var btn = document.getElementById('snn-css-global-btn');
+            if (!btn) return;
+            btn.textContent = 'Saved!';
+            setTimeout(function() { if (isGlobalMode) btn.textContent = 'Global'; }, 1500);
+        }
+
+        function enterGlobalMode() {
+            if (isGlobalMode) return;
+            isGlobalMode   = true;
+            globalCssDirty = false;
+            var globalBtn = document.getElementById('snn-css-global-btn');
+            if (globalBtn) globalBtn.classList.add('active');
+            if (bpIndicatorEl) bpIndicatorEl.style.display = 'none';
+            if (titleEl) titleEl.textContent = 'CSS – Global (site-wide)';
+            if (!cmInstance) initCodeMirror();
+            fetchGlobalCss(function(css) {
+                if (cmInstance) {
+                    isSyncing = true;
+                    cmInstance.setValue(css || '');
+                    isSyncing = false;
+                    cmInstance.refresh();
+                    cmInstance.focus();
+                }
+            });
+        }
+
+        function exitGlobalMode() {
+            if (!isGlobalMode) return;
+            saveGlobalCss(function() {
+                isGlobalMode = false;
+                var globalBtn = document.getElementById('snn-css-global-btn');
+                if (globalBtn) { globalBtn.classList.remove('active'); globalBtn.textContent = 'Global'; }
+                if (bpIndicatorEl) bpIndicatorEl.style.display = '';
+                updateTitle();
+                syncFromBricks();
+            });
+        }
+
+        function initGlobalCssMode() {
+            var globalBtn = document.getElementById('snn-css-global-btn');
+            if (!globalBtn) return;
+
+            globalBtn.addEventListener('click', function() {
+                if (isGlobalMode) { exitGlobalMode(); } else { enterGlobalMode(); }
+            });
+
+            // Catch Bricks .save button click
+            document.addEventListener('click', function(e) {
+                if (!isGlobalMode) return;
+                var t = e.target;
+                while (t && t !== document) {
+                    if (t.classList && t.classList.contains('save')) { saveGlobalCss(); return; }
+                    t = t.parentNode;
+                }
+            }, true);
+
+            // Catch Ctrl+S / Cmd+S
+            document.addEventListener('keydown', function(e) {
+                if (isGlobalMode && (e.ctrlKey || e.metaKey) && e.key === 's') {
+                    saveGlobalCss();
+                }
+            }, true);
+
+            // Auto-save every 10 seconds — only when there are unsaved changes
+            setInterval(function() {
+                if (isGlobalMode && globalCssDirty && overlay && !overlay.classList.contains('snn-hidden')) {
+                    saveGlobalCss();
+                }
+            }, 10000);
+        }
+
         // ── Initialize everything ──
         initResize();
         initOverlayButtons();
         watchForPanelHeader();
+        initGlobalCssMode();
         <?php if ( $snn_css_ai_enabled ) : ?>
         initAiSidebar();
         <?php endif; ?>
