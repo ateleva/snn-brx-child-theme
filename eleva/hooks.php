@@ -12,3 +12,7 @@ add_action( 'after_setup_theme', function() {
     remove_filter( 'themes_api', 'snn_brx_theme_info_from_proxy', 10 );
     remove_action( 'admin_footer', 'snn_brx_github_redirect_version_link' );
 }, 99 );
+
+add_action( 'init', function() {
+    \Bricks\Elements::register_element( get_stylesheet_directory() . '/eleva/elements/title.php' );
+}, 11 );
