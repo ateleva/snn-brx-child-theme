@@ -201,4 +201,4 @@ if (!empty($options['enqueue_gsap'])) {
 load_theme_textdomain('snn', SNN_PATH . '/languages');
 
 // Custom project-specific code (never touched by upstream updates)
-require_once SNN_PATH . 'custom/hooks.php';
+require_once SNN_PATH . 'eleva/hooks.php';
