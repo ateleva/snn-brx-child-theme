@@ -76,13 +76,22 @@
     display: none;
   }
 
-  /* Panel layout */
+  /* Panel layout.
+     The 8-column grid lives on the "Colonne" div (#brxe-digsuw) inside the
+     panel, not on the panel itself: the panel <ul> holds exactly two rows —
+     the columns grid, then the "Vedi tutto il catalogo" CTA. */
   #brxe-wkfnav .wkf-mm-panel--catalogo {
     display: grid;
-    grid-template-columns: repeat(8, minmax(0, 1fr));
+    grid-template-columns: 1fr;
     gap: var(--space-m);
     max-height: calc(100dvh - var(--wkf-header-h));
     overflow-y: auto;
+  }
+
+  /* The per-column drill-in / go-back arrows are a mobile affordance only. */
+  #brxe-wkfnav .wkf-go-into-macro,
+  #brxe-wkfnav .wkf-back-to-macro {
+    display: none;
   }
 
   /* Task 4 (Controller ruling R5): Bricks' bricksSubmenuPositionFn only ever
