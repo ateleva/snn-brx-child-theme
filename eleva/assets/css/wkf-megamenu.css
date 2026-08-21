@@ -336,8 +336,57 @@
     overscroll-behavior: contain;
   }
 
-  #brxe-wkfnav .wkf-mm-trigger > .brx-submenu-toggle,
-  #brxe-wkfnav .brx-nav-nested-items a { min-height: 44px; padding: var(--space-xs) var(--space-m); }
+  /* Level 1 rows.
+     The chevron sits inside the full-row <button> overlay, so the button is
+     what positions it; the label is indented past it by the same amount plus
+     one gap, and the link-only rows (Servizi, Guide tecniche, Contatti) take
+     that identical indent so every level-1 label starts on the same line.
+     Padding is applied per row type rather than to every <a> in the panel —
+     a blanket anchor rule double-padded any link nested inside an already
+     padded row, which is what pushed the catalogue CTA and the Settori
+     titles out of alignment with the text around them. */
+  #brxe-wkfnav {
+    --wkf-mm-indent: var(--space-l);
+    --wkf-mm-chevron: 16px;
+    --wkf-mm-label-indent: calc(var(--space-l) + var(--wkf-mm-chevron) + var(--space-m));
+  }
+
+  #brxe-wkfnav .wkf-mm-trigger > .brx-submenu-toggle { min-height: 48px; }
+
+  #brxe-wkfnav .wkf-mm-trigger > .brx-submenu-toggle > span,
+  #brxe-wkfnav .brx-nav-nested-items > li > .brxe-text-link {
+    display: flex;
+    align-items: center;
+    min-height: 48px;
+    padding: var(--space-xs) var(--space-m) var(--space-xs) var(--wkf-mm-label-indent);
+    font-size: var(--text-l);
+    font-weight: 500;
+  }
+
+  #brxe-wkfnav .wkf-mm-trigger > .brx-submenu-toggle > button {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding-left: var(--wkf-mm-indent);
+  }
+
+  /* One chevron style everywhere: the Themify glyph at 16px that the macro
+     rows already use. */
+  #brxe-wkfnav .wkf-mm-trigger > .brx-submenu-toggle > button > i,
+  #brxe-wkfnav .wkf-go-into-macro,
+  #brxe-wkfnav .wkf-back-to-macro,
+  #brxe-wkfnav .wkf-mm-chevron {
+    font-size: var(--wkf-mm-chevron);
+    line-height: 1;
+  }
+
+  /* Level 3 category links keep their own touch target. */
+  #brxe-wkfnav .wkf-mm-sublist a {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    padding: var(--space-xs) var(--space-m);
+  }
 
   #brxe-wkfnav .brx-multilevel-back {
     display: flex;
@@ -348,13 +397,7 @@
     font-weight: 600;
     border-bottom: 1px solid var(--wkf-grey-l-2);
   }
-  #brxe-wkfnav .brx-multilevel-back::before {
-    content: "";
-    border: solid currentColor;
-    border-width: 0 2px 2px 0;
-    padding: 3px;
-    transform: rotate(135deg);
-  }
+  #brxe-wkfnav .brx-multilevel-back::before { content: none; }
 
   #brxe-wkfnav .wkf-mm-mobile-foot {
     display: flex;
@@ -447,9 +490,12 @@
     border-bottom: 1px solid var(--wkf-grey-l-2);
   }
   #brxe-wkfnav .wkf-mm-levelhead__label {
-    font-size: var(--text-m);
-    font-weight: 600;
-    flex: 1 1 auto;
+    display: flex;
+    align-items: center;
+    min-height: 48px;
+    padding: var(--space-xs) var(--space-m);
+    font-size: var(--text-l);
+    font-weight: 500;
   }
   #brxe-wkfnav .wkf-mm-backbtn {
     flex: 0 0 auto;
@@ -520,7 +566,21 @@
     margin-top: 0;
     padding-top: var(--space-s);
   }
-  #brxe-wkfnav .wkf-mm-cta { padding: var(--space-s) var(--space-m); }
+  #brxe-wkfnav .wkf-mm-cta { padding: 0; }
+  #brxe-wkfnav .wkf-mm-cta > a {
+    display: flex;
+    align-items: center;
+    min-height: 48px;
+    padding: var(--space-xs) var(--space-m);
+    font-weight: 500;
+  }
+
+  /* Sector rows: the title link must not add its own padding on top of the
+     row's, or it sits indented from its own description. */
+  #brxe-wkfnav .wkf-mm-sector > a {
+    padding: 0;
+    min-height: 0;
+  }
   #brxe-wkfnav .wkf-mm-sublist .brxe-heading { font-size: var(--text-s); font-weight: 400; }
 
   /* LEVEL 2 — macro names only. No children anywhere on this level.

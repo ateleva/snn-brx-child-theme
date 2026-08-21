@@ -115,6 +115,13 @@
 	 * Bricks injects into every nested <ul>.
 	 * ------------------------------------------------------------------ */
 
+	function backIcon() {
+		var icon = document.createElement( 'i' );
+		icon.className = 'ti-angle-left wkf-mm-chevron';
+		icon.setAttribute( 'aria-hidden', 'true' );
+		return icon;
+	}
+
 	function labelOf( dropdown ) {
 		var node = dropdown.querySelector( ':scope > .brx-submenu-toggle > a, :scope > .brx-submenu-toggle > span' );
 		return node ? node.textContent.trim() : '';
@@ -147,6 +154,10 @@
 		back.type = 'button';
 		back.className = 'wkf-mm-backbtn brx-multilevel-back';
 		back.setAttribute( 'aria-label', 'Torna al menu principale' );
+
+		/* Same Themify glyph the macro rows use, so every chevron in the menu
+		   is the same shape and weight rather than a CSS-drawn lookalike. */
+		back.appendChild( backIcon() );
 
 		back.addEventListener( 'click', function ( event ) {
 			event.preventDefault();
