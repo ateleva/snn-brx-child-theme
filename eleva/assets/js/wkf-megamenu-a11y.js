@@ -79,6 +79,11 @@
 		return el;
 	}
 
+	/* A placeholder marks each element's exact spot in the header. Remembering
+	   the next sibling instead would break: those siblings are themselves
+	   borrowed, so by the time one is put back its recorded neighbour has
+	   already moved into the panel and insertBefore throws NotFoundError —
+	   which aborts the loop and strands the rest of the header. */
 	function borrowWidgets( root ) {
 		BORROWED.forEach( function ( item ) {
 			var node = widgetNode( item.id );
@@ -88,7 +93,10 @@
 				return;
 			}
 
-			borrowedHome[ item.id ] = { parent: node.parentNode, next: node.nextSibling };
+			var marker = document.createComment( 'wkf-mm:' + item.id );
+			node.parentNode.insertBefore( marker, node );
+
+			borrowedHome[ item.id ] = marker;
 			node.style.order = item.order;
 			slot.appendChild( node );
 		} );
@@ -97,15 +105,16 @@
 	function returnWidgets() {
 		BORROWED.forEach( function ( item ) {
 			var node = widgetNode( item.id );
-			var home = borrowedHome[ item.id ];
+			var marker = borrowedHome[ item.id ];
 
-			if ( ! node || ! home ) {
+			delete borrowedHome[ item.id ];
+
+			if ( ! node || ! marker || ! marker.parentNode ) {
 				return;
 			}
 
 			node.style.order = '';
-			home.parent.insertBefore( node, home.next );
-			delete borrowedHome[ item.id ];
+			marker.parentNode.replaceChild( node, marker );
 		} );
 	}
 
