@@ -1,0 +1,32 @@
+/* wkf-megamenu.css — Working Finiture main navigation
+   1. Shared   2. Desktop (>=992)   3. Mobile (<=991)
+   Structure/settings live in Bricks (header template 7). This file only
+   supplies what Bricks controls cannot express. */
+
+:root {
+  --wkf-header-h: 8rem; /* fallback; refined in Task 4 against the real header */
+}
+
+/* ---------- 1. Shared ---------- */
+
+#brxe-wkfnav :focus-visible,
+#brxe-wkfnav .brx-multilevel-back:focus-visible {
+  outline: 2px solid var(--wkf-primary);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Whole trigger row is the button, caret drawn as a pseudo-element. */
+#brxe-wkfnav .wkf-mm-trigger > .brx-submenu-toggle {
+  position: relative;
+}
+#brxe-wkfnav .wkf-mm-trigger > .brx-submenu-toggle > button {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
