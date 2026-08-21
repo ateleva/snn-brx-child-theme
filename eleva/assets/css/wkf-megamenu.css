@@ -28,6 +28,37 @@
 }
 #brxe-wkfnav .wkf-mm-sector > p { margin: 0; }
 
+/* Brand rows: [ icon  name .......... Scopri ] with the description beneath,
+   each row separated by a hairline. The icon is the square `brand_icon` term
+   field, so all three line up regardless of the logos' aspect ratios. */
+#brxe-wkfnav .wkf-mm-brand + .wkf-mm-brand {
+  border-top: 1px solid var(--wkf-grey-l-2);
+  padding-top: var(--space-s);
+  margin-top: var(--space-s);
+}
+#brxe-wkfnav .wkf-mm-brand__row > img {
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+#brxe-wkfnav .wkf-mm-brand__name {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+#brxe-wkfnav .wkf-mm-brand__cta {
+  flex: 0 0 auto;
+  font-size: var(--text-s);
+  font-weight: 600;
+  color: var(--wkf-primary);
+  white-space: nowrap;
+}
+#brxe-wkfnav .wkf-mm-brand__desc {
+  margin: 0;
+  font-size: var(--text-s);
+  color: var(--wkf-grey-d-1);
+}
+
 /* Whole trigger row is the button, caret drawn as a pseudo-element. */
 #brxe-wkfnav .wkf-mm-trigger > .brx-submenu-toggle {
   position: relative;
@@ -46,43 +77,16 @@
 /* ---------- 2. Desktop (>= 992px) ---------- */
 @media (min-width: 992px) {
 
-  /* Bricks applies .brx-has-multilevel to every dropdown at every viewport.
-     These rules undo its mobile-only assumptions for the mega panel.
+  /* Bricks applies .brx-has-multilevel to every dropdown at every viewport,
+     and its `.brx-has-multilevel ul li:not(.open){display:none}` is not
+     breakpoint-scoped, so it hides the panel's own rows at desktop too.
+     Rows that set their own display via a Bricks ID rule (.wkf-mm-sector,
+     the looped .wkf-mm-brand) already outrank it; the CTA row does not.
      Measured against Bricks 2.3.11 assets/css/frontend.min.css. */
-
-  #brxe-wkfnav .wkf-mm-panel > li,
-  #brxe-wkfnav .wkf-mm-sublist > li {
-    display: list-item;
-  }
-
-  #brxe-wkfnav .wkf-mm-col > .brx-dropdown-content {
-    position: static;
-    opacity: 1;
-    transform: none;
-    left: auto !important;
-    min-width: 0;
-    box-shadow: none;
-    background: none;
-  }
-
-  /* visibility is scoped to the OPEN panel on purpose. An unscoped
-     `visibility: visible` here would beat the closed panel's inherited
-     `visibility: hidden`, leaving the category links keyboard-focusable
-     and exposed to the a11y tree while the panel is shut (WCAG 2.4.3). */
-  #brxe-wkfnav .wkf-mm-trigger.open .wkf-mm-col > .brx-dropdown-content {
-    visibility: visible;
-  }
-
-  #brxe-wkfnav .wkf-mm-col > .brx-submenu-toggle {
+  #brxe-wkfnav .wkf-mm-panel > li.wkf-mm-cta {
     display: block;
   }
 
-  /* Caret button is meaningless when the list is permanently visible:
-     removing it from the DOM box model removes it from the tab order
-     and from the accessibility tree. */
-  #brxe-wkfnav .wkf-mm-col > .brx-submenu-toggle > button {
-    display: none;
-  }
 
   #brxe-wkfnav .brx-multilevel-back {
     display: none;
@@ -159,12 +163,6 @@
     }
   }
 
-  /* Task 4 (Controller ruling R8): Bricks injects a back-link <li> into every
-     nested <ul> at runtime; the section-2 override hides the <a> but leaves
-     an empty list row visible at desktop. */
-  #brxe-wkfnav .wkf-mm-sublist > li:has(> .brx-multilevel-back) {
-    display: none;
-  }
 
   /* ---------- Task 4: desktop panel styling ---------- */
 
@@ -175,14 +173,6 @@
     border-radius: 0 0 var(--radius-s) var(--radius-s);
   }
 
-  #brxe-wkfnav .wkf-mm-col > .brx-submenu-toggle a {
-    font-weight: 600;
-    font-size: var(--text-m);
-    display: block;
-    padding-bottom: var(--space-2xs);
-    border-bottom: 1px solid var(--wkf-grey-l-2);
-    margin-bottom: var(--space-2xs);
-  }
 
   #brxe-wkfnav .wkf-mm-sublist a {
     display: block;
@@ -323,7 +313,16 @@
     border-bottom: 1px solid var(--wkf-grey-l-2);
     flex: 0 0 auto;
   }
+  /* Row order: logo | account | cart | close. The logo, account and cart are
+     the site header's own elements, relocated here while the panel is open
+     (see BORROWED in wkf-megamenu-a11y.js) and carrying an inline `order`;
+     the close toggle is the only element that natively belongs to the panel,
+     so it is ordered last here. */
   #brxe-wkfnav .wkf-mm-mobile-head .brxe-logo { margin-right: auto; }
+  #brxe-wkfnav .wkf-mm-mobile-head > button.brxe-toggle { order: 4; }
+  #brxe-wkfnav .wkf-mm-mobile-search > .brxe-search { width: 100%; }
+  #brxe-wkfnav .wkf-mm-mobile-search .bricks-search-form { width: 100%; }
+  #brxe-wkfnav .wkf-mm-mobile-search input[name="s"] { width: 100%; min-height: 44px; }
 
   #brxe-wkfnav .wkf-mm-mobile-search { padding: var(--space-s) var(--space-m); flex: 0 0 auto; }
 
@@ -338,10 +337,6 @@
   }
 
   #brxe-wkfnav .wkf-mm-trigger > .brx-submenu-toggle,
-  #brxe-wkfnav .wkf-mm-col > .brx-submenu-toggle {
-    min-height: 44px;
-    padding: var(--space-xs) var(--space-m);
-  }
   #brxe-wkfnav .brx-nav-nested-items a { min-height: 44px; padding: var(--space-xs) var(--space-m); }
 
   #brxe-wkfnav .brx-multilevel-back {
@@ -404,8 +399,8 @@
   /* Levels 2 and 3: every center row except the open one is gone.
      The fixed header and footer are deliberately excluded — they never
      change between levels. */
-  #brxe-wkfnav[data-wkf-level="2"] .brx-nav-nested-items > li:not(.wkf-mm-mobile-head):not(.wkf-mm-mobile-foot):not(.open),
-  #brxe-wkfnav[data-wkf-level="3"] .brx-nav-nested-items > li:not(.wkf-mm-mobile-head):not(.wkf-mm-mobile-foot):not(.open) {
+  #brxe-wkfnav[data-wkf-level="2"] .brx-nav-nested-items > li:not(.wkf-mm-mobile-head):not(.wkf-mm-mobile-search):not(.wkf-mm-mobile-foot):not(.open),
+  #brxe-wkfnav[data-wkf-level="3"] .brx-nav-nested-items > li:not(.wkf-mm-mobile-head):not(.wkf-mm-mobile-search):not(.wkf-mm-mobile-foot):not(.open) {
     display: none;
   }
 
@@ -458,9 +453,14 @@
   }
   #brxe-wkfnav .wkf-mm-backbtn {
     flex: 0 0 auto;
+    margin-left: auto;
+    /* The level-head button also carries Bricks' .brx-multilevel-back, whose
+       own rule sets width:100% — that stretched it across the row and pushed
+       the arrow past the right edge. */
+    width: auto;
     display: inline-flex;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-end;
     min-width: 44px;
     min-height: 44px;
     padding: 0 var(--space-m) 0 0;
@@ -469,6 +469,9 @@
     color: inherit;
     cursor: pointer;
   }
+  /* The label must not stretch across the row, or the back arrow lands in
+     dead space instead of against the right edge. */
+  #brxe-wkfnav .wkf-mm-levelhead__label { flex: 0 1 auto; }
 
   /* Catalogo: the 8 columns become 8 stacked, full-width rows. Bricks' own
      flex defaults size these blocks to their content, which left ragged row
@@ -507,6 +510,17 @@
   }
   #brxe-wkfnav .wkf-mm-coltop a { padding: 0; min-height: 0; }
   #brxe-wkfnav .wkf-mm-sublist { padding: 0 0 var(--space-s) 0; gap: 0; }
+
+  /* The level machine strips the panel's own padding, so the rows carry it. */
+  #brxe-wkfnav .wkf-mm-brand,
+  #brxe-wkfnav .wkf-mm-sector {
+    padding: var(--space-s) var(--space-m);
+  }
+  #brxe-wkfnav .wkf-mm-brand + .wkf-mm-brand {
+    margin-top: 0;
+    padding-top: var(--space-s);
+  }
+  #brxe-wkfnav .wkf-mm-cta { padding: var(--space-s) var(--space-m); }
   #brxe-wkfnav .wkf-mm-sublist .brxe-heading { font-size: var(--text-s); font-weight: 400; }
 
   /* LEVEL 2 — macro names only. No children anywhere on this level.
@@ -553,5 +567,7 @@
      target that wrapper, not the inner icon, or it has no effect. */
   #brxe-nebryp > a:has(> #brxe-donbzq) { order: 3; }
   #brxe-gfhkoa { order: 4; }
-  #brxe-gjvbmv { display: none; }  /* search moves into the panel */
+  /* Hidden only while it is still a child of the header row: the JS moves this
+     very element into the panel when the menu opens, and there it must show. */
+  #brxe-nebryp > #brxe-gjvbmv { display: none; }
 }

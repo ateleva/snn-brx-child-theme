@@ -42,6 +42,74 @@
 	}
 
 	/* ------------------------------------------------------------------ *
+	 * Borrowed header widgets
+	 *
+	 * The panel needs the logo, search, account and cart — but those already
+	 * exist in the site header, and duplicating them would put two of each in
+	 * the DOM, two tab stops per control, and two copies of the search input
+	 * for Relevanssi to bind. So the real elements are MOVED into the panel
+	 * while it is open and returned to their exact original position when it
+	 * closes. Each one remembers the parent and next sibling it came from.
+	 * ------------------------------------------------------------------ */
+
+	var BORROWED = [
+		{ id: 'brxe-aqqruf', slot: '.wkf-mm-mobile-head', order: 1 },  /* logo    */
+		{ id: 'brxe-donbzq', slot: '.wkf-mm-mobile-head', order: 2 },  /* account */
+		{ id: 'brxe-gfhkoa', slot: '.wkf-mm-mobile-head', order: 3 },  /* cart    */
+		{ id: 'brxe-gjvbmv', slot: '.wkf-mm-mobile-search', order: 1 } /* search  */
+	];
+
+	var borrowedHome = {};
+
+	/* Bricks wraps an icon element that has a link in an <a>, so the node to
+	   move is that wrapper, not the icon itself. */
+	function widgetNode( id ) {
+		var el = document.getElementById( id );
+
+		if ( ! el ) {
+			return null;
+		}
+
+		var wrapper = el.parentNode;
+
+		if ( wrapper && wrapper.tagName === 'A' && wrapper.classList.contains( 'bricks-link-wrapper' ) ) {
+			return wrapper;
+		}
+
+		return el;
+	}
+
+	function borrowWidgets( root ) {
+		BORROWED.forEach( function ( item ) {
+			var node = widgetNode( item.id );
+			var slot = root.querySelector( item.slot );
+
+			if ( ! node || ! slot || borrowedHome[ item.id ] ) {
+				return;
+			}
+
+			borrowedHome[ item.id ] = { parent: node.parentNode, next: node.nextSibling };
+			node.style.order = item.order;
+			slot.appendChild( node );
+		} );
+	}
+
+	function returnWidgets() {
+		BORROWED.forEach( function ( item ) {
+			var node = widgetNode( item.id );
+			var home = borrowedHome[ item.id ];
+
+			if ( ! node || ! home ) {
+				return;
+			}
+
+			node.style.order = '';
+			home.parent.insertBefore( node, home.next );
+			delete borrowedHome[ item.id ];
+		} );
+	}
+
+	/* ------------------------------------------------------------------ *
 	 * Level 2 header row: [ label ................ back ]
 	 * Built once per dropdown panel, replacing the "Indietro" anchor that
 	 * Bricks injects into every nested <ul>.
@@ -436,6 +504,13 @@
 				panelWasOpen = panelIsOpen;
 				closeAllDropdowns( root );
 				resetToLevel1( root );
+
+				if ( panelIsOpen ) {
+					borrowWidgets( root );
+				} else {
+					returnWidgets();
+				}
+
 				return;
 			}
 
@@ -466,6 +541,7 @@
 			closeAllDropdowns( root );
 			resetToLevel1( root );
 			root.classList.remove( 'brx-open' );
+			returnWidgets();
 
 			Array.prototype.forEach.call( columns( root ), asPlainRow );
 		} );
