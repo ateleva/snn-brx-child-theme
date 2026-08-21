@@ -93,6 +93,43 @@
     max-width: none;
   }
 
+  /* Task 6 (Controller ruling R11): the megaMenuSelector now targets
+     #brxe-vnqmhw, the full-width 0-padding header container, so the
+     Catalogo panel's intended width/position is relative to that
+     container, not to its own deeply-nested trigger <li> (Bricks' default
+     absolute-positioning ancestor). Two Bricks quirks have to be defeated
+     to get there, both confirmed by bisecting document.styleSheets:
+     1) Bricks ships frontend-layer.min.css inside `@layer bricks`, and its
+        multilevel rule (`.brx-has-multilevel ul:not(.brx-multilevel-
+        overflow-right){left:0!important}`) beats ANY unlayered !important
+        declaration outright — per the cascade-layers spec, importance
+        order is reversed and an unlayered !important always loses to a
+        layered one, regardless of selector specificity (measured before
+        this fix: left:411.875/right:1388.875 at 992px, 396.875px past the
+        viewport). Joining the same layer restores normal specificity/
+        source-order tie-breaking.
+     2) The trigger <li> (.brxe-dropdown, position:relative) is the
+        nearest positioned ancestor, so a plain position:absolute panel
+        would still only span the trigger's own ~64px width. Dropping the
+        trigger to position:static (below) bubbles the containing block up
+        to #brxe-nebryp, which shares #brxe-vnqmhw's full width and left
+        edge — that one rule is a NORMAL declaration and unlayered normal
+        author styles already win over Bricks' layered normal
+        `.brxe-dropdown{position:relative}`, no !important needed. */
+  #brxe-wkfcat {
+    position: static;
+  }
+  @layer bricks {
+    #brxe-wkfnav .wkf-mm-panel--catalogo {
+      position: absolute !important;
+      left: 0 !important;
+      right: 0 !important;
+      width: auto !important;
+      min-width: 0 !important;
+      top: var(--wkf-header-h) !important;
+    }
+  }
+
   /* Task 4 (Controller ruling R8): Bricks injects a back-link <li> into every
      nested <ul> at runtime; the section-2 override hides the <a> but leaves
      an empty list row visible at desktop. */
@@ -136,7 +173,7 @@
     display: grid;
     grid-template-columns: repeat(3, minmax(200px, 1fr));
     gap: var(--space-m);
-    min-width: 640px;
+    min-width: min(640px, calc(100vw - var(--space-l) * 2));
   }
   #brxe-wkfnav .wkf-mm-brand img { max-width: 140px; height: auto; }
 
@@ -144,10 +181,46 @@
     display: grid;
     grid-template-columns: 1fr;
     gap: var(--space-xs);
-    min-width: 340px;
+    min-width: min(340px, calc(100vw - var(--space-l) * 2));
   }
   #brxe-wkfnav .wkf-mm-sector a { font-weight: 600; display: block; }
   #brxe-wkfnav .wkf-mm-sector p { font-size: var(--text-s); margin: 0; }
+
+  /* Task 6 (Controller ruling R11): Bricks correctly flags these two
+     panels `.brx-multilevel-overflow-right` at narrow desktop widths and
+     flips them to right-edge anchoring off the trigger — but Brand/Settori
+     sit early in the row, so anchoring a 640px/340px-wide panel off their
+     own right edge still pushes the LEFT edge past 0 (measured at 992px:
+     left:-88.7px for Brand even after the min-width clamp above, since the
+     clamp only bounds absolute width, not this trigger-relative underflow).
+     Anchoring to #brxe-nebryp's right edge instead of the trigger's
+     guarantees both edges stay on-screen; the position:static + @layer
+     bricks reasoning is identical to Catalogo's above. An explicit
+     `width` (not just max-width) is required too: with left:auto and no
+     definite width, these grid panels shrink-to-fit against the
+     *available* space rather than their own content, so a 1fr grid track
+     happily grows to fill the whole containing block instead of staying a
+     tight ~640/340px card list — measured, that produced a 956px-wide
+     Brand panel at 992px. */
+  #brxe-wkfbrand,
+  #brxe-wkfsett {
+    position: static;
+  }
+  @layer bricks {
+    #brxe-wkfnav .wkf-mm-panel--brand,
+    #brxe-wkfnav .wkf-mm-panel--settori {
+      position: absolute !important;
+      left: auto !important;
+      right: var(--space-l) !important;
+      top: var(--wkf-header-h) !important;
+    }
+    #brxe-wkfnav .wkf-mm-panel--brand {
+      width: min(640px, calc(100vw - var(--space-l) * 2)) !important;
+    }
+    #brxe-wkfnav .wkf-mm-panel--settori {
+      width: min(340px, calc(100vw - var(--space-l) * 2)) !important;
+    }
+  }
 
   /* Top-level trigger caret, drawn on the row, not inside the hidden button. */
   #brxe-wkfnav .wkf-mm-trigger > .brx-submenu-toggle > span::after {
@@ -269,9 +342,34 @@
     flex: 0 0 auto;
   }
   #brxe-wkfnav .wkf-mm-mobile-foot a { min-width: 44px; min-height: 44px; display: grid; place-items: center; }
+
+  /* USER REQUIREMENT: social/contact icons must be visible ONLY inside the
+     open full-screen panel, never in the site header at any width. The
+     panel's own clip-path hides it visually when closed but does not
+     collapse its layout box (clip-path is paint-only), so the footer row's
+     links still report real width/height via getBoundingClientRect while
+     closed. Explicit display:none actually collapses the geometry. */
+  #brxe-wkfnav:not(.brx-open) .wkf-mm-mobile-foot {
+    display: none;
+  }
 }
 
 @media (max-width: 991px) and (prefers-reduced-motion: reduce) {
   #brxe-wkfnav .brx-nav-nested-items { transition: none; clip-path: none; visibility: hidden; }
   #brxe-wkfnav.brx-open .brx-nav-nested-items { visibility: visible; }
+}
+
+/* ---------- Task 6: header order at mobile ---------- */
+@media (max-width: 991px) {
+  /* Header order: logo | hamburger | account | cart */
+  #brxe-nebryp { display: flex; align-items: center; gap: var(--space-s); }
+  #brxe-aqqruf { order: 1; margin-right: auto; }
+  #brxe-wkfnav { order: 2; }
+  /* donbzq (icon+link) renders id on the inner <i>; the actual flex
+     child in #brxe-nebryp is its wrapping <a class="bricks-link-wrapper">
+     (see eleva memory: bricks-keyboard-accessibility). `order` must
+     target that wrapper, not the inner icon, or it has no effect. */
+  #brxe-nebryp > a:has(> #brxe-donbzq) { order: 3; }
+  #brxe-gfhkoa { order: 4; }
+  #brxe-gjvbmv { display: none; }  /* search moves into the panel */
 }
