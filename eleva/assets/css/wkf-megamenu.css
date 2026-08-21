@@ -1,13 +1,11 @@
-/* wkf-megamenu.css — Working Finiture main navigation
-   1. Shared   2. Desktop (>=992)   3. Mobile (<=991)
-   Structure/settings live in Bricks (header template 7). This file only
-   supplies what Bricks controls cannot express. */
+/* wkf-megamenu.css — main navigation. Structure lives in Bricks (template 7);
+   this file only supplies what Bricks controls cannot express. */
 
 :root {
-  --wkf-header-h: 4.25rem; /* measured Task 4: #brxe-vnqmhw = 67px at 992/1280 desktop widths, rounded up */
+  --wkf-header-h: 4.25rem;
 }
 
-/* ---------- 1. Shared ---------- */
+/* ============ 1. Shared ============ */
 
 #brxe-wkfnav :focus-visible,
 #brxe-wkfnav .brx-multilevel-back:focus-visible {
@@ -16,10 +14,7 @@
   border-radius: 2px;
 }
 
-/* Sector rows stack: title above its description, never side by side.
-   Bricks' own `.brx-has-multilevel .open.active>ul>li{display:flex}` sets
-   these <li> to flex with the default row direction, which is what put the
-   description next to the title. */
+/* Bricks sets these <li> to flex-row; stack title over description. */
 #brxe-wkfnav .wkf-mm-sector {
   display: flex;
   flex-direction: column;
@@ -28,9 +23,7 @@
 }
 #brxe-wkfnav .wkf-mm-sector > p { margin: 0; }
 
-/* Brand rows: [ icon  name .......... Scopri ] with the description beneath,
-   each row separated by a hairline. The icon is the square `brand_icon` term
-   field, so all three line up regardless of the logos' aspect ratios. */
+/* Brand row: [ icon  name .......... Scopri ] + description beneath. */
 #brxe-wkfnav .wkf-mm-brand + .wkf-mm-brand {
   border-top: 1px solid var(--wkf-grey-l-2);
   padding-top: var(--space-s);
@@ -59,7 +52,7 @@
   color: var(--wkf-grey-d-1);
 }
 
-/* Whole trigger row is the button, caret drawn as a pseudo-element. */
+/* The whole trigger row is the button. */
 #brxe-wkfnav .wkf-mm-trigger > .brx-submenu-toggle {
   position: relative;
 }
@@ -74,81 +67,42 @@
   cursor: pointer;
 }
 
-/* ---------- 2. Desktop (>= 992px) ---------- */
+/* ============ 2. Desktop (>= 992px) ============ */
 @media (min-width: 992px) {
 
-  /* Bricks applies .brx-has-multilevel to every dropdown at every viewport,
-     and its `.brx-has-multilevel ul li:not(.open){display:none}` is not
-     breakpoint-scoped, so it hides the panel's own rows at desktop too.
-     Rows that set their own display via a Bricks ID rule (.wkf-mm-sector,
-     the looped .wkf-mm-brand) already outrank it; the CTA row does not.
-     Measured against Bricks 2.3.11 assets/css/frontend.min.css. */
+  /* Bricks' unscoped `.brx-has-multilevel ul li:not(.open){display:none}`
+     also hides the CTA row; other rows outrank it via their own ID. */
   #brxe-wkfnav .wkf-mm-panel > li.wkf-mm-cta {
     display: block;
   }
-
 
   #brxe-wkfnav .brx-multilevel-back {
     display: none;
   }
 
-  /* Panel layout.
-     The 8-column grid lives on the "Colonne" div (#brxe-digsuw) inside the
-     panel, not on the panel itself: the panel <ul> holds exactly two rows —
-     the columns grid, then the "Vedi tutto il catalogo" CTA. */
+  /* The 8-column grid lives on #brxe-digsuw; the panel holds columns + CTA.
+     max-width:none is required: Bricks only ever sets min-width on megamenus. */
   #brxe-wkfnav .wkf-mm-panel--catalogo {
     display: grid;
     grid-template-columns: 1fr;
     gap: var(--space-m);
+    max-width: none;
     max-height: calc(100dvh - var(--wkf-header-h));
     overflow-y: auto;
   }
 
-  /* The per-column drill-in / go-back arrows are a mobile affordance only,
-     and so is the level header row the JS builds for the mobile stack. */
+  /* Drill-in arrows and the level header row are mobile-only affordances. */
   #brxe-wkfnav .wkf-go-into-macro,
   #brxe-wkfnav .wkf-back-to-macro {
     display: none;
   }
-
-  /* Needs the `.wkf-mm-panel > li` shape to outrank the section-2 override
-     `#brxe-wkfnav .wkf-mm-panel > li { display: list-item }`, which is
-     load-bearing for the columns and must not be edited. */
   #brxe-wkfnav .wkf-mm-panel > li.wkf-mm-levelhead {
     display: none;
   }
 
-  /* Task 4 (Controller ruling R5): Bricks' bricksSubmenuPositionFn only ever
-     sets submenu.style.minWidth, never width, so an inherited max-width: 100%
-     clamps the panel to its trigger <li> and the 8 grid tracks above compute
-     to 0px. Lifting the clamp is required for the columns to render. */
-  #brxe-wkfnav .wkf-mm-panel--catalogo {
-    max-width: none;
-  }
-
-  /* Task 6 (Controller ruling R11): the megaMenuSelector now targets
-     #brxe-vnqmhw, the full-width 0-padding header container, so the
-     Catalogo panel's intended width/position is relative to that
-     container, not to its own deeply-nested trigger <li> (Bricks' default
-     absolute-positioning ancestor). Two Bricks quirks have to be defeated
-     to get there, both confirmed by bisecting document.styleSheets:
-     1) Bricks ships frontend-layer.min.css inside `@layer bricks`, and its
-        multilevel rule (`.brx-has-multilevel ul:not(.brx-multilevel-
-        overflow-right){left:0!important}`) beats ANY unlayered !important
-        declaration outright — per the cascade-layers spec, importance
-        order is reversed and an unlayered !important always loses to a
-        layered one, regardless of selector specificity (measured before
-        this fix: left:411.875/right:1388.875 at 992px, 396.875px past the
-        viewport). Joining the same layer restores normal specificity/
-        source-order tie-breaking.
-     2) The trigger <li> (.brxe-dropdown, position:relative) is the
-        nearest positioned ancestor, so a plain position:absolute panel
-        would still only span the trigger's own ~64px width. Dropping the
-        trigger to position:static (below) bubbles the containing block up
-        to #brxe-nebryp, which shares #brxe-vnqmhw's full width and left
-        edge — that one rule is a NORMAL declaration and unlayered normal
-        author styles already win over Bricks' layered normal
-        `.brxe-dropdown{position:relative}`, no !important needed. */
+  /* Panels anchor to the full-width header, not to their own trigger <li>:
+     static trigger + same @layer as Bricks, whose layered !important would
+     otherwise beat any unlayered rule regardless of specificity. */
   #brxe-wkfcat {
     position: static;
   }
@@ -163,16 +117,12 @@
     }
   }
 
-
-  /* ---------- Task 4: desktop panel styling ---------- */
-
   #brxe-wkfnav .wkf-mm-panel {
     background: var(--wkf-white);
     box-shadow: 0 8px 24px var(--wkf-black-t-2);
     padding: var(--space-m);
     border-radius: 0 0 var(--radius-s) var(--radius-s);
   }
-
 
   #brxe-wkfnav .wkf-mm-sublist a {
     display: block;
@@ -205,22 +155,9 @@
   #brxe-wkfnav .wkf-mm-sector a { font-weight: 600; display: block; }
   #brxe-wkfnav .wkf-mm-sector p { font-size: var(--text-s); margin: 0; }
 
-  /* Task 6 (Controller ruling R11): Bricks correctly flags these two
-     panels `.brx-multilevel-overflow-right` at narrow desktop widths and
-     flips them to right-edge anchoring off the trigger — but Brand/Settori
-     sit early in the row, so anchoring a 640px/340px-wide panel off their
-     own right edge still pushes the LEFT edge past 0 (measured at 992px:
-     left:-88.7px for Brand even after the min-width clamp above, since the
-     clamp only bounds absolute width, not this trigger-relative underflow).
-     Anchoring to #brxe-nebryp's right edge instead of the trigger's
-     guarantees both edges stay on-screen; the position:static + @layer
-     bricks reasoning is identical to Catalogo's above. An explicit
-     `width` (not just max-width) is required too: with left:auto and no
-     definite width, these grid panels shrink-to-fit against the
-     *available* space rather than their own content, so a 1fr grid track
-     happily grows to fill the whole containing block instead of staying a
-     tight ~640/340px card list — measured, that produced a 956px-wide
-     Brand panel at 992px. */
+  /* These two sit early in the row, so anchoring off their own trigger pushes
+     the left edge off-screen; anchor to the header's right edge instead.
+     An explicit width is needed or the 1fr track fills the containing block. */
   #brxe-wkfbrand,
   #brxe-wkfsett {
     position: static;
@@ -241,7 +178,7 @@
     }
   }
 
-  /* Top-level trigger caret, drawn on the row, not inside the hidden button. */
+  /* Down-caret on the row; the element's own icon is hidden to avoid two. */
   #brxe-wkfnav .wkf-mm-trigger > .brx-submenu-toggle > span::after {
     content: "";
     display: inline-block;
@@ -252,30 +189,16 @@
     transform: rotate(45deg);
     vertical-align: middle;
   }
-
-  /* ---------- Task 5: mobile-only rows are hidden at desktop ---------- */
-  #brxe-wkfnav .wkf-mm-mobile-head,
-  #brxe-wkfnav .wkf-mm-mobile-search,
-  #brxe-wkfnav .wkf-mm-mobile-foot { display: none; }
-
-  /* Task 5 (Controller ruling R10): the wkf-mm-trigger element carries its
-     own `icon` setting (ti-angle-right), rendered as an <i> inside the
-     full-row overlay <button> from section 1, at every viewport. At
-     mobile that icon IS the row's right-chevron (wanted, left alone
-     here). At desktop it duplicates the down-caret drawn by the
-     span::after rule above and visibly overlaps the trigger's first
-     letter (confirmed on screen: verified with an outline probe, the
-     icon sits at the row's left edge, under the label text). The button
-     itself must stay — it is the full-row click target described in
-     section 1 — so only the icon glyph is hidden, and only at desktop.
-     (wkf-mm-col's own toggle button is already fully hidden at desktop
-     by the section-2 rule above; it needs no equivalent fix.) */
   #brxe-wkfnav .wkf-mm-trigger > .brx-submenu-toggle > button > i {
     display: none;
   }
+
+  #brxe-wkfnav .wkf-mm-mobile-head,
+  #brxe-wkfnav .wkf-mm-mobile-search,
+  #brxe-wkfnav .wkf-mm-mobile-foot { display: none; }
 }
 
-/* ---------- 3. Mobile (<= 991px) ---------- */
+/* ============ 3. Mobile panel (<= 991px) ============ */
 @media (max-width: 991px) {
 
   #brxe-wkfnav .brx-nav-nested-items {
@@ -288,15 +211,7 @@
     background: var(--wkf-white);
     clip-path: circle(0% at 100% 0%);
     transition: clip-path .3s cubic-bezier(.22,.61,.36,1);
-    /* Bricks' own (unscoped) multilevel CSS sets overflow-y: hidden here.
-       That is fine for a short native menu but this tree has 8 macro
-       columns per category: once a level's accordion content is opened,
-       head + search + expanded rows can add up to more than 100dvh, and
-       with overflow hidden that excess (including the footer) becomes
-       permanently unreachable by touch/wheel, confirmed on-device via a
-       dispatched WheelEvent that left scrollTop at 0. Reinstating a
-       vertical scroller on the outer panel is the minimal, section-3-only
-       fix: it doesn't touch the untouchable Task 2 override block. */
+    /* Bricks sets overflow-y:hidden here, which strands content past 100dvh. */
     overflow-y: auto;
     overflow-x: hidden;
   }
@@ -305,6 +220,8 @@
     clip-path: circle(150% at 100% 0%);
   }
 
+  /* Row order: logo | account | cart | close. The first three are the site
+     header's own elements, relocated here by JS with an inline `order`. */
   #brxe-wkfnav .wkf-mm-mobile-head {
     display: flex;
     align-items: center;
@@ -313,20 +230,14 @@
     border-bottom: 1px solid var(--wkf-grey-l-2);
     flex: 0 0 auto;
   }
-  /* Row order: logo | account | cart | close. The logo, account and cart are
-     the site header's own elements, relocated here while the panel is open
-     (see BORROWED in wkf-megamenu-a11y.js) and carrying an inline `order`;
-     the close toggle is the only element that natively belongs to the panel,
-     so it is ordered last here. */
   #brxe-wkfnav .wkf-mm-mobile-head .brxe-logo { margin-right: auto; }
   #brxe-wkfnav .wkf-mm-mobile-head > button.brxe-toggle { order: 4; }
+
+  #brxe-wkfnav .wkf-mm-mobile-search { padding: var(--space-s) var(--space-m); flex: 0 0 auto; }
   #brxe-wkfnav .wkf-mm-mobile-search > .brxe-search { width: 100%; }
   #brxe-wkfnav .wkf-mm-mobile-search .bricks-search-form { width: 100%; }
   #brxe-wkfnav .wkf-mm-mobile-search input[name="s"] { width: 100%; min-height: 44px; }
 
-  #brxe-wkfnav .wkf-mm-mobile-search { padding: var(--space-s) var(--space-m); flex: 0 0 auto; }
-
-  /* Navigation rows scroll; the page behind never does (Bricks adds body.no-scroll). */
   #brxe-wkfnav .brx-nav-nested-items > li:not(.wkf-mm-mobile-head):not(.wkf-mm-mobile-search):not(.wkf-mm-mobile-foot) {
     flex: 0 0 auto;
   }
@@ -336,36 +247,24 @@
     overscroll-behavior: contain;
   }
 
-  /* Level 1 rows.
-     The chevron sits inside the full-row <button> overlay, so the button is
-     what positions it; the label is indented past it by the same amount plus
-     one gap, and the link-only rows (Servizi, Guide tecniche, Contatti) take
-     that identical indent so every level-1 label starts on the same line.
-     Padding is applied per row type rather than to every <a> in the panel —
-     a blanket anchor rule double-padded any link nested inside an already
-     padded row, which is what pushed the catalogue CTA and the Settori
-     titles out of alignment with the text around them. */
   #brxe-wkfnav {
-    --wkf-mm-indent: var(--space-l);
     --wkf-mm-chevron: 16px;
-    --wkf-mm-label-indent: calc(var(--space-l) + var(--wkf-mm-chevron) + var(--space-m));
   }
 
+  /* Level 1 rows. Padding is per row type: a blanket `a` rule double-padded
+     links nested inside already-padded rows. */
   #brxe-wkfnav .wkf-mm-trigger > .brx-submenu-toggle { min-height: 48px; }
-
   #brxe-wkfnav .wkf-mm-trigger > .brx-submenu-toggle > span,
   #brxe-wkfnav .brx-nav-nested-items > li > .brxe-text-link {
     display: flex;
     align-items: center;
     min-height: 48px;
-    padding: var(--space-xs) var(--space-m) var(--space-xs) var(--wkf-mm-label-indent);
+    padding: var(--space-xs) var(--space-m);
     font-size: var(--text-l);
     font-weight: 500;
   }
 
-  /* The chevron sits at the row's right edge, matching the macro rows one
-     level down. It still lives inside the full-row <button> overlay, so the
-     overlay is what positions it. */
+  /* The chevron lives in the full-row overlay, so the overlay positions it. */
   #brxe-wkfnav .wkf-mm-trigger > .brx-submenu-toggle > button {
     display: flex;
     align-items: center;
@@ -373,22 +272,13 @@
     padding-right: var(--space-m);
   }
 
-  /* One chevron style everywhere: the Themify glyph at 16px that the macro
-     rows already use. */
+  /* One chevron style everywhere. */
   #brxe-wkfnav .wkf-mm-trigger > .brx-submenu-toggle > button > i,
   #brxe-wkfnav .wkf-go-into-macro,
   #brxe-wkfnav .wkf-back-to-macro,
   #brxe-wkfnav .wkf-mm-chevron {
     font-size: var(--wkf-mm-chevron);
     line-height: 1;
-  }
-
-  /* Level 3 category links keep their own touch target. */
-  #brxe-wkfnav .wkf-mm-sublist a {
-    display: flex;
-    align-items: center;
-    min-height: 44px;
-    padding: var(--space-xs) var(--space-m);
   }
 
   #brxe-wkfnav .brx-multilevel-back {
@@ -413,44 +303,24 @@
   }
   #brxe-wkfnav .wkf-mm-mobile-foot a { min-width: 44px; min-height: 44px; display: grid; place-items: center; }
 
-  /* USER REQUIREMENT: social/contact icons must be visible ONLY inside the
-     open full-screen panel, never in the site header at any width. The
-     panel's own clip-path hides it visually when closed but does not
-     collapse its layout box (clip-path is paint-only), so the footer row's
-     links still report real width/height via getBoundingClientRect while
-     closed. Explicit display:none actually collapses the geometry. */
+  /* clip-path only hides paint, so the closed panel's footer would otherwise
+     still occupy layout in the header. */
   #brxe-wkfnav:not(.brx-open) .wkf-mm-mobile-foot {
     display: none;
   }
 }
 
-/* ---------- 3b. Mobile level machine ----------
-   The panel is three parts: a fixed header row, a fixed footer row, and a
-   center section that SWAPS between levels. Only one level is ever in the
-   center; a deeper level replaces the one before it, it does not expand
-   inside it (that would be an accordion).
-
-   State lives in `data-wkf-level` on the nav root, set by
-   wkf-megamenu-a11y.js:
-     1 = top-level items      2 = one dropdown's own content
-     3 = one Catalogo macro's children (`.wkf-is-open` marks which)
-
-   Bricks cannot express this: its own rule
-   `.brxe-nav-nested.brx-open .brxe-dropdown.open>.brx-dropdown-content
-    {position:static}` renders an opened level inline, and its multiLevel
-   rules only ever hide items *inside* a dropdown's own <ul> — never the
-   top-level siblings. So the covering behaviour is asserted here. */
+/* ============ 4. Mobile level machine ============
+   data-wkf-level on the nav root: 1 = top level, 2 = a dropdown's content,
+   3 = one Catalogo macro's children (.wkf-is-open marks which). Only the
+   center section swaps; header and footer never move. */
 @media (max-width: 991px) {
 
-  /* Levels 2 and 3: every center row except the open one is gone.
-     The fixed header and footer are deliberately excluded — they never
-     change between levels. */
   #brxe-wkfnav[data-wkf-level="2"] .brx-nav-nested-items > li:not(.wkf-mm-mobile-head):not(.wkf-mm-mobile-search):not(.wkf-mm-mobile-foot):not(.open),
   #brxe-wkfnav[data-wkf-level="3"] .brx-nav-nested-items > li:not(.wkf-mm-mobile-head):not(.wkf-mm-mobile-search):not(.wkf-mm-mobile-foot):not(.open) {
     display: none;
   }
 
-  /* The open level owns the whole center section and scrolls inside itself. */
   #brxe-wkfnav[data-wkf-level="2"] .brxe-dropdown.open,
   #brxe-wkfnav[data-wkf-level="3"] .brxe-dropdown.open {
     display: flex;
@@ -459,8 +329,8 @@
     min-height: 0;
   }
 
-  /* The trigger row ("Catalogo >") belongs to level 1. Inside the level it
-     opened, the same label is shown by the level header row instead. */
+  /* The trigger row belongs to level 1; inside the level it opened, the
+     header row shows the same label. */
   #brxe-wkfnav[data-wkf-level="2"] .brxe-dropdown.open > .brx-submenu-toggle,
   #brxe-wkfnav[data-wkf-level="3"] .brxe-dropdown.open > .brx-submenu-toggle {
     display: none;
@@ -477,13 +347,14 @@
     max-height: none;
     padding: 0;
     overflow-y: auto;
+    overflow-x: hidden;
     overscroll-behavior: contain;
     background: var(--wkf-white);
     box-shadow: none;
     border-radius: 0;
   }
 
-  /* The level header row: [ label ............ back arrow ] */
+  /* Level header row: [ label ............ back ] */
   #brxe-wkfnav .wkf-mm-levelhead {
     display: flex;
     align-items: center;
@@ -495,17 +366,16 @@
   #brxe-wkfnav .wkf-mm-levelhead__label {
     display: flex;
     align-items: center;
+    flex: 0 1 auto;
     min-height: 48px;
     padding: var(--space-xs) var(--space-m);
     font-size: var(--text-l);
     font-weight: 500;
   }
+  /* width:auto overrides Bricks' .brx-multilevel-back{width:100%}. */
   #brxe-wkfnav .wkf-mm-backbtn {
     flex: 0 0 auto;
     margin-left: auto;
-    /* The level-head button also carries Bricks' .brx-multilevel-back, whose
-       own rule sets width:100% — that stretched it across the row and pushed
-       the arrow past the right edge. */
     width: auto;
     display: inline-flex;
     align-items: center;
@@ -518,13 +388,8 @@
     color: inherit;
     cursor: pointer;
   }
-  /* The label must not stretch across the row, or the back arrow lands in
-     dead space instead of against the right edge. */
-  #brxe-wkfnav .wkf-mm-levelhead__label { flex: 0 1 auto; }
 
-  /* Catalogo: the 8 columns become 8 stacked, full-width rows. Bricks' own
-     flex defaults size these blocks to their content, which left ragged row
-     borders and pushed the panel wider than the viewport. */
+  /* The 8 columns become 8 stacked, full-width rows. */
   #brxe-wkfnav #brxe-digsuw {
     display: flex;
     flex-direction: column;
@@ -542,11 +407,8 @@
     min-width: 0;
     max-width: 100%;
   }
-  #brxe-wkfnav .brxe-dropdown.open > .brx-dropdown-content {
-    overflow-x: hidden;
-  }
 
-  /* Each macro row: [ name ............ > ] — the whole row is the control. */
+  /* Macro row: [ name ............ > ] — the whole row is the control. */
   #brxe-wkfnav .wkf-mm-coltop {
     min-height: 44px;
     padding: var(--space-xs) var(--space-m);
@@ -558,9 +420,21 @@
     font-weight: 600;
   }
   #brxe-wkfnav .wkf-mm-coltop a { padding: 0; min-height: 0; }
-  #brxe-wkfnav .wkf-mm-sublist { padding: 0 0 var(--space-s) 0; gap: 0; }
 
-  /* The level machine strips the panel's own padding, so the rows carry it. */
+  /* Level 3 category rows. .wkf-mm-sublist is the loop element, so it repeats
+     once per category: spacing belongs on the row, not on it or the column. */
+  #brxe-wkfnav .wkf-mm-col { row-gap: 0; }
+  #brxe-wkfnav .wkf-mm-sublist { padding: 0; gap: 0; }
+  #brxe-wkfnav .wkf-mm-sublist a {
+    display: flex;
+    align-items: center;
+    min-height: 32px;
+    padding: var(--space-2xs) var(--space-m);
+  }
+  #brxe-wkfnav .wkf-mm-sublist .brxe-heading { font-size: var(--text-m); font-weight: 400; }
+  #brxe-wkfnav .wkf-mm-sublist:last-of-type { padding-bottom: var(--space-s); }
+
+  /* The level machine strips the panel's padding, so rows carry it. */
   #brxe-wkfnav .wkf-mm-brand,
   #brxe-wkfnav .wkf-mm-sector {
     padding: var(--space-s) var(--space-m);
@@ -578,28 +452,20 @@
     font-weight: 500;
   }
 
-  /* Sector rows: the title link must not add its own padding on top of the
-     row's, or it sits indented from its own description. */
+  /* Title padding stays 0 so it aligns with its own description. */
   #brxe-wkfnav .wkf-mm-sector > a {
     padding: 0;
     min-height: 0;
     font-size: var(--text-l);
     font-weight: 500;
   }
-
-  /* Brand name sits at the same weight and size as the sector titles. The
-     ID+class specificity is needed to beat the element's own Bricks ID rule
-     (`#brxe-wkfbrttl { font-size: var(--text-m); font-weight: 600 }`). */
   #brxe-wkfnav .wkf-mm-brand__name {
     font-size: var(--text-l);
     font-weight: 500;
   }
-  #brxe-wkfnav .wkf-mm-sublist .brxe-heading { font-size: var(--text-s); font-weight: 400; }
 
-  /* LEVEL 2 — macro names only. No children anywhere on this level.
-     The back arrow's wrapping <button> must be hidden too, not just the
-     icon inside it: a 44px-wide empty button would otherwise sit at the
-     row's right edge and stop the `>` from reaching it. */
+  /* Level 2 — macro names only. The back button is hidden with its icon, or
+     its 44px box would keep the `>` off the right edge. */
   #brxe-wkfnav[data-wkf-level="2"] .wkf-mm-sublist,
   #brxe-wkfnav[data-wkf-level="2"] .wkf-mm-col .wkf-mm-backbtn,
   #brxe-wkfnav[data-wkf-level="2"] .wkf-back-to-macro { display: none; }
@@ -608,7 +474,7 @@
     margin-left: auto;
   }
 
-  /* LEVEL 3 — one macro only: its header row, then its children. */
+  /* Level 3 — one macro: its header row, then its children. */
   #brxe-wkfnav[data-wkf-level="3"] .wkf-mm-col:not(.wkf-is-open),
   #brxe-wkfnav[data-wkf-level="3"] .wkf-mm-cta,
   #brxe-wkfnav[data-wkf-level="3"] .wkf-mm-levelhead,
@@ -618,8 +484,7 @@
   #brxe-wkfnav[data-wkf-level="3"] .wkf-mm-backbtn { margin-left: auto; }
   #brxe-wkfnav[data-wkf-level="3"] .wkf-is-open .wkf-mm-coltop { cursor: default; }
 
-  /* Bricks injects its own "Indietro" row into every nested <ul>; the level
-     header row above replaces it. */
+  /* Bricks' own injected "Indietro" row, replaced by the level header. */
   #brxe-wkfnav .brx-multilevel-back[hidden] { display: none !important; }
 }
 
@@ -628,19 +493,15 @@
   #brxe-wkfnav.brx-open .brx-nav-nested-items { visibility: visible; }
 }
 
-/* ---------- Task 6: header order at mobile ---------- */
+/* ============ 5. Site header (<= 991px) ============ */
 @media (max-width: 991px) {
-  /* Header order: logo | hamburger | account | cart */
+  /* logo | hamburger | account | cart */
   #brxe-nebryp { display: flex; align-items: center; gap: var(--space-s); }
   #brxe-aqqruf { order: 1; margin-right: auto; }
   #brxe-wkfnav { order: 2; }
-  /* donbzq (icon+link) renders id on the inner <i>; the actual flex
-     child in #brxe-nebryp is its wrapping <a class="bricks-link-wrapper">
-     (see eleva memory: bricks-keyboard-accessibility). `order` must
-     target that wrapper, not the inner icon, or it has no effect. */
+  /* The flex child is the link wrapper, not the icon it wraps. */
   #brxe-nebryp > a:has(> #brxe-donbzq) { order: 3; }
   #brxe-gfhkoa { order: 4; }
-  /* Hidden only while it is still a child of the header row: the JS moves this
-     very element into the panel when the menu opens, and there it must show. */
+  /* Hidden only while still in the header; JS moves it into the open panel. */
   #brxe-nebryp > #brxe-gjvbmv { display: none; }
 }
