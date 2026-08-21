@@ -160,4 +160,118 @@
     transform: rotate(45deg);
     vertical-align: middle;
   }
+
+  /* ---------- Task 5: mobile-only rows are hidden at desktop ---------- */
+  #brxe-wkfnav .wkf-mm-mobile-head,
+  #brxe-wkfnav .wkf-mm-mobile-search,
+  #brxe-wkfnav .wkf-mm-mobile-foot { display: none; }
+
+  /* Task 5 (Controller ruling R10): the wkf-mm-trigger element carries its
+     own `icon` setting (ti-angle-right), rendered as an <i> inside the
+     full-row overlay <button> from section 1, at every viewport. At
+     mobile that icon IS the row's right-chevron (wanted, left alone
+     here). At desktop it duplicates the down-caret drawn by the
+     span::after rule above and visibly overlaps the trigger's first
+     letter (confirmed on screen: verified with an outline probe, the
+     icon sits at the row's left edge, under the label text). The button
+     itself must stay — it is the full-row click target described in
+     section 1 — so only the icon glyph is hidden, and only at desktop.
+     (wkf-mm-col's own toggle button is already fully hidden at desktop
+     by the section-2 rule above; it needs no equivalent fix.) */
+  #brxe-wkfnav .wkf-mm-trigger > .brx-submenu-toggle > button > i {
+    display: none;
+  }
+}
+
+/* ---------- 3. Mobile (<= 991px) ---------- */
+@media (max-width: 991px) {
+
+  #brxe-wkfnav .brx-nav-nested-items {
+    display: flex;
+    flex-direction: column;
+    inset: 0;
+    width: 100vw;
+    height: 100dvh;
+    padding: 0;
+    background: var(--wkf-white);
+    clip-path: circle(0% at 100% 0%);
+    transition: clip-path .3s cubic-bezier(.22,.61,.36,1);
+    /* Bricks' own (unscoped) multilevel CSS sets overflow-y: hidden here.
+       That is fine for a short native menu but this tree has 8 macro
+       columns per category: once a level's accordion content is opened,
+       head + search + expanded rows can add up to more than 100dvh, and
+       with overflow hidden that excess (including the footer) becomes
+       permanently unreachable by touch/wheel, confirmed on-device via a
+       dispatched WheelEvent that left scrollTop at 0. Reinstating a
+       vertical scroller on the outer panel is the minimal, section-3-only
+       fix: it doesn't touch the untouchable Task 2 override block. */
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  #brxe-wkfnav.brx-open .brx-nav-nested-items {
+    clip-path: circle(150% at 100% 0%);
+  }
+
+  #brxe-wkfnav .wkf-mm-mobile-head {
+    display: flex;
+    align-items: center;
+    gap: var(--space-s);
+    padding: var(--space-m);
+    border-bottom: 1px solid var(--wkf-grey-l-2);
+    flex: 0 0 auto;
+  }
+  #brxe-wkfnav .wkf-mm-mobile-head .brxe-logo { margin-right: auto; }
+
+  #brxe-wkfnav .wkf-mm-mobile-search { padding: var(--space-s) var(--space-m); flex: 0 0 auto; }
+
+  /* Navigation rows scroll; the page behind never does (Bricks adds body.no-scroll). */
+  #brxe-wkfnav .brx-nav-nested-items > li:not(.wkf-mm-mobile-head):not(.wkf-mm-mobile-search):not(.wkf-mm-mobile-foot) {
+    flex: 0 0 auto;
+  }
+  #brxe-wkfnav .brx-dropdown-content {
+    max-height: 100dvh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  #brxe-wkfnav .wkf-mm-trigger > .brx-submenu-toggle,
+  #brxe-wkfnav .wkf-mm-col > .brx-submenu-toggle {
+    min-height: 44px;
+    padding: var(--space-xs) var(--space-m);
+  }
+  #brxe-wkfnav .brx-nav-nested-items a { min-height: 44px; padding: var(--space-xs) var(--space-m); }
+
+  #brxe-wkfnav .brx-multilevel-back {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2xs);
+    min-height: 44px;
+    padding: var(--space-xs) var(--space-m);
+    font-weight: 600;
+    border-bottom: 1px solid var(--wkf-grey-l-2);
+  }
+  #brxe-wkfnav .brx-multilevel-back::before {
+    content: "";
+    border: solid currentColor;
+    border-width: 0 2px 2px 0;
+    padding: 3px;
+    transform: rotate(135deg);
+  }
+
+  #brxe-wkfnav .wkf-mm-mobile-foot {
+    display: flex;
+    gap: var(--space-m);
+    justify-content: center;
+    padding: var(--space-m);
+    border-top: 1px solid var(--wkf-grey-l-2);
+    margin-top: auto;
+    flex: 0 0 auto;
+  }
+  #brxe-wkfnav .wkf-mm-mobile-foot a { min-width: 44px; min-height: 44px; display: grid; place-items: center; }
+}
+
+@media (max-width: 991px) and (prefers-reduced-motion: reduce) {
+  #brxe-wkfnav .brx-nav-nested-items { transition: none; clip-path: none; visibility: hidden; }
+  #brxe-wkfnav.brx-open .brx-nav-nested-items { visibility: visible; }
 }
