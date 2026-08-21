@@ -30,3 +30,58 @@
   padding: 0;
   cursor: pointer;
 }
+
+/* ---------- 2. Desktop (>= 992px) ---------- */
+@media (min-width: 992px) {
+
+  /* Bricks applies .brx-has-multilevel to every dropdown at every viewport.
+     These rules undo its mobile-only assumptions for the mega panel.
+     Measured against Bricks 2.3.11 assets/css/frontend.min.css. */
+
+  #brxe-wkfnav .wkf-mm-panel > li,
+  #brxe-wkfnav .wkf-mm-sublist > li {
+    display: list-item;
+  }
+
+  #brxe-wkfnav .wkf-mm-col > .brx-dropdown-content {
+    position: static;
+    opacity: 1;
+    transform: none;
+    left: auto !important;
+    min-width: 0;
+    box-shadow: none;
+    background: none;
+  }
+
+  /* visibility is scoped to the OPEN panel on purpose. An unscoped
+     `visibility: visible` here would beat the closed panel's inherited
+     `visibility: hidden`, leaving the category links keyboard-focusable
+     and exposed to the a11y tree while the panel is shut (WCAG 2.4.3). */
+  #brxe-wkfnav .wkf-mm-trigger.open .wkf-mm-col > .brx-dropdown-content {
+    visibility: visible;
+  }
+
+  #brxe-wkfnav .wkf-mm-col > .brx-submenu-toggle {
+    display: block;
+  }
+
+  /* Caret button is meaningless when the list is permanently visible:
+     removing it from the DOM box model removes it from the tab order
+     and from the accessibility tree. */
+  #brxe-wkfnav .wkf-mm-col > .brx-submenu-toggle > button {
+    display: none;
+  }
+
+  #brxe-wkfnav .brx-multilevel-back {
+    display: none;
+  }
+
+  /* Panel layout */
+  #brxe-wkfnav .wkf-mm-panel--catalogo {
+    display: grid;
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+    gap: var(--space-m);
+    max-height: calc(100dvh - var(--wkf-header-h));
+    overflow-y: auto;
+  }
+}
