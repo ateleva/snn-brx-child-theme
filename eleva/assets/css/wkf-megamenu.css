@@ -24,11 +24,6 @@
 #brxe-wkfnav .wkf-mm-sector > p { margin: 0; }
 
 /* Brand row: [ icon  name .......... Scopri ] + description beneath. */
-#brxe-wkfnav .wkf-mm-brand + .wkf-mm-brand {
-  border-top: 1px solid var(--wkf-grey-l-2);
-  padding-top: var(--space-s);
-  margin-top: var(--space-s);
-}
 #brxe-wkfnav .wkf-mm-brand__row > img {
   flex: 0 0 auto;
   width: 40px;
@@ -144,7 +139,6 @@
     gap: var(--space-m);
     min-width: min(640px, calc(100vw - var(--space-l) * 2));
   }
-  #brxe-wkfnav .wkf-mm-brand img { max-width: 140px; height: auto; }
 
   #brxe-wkfnav .wkf-mm-panel--settori {
     display: grid;
@@ -233,10 +227,41 @@
   #brxe-wkfnav .wkf-mm-mobile-head .brxe-logo { margin-right: auto; }
   #brxe-wkfnav .wkf-mm-mobile-head > button.brxe-toggle { order: 4; }
 
-  #brxe-wkfnav .wkf-mm-mobile-search { padding: var(--space-s) var(--space-m); flex: 0 0 auto; }
-  #brxe-wkfnav .wkf-mm-mobile-search > .brxe-search { width: 100%; }
-  #brxe-wkfnav .wkf-mm-mobile-search .bricks-search-form { width: 100%; }
-  #brxe-wkfnav .wkf-mm-mobile-search input[name="s"] { width: 100%; min-height: 44px; }
+  /* Search row: [ input, icon inside ] [ close ]. */
+  #brxe-wkfnav .wkf-mm-mobile-search {
+    display: flex;
+    align-items: center;
+    gap: var(--space-s);
+    padding: var(--space-s) var(--space-m);
+    flex: 0 0 auto;
+  }
+  #brxe-wkfnav .wkf-mm-mobile-search > .brxe-search { flex: 1 1 auto; min-width: 0; }
+  #brxe-wkfnav .wkf-mm-mobile-search .bricks-search-form { position: relative; width: 100%; }
+  #brxe-wkfnav .wkf-mm-mobile-search input[name="s"] {
+    width: 100%;
+    min-height: 44px;
+    padding-right: 44px;
+  }
+  #brxe-wkfnav .wkf-mm-mobile-search .bricks-search-form > button {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 44px;
+    display: grid;
+    place-items: center;
+    background: none;
+    border: 0;
+    color: inherit;
+  }
+  /* The search element is appended by JS, so the close button needs an
+     explicit order to stay to its right. */
+  #brxe-wkfnav .wkf-mm-mobile-search > button.brxe-toggle {
+    flex: 0 0 auto;
+    order: 2;
+    min-width: 44px;
+    min-height: 44px;
+  }
 
   #brxe-wkfnav .brx-nav-nested-items > li:not(.wkf-mm-mobile-head):not(.wkf-mm-mobile-search):not(.wkf-mm-mobile-foot) {
     flex: 0 0 auto;
@@ -440,8 +465,12 @@
     padding: var(--space-s) var(--space-m);
   }
   #brxe-wkfnav .wkf-mm-brand + .wkf-mm-brand {
-    margin-top: 0;
-    padding-top: var(--space-s);
+    border-top: 1px solid var(--wkf-grey-l-2);
+  }
+  #brxe-wkfnav .wkf-mm-brand__desc { font-size: var(--text-m); }
+  #brxe-wkfnav .wkf-mm-brand__cta {
+    font-size: var(--text-m);
+    color: inherit;
   }
   #brxe-wkfnav .wkf-mm-cta { padding: 0; }
   #brxe-wkfnav .wkf-mm-cta > a {
