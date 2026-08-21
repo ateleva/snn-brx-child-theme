@@ -363,11 +363,14 @@
     font-weight: 500;
   }
 
+  /* The chevron sits at the row's right edge, matching the macro rows one
+     level down. It still lives inside the full-row <button> overlay, so the
+     overlay is what positions it. */
   #brxe-wkfnav .wkf-mm-trigger > .brx-submenu-toggle > button {
     display: flex;
     align-items: center;
-    justify-content: flex-start;
-    padding-left: var(--wkf-mm-indent);
+    justify-content: flex-end;
+    padding-right: var(--space-m);
   }
 
   /* One chevron style everywhere: the Themify glyph at 16px that the macro
@@ -580,6 +583,16 @@
   #brxe-wkfnav .wkf-mm-sector > a {
     padding: 0;
     min-height: 0;
+    font-size: var(--text-l);
+    font-weight: 500;
+  }
+
+  /* Brand name sits at the same weight and size as the sector titles. The
+     ID+class specificity is needed to beat the element's own Bricks ID rule
+     (`#brxe-wkfbrttl { font-size: var(--text-m); font-weight: 600 }`). */
+  #brxe-wkfnav .wkf-mm-brand__name {
+    font-size: var(--text-l);
+    font-weight: 500;
   }
   #brxe-wkfnav .wkf-mm-sublist .brxe-heading { font-size: var(--text-s); font-weight: 400; }
 
