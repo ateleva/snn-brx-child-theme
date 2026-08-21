@@ -1,536 +1,538 @@
 /* wkf-megamenu.css — main navigation. Structure lives in Bricks (template 7);
-   this file only supplies what Bricks controls cannot express. */
+this file only supplies what Bricks controls cannot express. */
 
 :root {
-  --wkf-header-h: 4.25rem;
+	--wkf-header-h: 4.25rem;
 }
 
 /* ============ 1. Shared ============ */
 
 #brxe-wkfnav :focus-visible,
 #brxe-wkfnav .brx-multilevel-back:focus-visible {
-  outline: 2px solid var(--wkf-primary);
-  outline-offset: 2px;
-  border-radius: 2px;
+	outline: 2px solid var(--wkf-primary);
+	outline-offset: 2px;
+	border-radius: 2px;
 }
 
 /* Bricks sets these <li> to flex-row; stack title over description. */
 #brxe-wkfnav .wkf-mm-sector {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: var(--space-2xs);
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: var(--space-2xs);
 }
 #brxe-wkfnav .wkf-mm-sector > p { margin: 0; }
 
 /* Brand row: [ icon  name .......... Scopri ] + description beneath. */
 #brxe-wkfnav .wkf-mm-brand__row > img {
-  flex: 0 0 auto;
-  width: 40px;
-  height: 40px;
-  object-fit: contain;
+	flex: 0 0 auto;
+	width: 40px;
+	height: 40px;
+	object-fit: contain;
 }
 #brxe-wkfnav .wkf-mm-brand__name {
-  flex: 1 1 auto;
-  min-width: 0;
+	flex: 1 1 auto;
+	min-width: 0;
 }
 #brxe-wkfnav .wkf-mm-brand__cta {
-  flex: 0 0 auto;
-  font-size: var(--text-s);
-  font-weight: 600;
-  color: var(--wkf-primary);
-  white-space: nowrap;
+	flex: 0 0 auto;
+	font-size: var(--text-s);
+	font-weight: 600;
+	color: var(--wkf-primary);
+	white-space: nowrap;
 }
 #brxe-wkfnav .wkf-mm-brand__desc {
-  margin: 0;
-  font-size: var(--text-s);
-  color: var(--wkf-grey-d-1);
+	margin: 0;
+	font-size: var(--text-s);
+	color: var(--wkf-grey-d-1);
 }
 
 /* The whole trigger row is the button. */
 #brxe-wkfnav .wkf-mm-trigger > .brx-submenu-toggle {
-  position: relative;
+	position: relative;
 }
 #brxe-wkfnav .wkf-mm-trigger > .brx-submenu-toggle > button {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  background: none;
-  border: 0;
-  padding: 0;
-  cursor: pointer;
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	background: none;
+	border: 0;
+	padding: 0;
+	cursor: pointer;
 }
 
 /* ============ 2. Desktop (>= 992px) ============ */
 @media (min-width: 992px) {
 
-  /* Bricks' unscoped `.brx-has-multilevel ul li:not(.open){display:none}`
-     also hides the CTA row; other rows outrank it via their own ID. */
-  #brxe-wkfnav .wkf-mm-panel > li.wkf-mm-cta {
-    display: block;
-  }
+	/* Bricks' unscoped `.brx-has-multilevel ul li:not(.open){display:none}`
+	also hides the CTA row; other rows outrank it via their own ID. */
+	#brxe-wkfnav .wkf-mm-panel > li.wkf-mm-cta {
+		display: block;
+	}
 
-  #brxe-wkfnav .brx-multilevel-back {
-    display: none;
-  }
+	#brxe-wkfnav .brx-multilevel-back {
+		display: none;
+	}
 
-  /* The 8-column grid lives on #brxe-digsuw; the panel holds columns + CTA.
-     max-width:none is required: Bricks only ever sets min-width on megamenus. */
-  #brxe-wkfnav .wkf-mm-panel--catalogo {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: var(--space-m);
-    max-width: none;
-    max-height: calc(100dvh - var(--wkf-header-h));
-    overflow-y: auto;
-  }
+	/* The 8-column grid lives on #brxe-digsuw; the panel holds columns + CTA.
+	max-width:none is required: Bricks only ever sets min-width on megamenus. */
+	#brxe-wkfnav .wkf-mm-panel--catalogo {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: var(--space-m);
+		max-width: none;
+		max-height: calc(100dvh - var(--wkf-header-h));
+		overflow-y: auto;
+	}
 
-  /* Drill-in arrows and the level header row are mobile-only affordances. */
-  #brxe-wkfnav .wkf-go-into-macro,
-  #brxe-wkfnav .wkf-back-to-macro {
-    display: none;
-  }
-  #brxe-wkfnav .wkf-mm-panel > li.wkf-mm-levelhead {
-    display: none;
-  }
+	/* Drill-in arrows and the level header row are mobile-only affordances. */
+	#brxe-wkfnav .wkf-go-into-macro,
+	#brxe-wkfnav .wkf-back-to-macro {
+		display: none;
+	}
+	#brxe-wkfnav .wkf-mm-panel > li.wkf-mm-levelhead {
+		display: none;
+	}
 
-  /* Panels anchor to the full-width header, not to their own trigger <li>:
-     static trigger + same @layer as Bricks, whose layered !important would
-     otherwise beat any unlayered rule regardless of specificity. */
-  #brxe-wkfcat {
-    position: static;
-  }
-  @layer bricks {
-    #brxe-wkfnav .wkf-mm-panel--catalogo {
-      position: absolute !important;
-      left: 0 !important;
-      right: 0 !important;
-      width: auto !important;
-      min-width: 0 !important;
-      top: var(--wkf-header-h) !important;
-    }
-  }
+	/* Panels anchor to the full-width header, not to their own trigger <li>:
+	static trigger + same @layer as Bricks, whose layered !important would
+	otherwise beat any unlayered rule regardless of specificity. */
+	#brxe-wkfcat {
+		position: static;
+	}
+	@layer bricks {
+		#brxe-wkfnav .wkf-mm-panel--catalogo {
+			position: absolute !important;
+			left: 0 !important;
+			right: 0 !important;
+			width: auto !important;
+			min-width: 0 !important;
+			top: var(--wkf-header-h) !important;
+		}
+	}
 
-  #brxe-wkfnav .wkf-mm-panel {
-    background: var(--wkf-white);
-    box-shadow: 0 8px 24px var(--wkf-black-t-2);
-    padding: var(--space-m);
-    border-radius: 0 0 var(--radius-s) var(--radius-s);
-  }
+	#brxe-wkfnav .wkf-mm-panel {
+		background: var(--wkf-white);
+		box-shadow: 0 8px 24px var(--wkf-black-t-2);
+		padding: var(--space-m);
+		border-radius: 0 0 var(--radius-s) var(--radius-s);
+	}
 
-  #brxe-wkfnav .wkf-mm-sublist a {
-    display: block;
-    font-size: var(--text-s);
-    padding: var(--space-2xs) 0;
-  }
+	#brxe-wkfnav .wkf-mm-sublist a {
+		display: block;
+		font-size: var(--text-s);
+		padding: var(--space-2xs) 0;
+	}
 
-  #brxe-wkfnav .wkf-mm-cta {
-    grid-column: 1 / -1;
-    border-top: 1px solid var(--wkf-grey-l-2);
-    padding-top: var(--space-xs);
-    margin-top: var(--space-xs);
-    font-weight: 600;
-  }
+	#brxe-wkfnav .wkf-mm-cta {
+		grid-column: 1 / -1;
+		border-top: 1px solid var(--wkf-grey-l-2);
+		padding-top: var(--space-xs);
+		margin-top: var(--space-xs);
+		font-weight: 600;
+	}
 
-  #brxe-wkfnav .wkf-mm-panel--brand {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(200px, 1fr));
-    gap: var(--space-m);
-    min-width: min(640px, calc(100vw - var(--space-l) * 2));
-  }
+	#brxe-wkfnav .wkf-mm-panel--brand {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(200px, 1fr));
+		gap: var(--space-m);
+		min-width: min(640px, calc(100vw - var(--space-l) * 2));
+	}
 
-  #brxe-wkfnav .wkf-mm-panel--settori {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: var(--space-xs);
-    min-width: min(340px, calc(100vw - var(--space-l) * 2));
-  }
-  #brxe-wkfnav .wkf-mm-sector a { font-weight: 600; display: block; }
-  #brxe-wkfnav .wkf-mm-sector p { font-size: var(--text-s); margin: 0; }
+	#brxe-wkfnav .wkf-mm-panel--settori {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: var(--space-xs);
+		min-width: min(340px, calc(100vw - var(--space-l) * 2));
+	}
+	#brxe-wkfnav .wkf-mm-sector a { font-weight: 600; display: block; }
+	#brxe-wkfnav .wkf-mm-sector p { font-size: var(--text-s); margin: 0; }
 
-  /* These two sit early in the row, so anchoring off their own trigger pushes
-     the left edge off-screen; anchor to the header's right edge instead.
-     An explicit width is needed or the 1fr track fills the containing block. */
-  #brxe-wkfbrand,
-  #brxe-wkfsett {
-    position: static;
-  }
-  @layer bricks {
-    #brxe-wkfnav .wkf-mm-panel--brand,
-    #brxe-wkfnav .wkf-mm-panel--settori {
-      position: absolute !important;
-      left: auto !important;
-      right: var(--space-l) !important;
-      top: var(--wkf-header-h) !important;
-    }
-    #brxe-wkfnav .wkf-mm-panel--brand {
-      width: min(640px, calc(100vw - var(--space-l) * 2)) !important;
-    }
-    #brxe-wkfnav .wkf-mm-panel--settori {
-      width: min(340px, calc(100vw - var(--space-l) * 2)) !important;
-    }
-  }
+	/* These two sit early in the row, so anchoring off their own trigger pushes
+	the left edge off-screen; anchor to the header's right edge instead.
+	An explicit width is needed or the 1fr track fills the containing block. */
+	#brxe-wkfbrand,
+	#brxe-wkfsett {
+		position: static;
+	}
+	@layer bricks {
+		#brxe-wkfnav .wkf-mm-panel--brand,
+		#brxe-wkfnav .wkf-mm-panel--settori {
+			position: absolute !important;
+			left: auto !important;
+			right: var(--space-l) !important;
+			top: var(--wkf-header-h) !important;
+		}
+		#brxe-wkfnav .wkf-mm-panel--brand {
+			width: min(640px, calc(100vw - var(--space-l) * 2)) !important;
+		}
+		#brxe-wkfnav .wkf-mm-panel--settori {
+			width: min(340px, calc(100vw - var(--space-l) * 2)) !important;
+		}
+	}
 
-  /* Down-caret on the row; the element's own icon is hidden to avoid two. */
-  #brxe-wkfnav .wkf-mm-trigger > .brx-submenu-toggle > span::after {
-    content: "";
-    display: inline-block;
-    margin-left: var(--space-2xs);
-    border: solid currentColor;
-    border-width: 0 2px 2px 0;
-    padding: 2px;
-    transform: rotate(45deg);
-    vertical-align: middle;
-  }
-  #brxe-wkfnav .wkf-mm-trigger > .brx-submenu-toggle > button > i {
-    display: none;
-  }
+	/* Down-caret on the row; the element's own icon is hidden to avoid two. */
+	#brxe-wkfnav .wkf-mm-trigger > .brx-submenu-toggle > span::after {
+		content: "";
+		display: inline-block;
+		margin-left: var(--space-2xs);
+		border: solid currentColor;
+		border-width: 0 2px 2px 0;
+		padding: 2px;
+		transform: rotate(45deg);
+		vertical-align: middle;
+	}
+	#brxe-wkfnav .wkf-mm-trigger > .brx-submenu-toggle > button > i {
+		display: none;
+	}
 
-  #brxe-wkfnav .wkf-mm-mobile-head,
-  #brxe-wkfnav .wkf-mm-mobile-search,
-  #brxe-wkfnav .wkf-mm-mobile-foot { display: none; }
+	#brxe-wkfnav .wkf-mm-mobile-head,
+	#brxe-wkfnav .wkf-mm-mobile-search,
+	#brxe-wkfnav .wkf-mm-mobile-foot { display: none; }
 }
 
 /* ============ 3. Mobile panel (<= 991px) ============ */
 @media (max-width: 991px) {
 
-  #brxe-wkfnav .brx-nav-nested-items {
-    display: flex;
-    flex-direction: column;
-    inset: 0;
-    width: 100vw;
-    height: 100dvh;
-    padding: 0;
-    background: var(--wkf-white);
-    clip-path: circle(0% at 100% 0%);
-    transition: clip-path .3s cubic-bezier(.22,.61,.36,1);
-    /* Bricks sets overflow-y:hidden here, which strands content past 100dvh. */
-    overflow-y: auto;
-    overflow-x: hidden;
-  }
+	#brxe-wkfnav .brx-nav-nested-items {
+		display: flex;
+		flex-direction: column;
+		inset: 0;
+		width: 100vw;
+		height: 100dvh;
+		padding: 0;
+		background: var(--wkf-white);
+		clip-path: circle(0% at 100% 0%);
+		transition: clip-path .3s cubic-bezier(.22,.61,.36,1);
+		/* Bricks sets overflow-y:hidden here, which strands content past 100dvh. */
+		overflow-y: auto;
+		overflow-x: hidden;
+	}
 
-  #brxe-wkfnav.brx-open .brx-nav-nested-items {
-    clip-path: circle(150% at 100% 0%);
-  }
+	#brxe-wkfnav.brx-open .brx-nav-nested-items {
+		clip-path: circle(150% at 100% 0%);
+	}
 
-  /* Row order: logo | account | cart | close. The first three are the site
-     header's own elements, relocated here by JS with an inline `order`. */
-  #brxe-wkfnav .wkf-mm-mobile-head {
-    display: flex;
-    align-items: center;
-    gap: var(--space-s);
-    padding: var(--space-m);
-    border-bottom: 1px solid var(--wkf-grey-l-2);
-    flex: 0 0 auto;
-  }
-  #brxe-wkfnav .wkf-mm-mobile-head .brxe-logo { margin-right: auto; }
-  #brxe-wkfnav .wkf-mm-mobile-head > button.brxe-toggle { order: 4; }
+	/* Row order: logo | account | cart | close.
+	The first three are the site header's own elements, relocated here by JS with an inline `order`. */
+	#brxe-wkfnav .wkf-mm-mobile-head {
+		display: flex;
+		align-items: center;
+		gap: var(--space-s);
+		padding: var(--space-m);
+		border-bottom: 1px solid var(--wkf-grey-l-2);
+		flex: 0 0 auto;
+	}
+	#brxe-wkfnav .wkf-mm-mobile-head .brxe-logo { margin-right: auto; }
+	#brxe-wkfnav .wkf-mm-mobile-head > button.brxe-toggle { order: 4; }
 
-  /* Search row: [ input, icon inside ] [ close ]. */
-  #brxe-wkfnav .wkf-mm-mobile-search {
-    display: flex;
-    align-items: center;
-    gap: var(--space-s);
-    padding: var(--space-s) var(--space-m);
-    flex: 0 0 auto;
-  }
-  #brxe-wkfnav .wkf-mm-mobile-search > .brxe-search { flex: 1 1 auto; min-width: 0; }
-  #brxe-wkfnav .wkf-mm-mobile-search .bricks-search-form { position: relative; width: 100%; }
-  #brxe-wkfnav .wkf-mm-mobile-search input[name="s"] {
-    width: 100%;
-    min-height: 44px;
-    padding-right: 44px;
-  }
-  #brxe-wkfnav .wkf-mm-mobile-search .bricks-search-form > button {
-    position: absolute;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    width: 44px;
-    display: grid;
-    place-items: center;
-    background: none;
-    border: 0;
-    color: inherit;
-  }
-  /* The search element is appended by JS, so the close button needs an
-     explicit order to stay to its right. */
-  #brxe-wkfnav .wkf-mm-mobile-search > button.brxe-toggle {
-    flex: 0 0 auto;
-    order: 2;
-    min-width: 44px;
-    min-height: 44px;
-  }
+	/* Search row: [ input, icon inside ] [ close ]. */
+	#brxe-wkfnav .wkf-mm-mobile-search {
+		display: flex;
+		align-items: center;
+		gap: var(--space-s);
+		padding: var(--space-s) var(--space-m);
+		flex: 0 0 auto;
+	}
+	#brxe-wkfnav .wkf-mm-mobile-search > .brxe-search { flex: 1 1 auto; min-width: 0; }
+	#brxe-wkfnav .wkf-mm-mobile-search .bricks-search-form { position: relative; width: 100%; }
+	#brxe-wkfnav .wkf-mm-mobile-search input[name="s"] {
+		width: 100%;
+		min-height: 44px;
+		padding-right: 44px;
+	}
+	#brxe-wkfnav .wkf-mm-mobile-search .bricks-search-form > button {
+		position: absolute;
+		right: 0;
+		top: 0;
+		bottom: 0;
+		width: 44px;
+		display: grid;
+		place-items: center;
+		background: none;
+		border: 0;
+		color: inherit;
+	}
+	#brxe-wkfnav .wkf-mm-mobile-search .bricks-search-form
+	[class*=" ti-"], [class^=ti-] {
+		font-size: var(--text-xl);
+	}
+	/* The search element is appended by JS, so the close button needs an explicit order to stay to its right. */
+	#brxe-wkfnav .wkf-mm-mobile-search > button.brxe-toggle {
+		flex: 0 0 auto;
+		order: 2;
+		margin-inline: 1rem;
+	}
 
-  #brxe-wkfnav .brx-nav-nested-items > li:not(.wkf-mm-mobile-head):not(.wkf-mm-mobile-search):not(.wkf-mm-mobile-foot) {
-    flex: 0 0 auto;
-  }
-  #brxe-wkfnav .brx-dropdown-content {
-    max-height: 100dvh;
-    overflow-y: auto;
-    overscroll-behavior: contain;
-  }
+	#brxe-wkfnav .brx-nav-nested-items > li:not(.wkf-mm-mobile-head):not(.wkf-mm-mobile-search):not(.wkf-mm-mobile-foot) {
+		flex: 0 0 auto;
+	}
+	#brxe-wkfnav .brx-dropdown-content {
+		max-height: 100dvh;
+		overflow-y: auto;
+		overscroll-behavior: contain;
+	}
 
-  #brxe-wkfnav {
-    --wkf-mm-chevron: 16px;
-  }
+	#brxe-wkfnav {
+		--wkf-mm-chevron: 16px;
+	}
 
-  /* Level 1 rows. Padding is per row type: a blanket `a` rule double-padded
-     links nested inside already-padded rows. */
-  #brxe-wkfnav .wkf-mm-trigger > .brx-submenu-toggle { min-height: 48px; }
-  #brxe-wkfnav .wkf-mm-trigger > .brx-submenu-toggle > span,
-  #brxe-wkfnav .brx-nav-nested-items > li > .brxe-text-link {
-    display: flex;
-    align-items: center;
-    min-height: 48px;
-    padding: var(--space-xs) var(--space-m);
-    font-size: var(--text-l);
-    font-weight: 500;
-  }
+	/* Level 1 rows. Padding is per row type: a blanket `a` rule double-padded
+	links nested inside already-padded rows. */
+	#brxe-wkfnav .wkf-mm-trigger > .brx-submenu-toggle { min-height: 48px; }
+	#brxe-wkfnav .wkf-mm-trigger > .brx-submenu-toggle > span,
+	#brxe-wkfnav .brx-nav-nested-items > li > .brxe-text-link {
+		display: flex;
+		align-items: center;
+		min-height: 48px;
+		padding: var(--space-xs) var(--space-m);
+		font-size: var(--text-l);
+		font-weight: 500;
+	}
 
-  /* The chevron lives in the full-row overlay, so the overlay positions it. */
-  #brxe-wkfnav .wkf-mm-trigger > .brx-submenu-toggle > button {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    padding-right: var(--space-m);
-  }
+	/* The chevron lives in the full-row overlay, so the overlay positions it. */
+	#brxe-wkfnav .wkf-mm-trigger > .brx-submenu-toggle > button {
+		display: flex;
+		align-items: center;
+		justify-content: flex-end;
+		padding-right: var(--space-m);
+	}
 
-  /* One chevron style everywhere. */
-  #brxe-wkfnav .wkf-mm-trigger > .brx-submenu-toggle > button > i,
-  #brxe-wkfnav .wkf-go-into-macro,
-  #brxe-wkfnav .wkf-back-to-macro,
-  #brxe-wkfnav .wkf-mm-chevron {
-    font-size: var(--wkf-mm-chevron);
-    line-height: 1;
-  }
+	/* One chevron style everywhere. */
+	#brxe-wkfnav .wkf-mm-trigger > .brx-submenu-toggle > button > i,
+	#brxe-wkfnav .wkf-go-into-macro,
+	#brxe-wkfnav .wkf-back-to-macro,
+	#brxe-wkfnav .wkf-mm-chevron {
+		font-size: var(--wkf-mm-chevron);
+		line-height: 1;
+	}
 
-  #brxe-wkfnav .brx-multilevel-back {
-    display: flex;
-    align-items: center;
-    gap: var(--space-2xs);
-    min-height: 44px;
-    padding: var(--space-xs) var(--space-m);
-    font-weight: 600;
-    border-bottom: 1px solid var(--wkf-grey-l-2);
-  }
-  #brxe-wkfnav .brx-multilevel-back::before { content: none; }
+	#brxe-wkfnav .brx-multilevel-back {
+		display: flex;
+		align-items: center;
+		gap: var(--space-2xs);
+		min-height: 44px;
+		padding: var(--space-xs) var(--space-m);
+		font-weight: 600;
+		border-bottom: 1px solid var(--wkf-grey-l-2);
+	}
+	#brxe-wkfnav .brx-multilevel-back::before { content: none; }
 
-  #brxe-wkfnav .wkf-mm-mobile-foot {
-    display: flex;
-    gap: var(--space-m);
-    justify-content: center;
-    padding: var(--space-m);
-    border-top: 1px solid var(--wkf-grey-l-2);
-    margin-top: auto;
-    flex: 0 0 auto;
-  }
-  #brxe-wkfnav .wkf-mm-mobile-foot a { min-width: 44px; min-height: 44px; display: grid; place-items: center; }
+	#brxe-wkfnav .wkf-mm-mobile-foot {
+		display: flex;
+		gap: var(--space-m);
+		justify-content: center;
+		padding: var(--space-m);
+		border-top: 1px solid var(--wkf-grey-l-2);
+		margin-top: auto;
+		flex: 0 0 auto;
+	}
+	#brxe-wkfnav .wkf-mm-mobile-foot a { min-width: 44px; min-height: 44px; display: grid; place-items: center; }
 
-  /* clip-path only hides paint, so the closed panel's footer would otherwise
-     still occupy layout in the header. */
-  #brxe-wkfnav:not(.brx-open) .wkf-mm-mobile-foot {
-    display: none;
-  }
+	/* clip-path only hides paint, so the closed panel's footer would otherwise
+	still occupy layout in the header. */
+	#brxe-wkfnav:not(.brx-open) .wkf-mm-mobile-foot {
+		display: none;
+	}
 }
 
 /* ============ 4. Mobile level machine ============
-   data-wkf-level on the nav root: 1 = top level, 2 = a dropdown's content,
-   3 = one Catalogo macro's children (.wkf-is-open marks which). Only the
-   center section swaps; header and footer never move. */
+data-wkf-level on the nav root: 1 = top level, 2 = a dropdown's content,
+3 = one Catalogo macro's children (.wkf-is-open marks which). Only the
+center section swaps; header and footer never move. */
 @media (max-width: 991px) {
 
-  #brxe-wkfnav[data-wkf-level="2"] .brx-nav-nested-items > li:not(.wkf-mm-mobile-head):not(.wkf-mm-mobile-search):not(.wkf-mm-mobile-foot):not(.open),
-  #brxe-wkfnav[data-wkf-level="3"] .brx-nav-nested-items > li:not(.wkf-mm-mobile-head):not(.wkf-mm-mobile-search):not(.wkf-mm-mobile-foot):not(.open) {
-    display: none;
-  }
+	#brxe-wkfnav[data-wkf-level="2"] .brx-nav-nested-items > li:not(.wkf-mm-mobile-head):not(.wkf-mm-mobile-search):not(.wkf-mm-mobile-foot):not(.open),
+	#brxe-wkfnav[data-wkf-level="3"] .brx-nav-nested-items > li:not(.wkf-mm-mobile-head):not(.wkf-mm-mobile-search):not(.wkf-mm-mobile-foot):not(.open) {
+		display: none;
+	}
 
-  #brxe-wkfnav[data-wkf-level="2"] .brxe-dropdown.open,
-  #brxe-wkfnav[data-wkf-level="3"] .brxe-dropdown.open {
-    display: flex;
-    flex-direction: column;
-    flex: 1 1 auto;
-    min-height: 0;
-  }
+	#brxe-wkfnav[data-wkf-level="2"] .brxe-dropdown.open,
+	#brxe-wkfnav[data-wkf-level="3"] .brxe-dropdown.open {
+		display: flex;
+		flex-direction: column;
+		flex: 1 1 auto;
+		min-height: 0;
+	}
 
-  /* The trigger row belongs to level 1; inside the level it opened, the
-     header row shows the same label. */
-  #brxe-wkfnav[data-wkf-level="2"] .brxe-dropdown.open > .brx-submenu-toggle,
-  #brxe-wkfnav[data-wkf-level="3"] .brxe-dropdown.open > .brx-submenu-toggle {
-    display: none;
-  }
+	/* The trigger row belongs to level 1; inside the level it opened, the
+	header row shows the same label. */
+	#brxe-wkfnav[data-wkf-level="2"] .brxe-dropdown.open > .brx-submenu-toggle,
+	#brxe-wkfnav[data-wkf-level="3"] .brxe-dropdown.open > .brx-submenu-toggle {
+		display: none;
+	}
 
-  #brxe-wkfnav[data-wkf-level="2"] .brxe-dropdown.open > .brx-dropdown-content,
-  #brxe-wkfnav[data-wkf-level="3"] .brxe-dropdown.open > .brx-dropdown-content {
-    position: static;
-    display: flex;
-    flex-direction: column;
-    flex: 1 1 auto;
-    min-width: 0;
-    min-height: 0;
-    max-height: none;
-    padding: 0;
-    overflow-y: auto;
-    overflow-x: hidden;
-    overscroll-behavior: contain;
-    background: var(--wkf-white);
-    box-shadow: none;
-    border-radius: 0;
-  }
+	#brxe-wkfnav[data-wkf-level="2"] .brxe-dropdown.open > .brx-dropdown-content,
+	#brxe-wkfnav[data-wkf-level="3"] .brxe-dropdown.open > .brx-dropdown-content {
+		position: static;
+		display: flex;
+		flex-direction: column;
+		flex: 1 1 auto;
+		min-width: 0;
+		min-height: 0;
+		max-height: none;
+		padding: 0;
+		overflow-y: auto;
+		overflow-x: hidden;
+		overscroll-behavior: contain;
+		background: var(--wkf-white);
+		box-shadow: none;
+		border-radius: 0;
+	}
 
-  /* Level header row: [ label ............ back ] */
-  #brxe-wkfnav .wkf-mm-levelhead {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--space-s);
-    flex: 0 0 auto;
-    border-bottom: 1px solid var(--wkf-grey-l-2);
-  }
-  #brxe-wkfnav .wkf-mm-levelhead__label {
-    display: flex;
-    align-items: center;
-    flex: 0 1 auto;
-    min-height: 48px;
-    padding: var(--space-xs) var(--space-m);
-    font-size: var(--text-l);
-    font-weight: 500;
-  }
-  /* width:auto overrides Bricks' .brx-multilevel-back{width:100%}. */
-  #brxe-wkfnav .wkf-mm-backbtn {
-    flex: 0 0 auto;
-    margin-left: auto;
-    width: auto;
-    display: inline-flex;
-    align-items: center;
-    justify-content: flex-end;
-    min-width: 44px;
-    min-height: 44px;
-    padding: 0 var(--space-m) 0 0;
-    background: none;
-    border: 0;
-    color: inherit;
-    cursor: pointer;
-  }
+	/* Level header row: [ label ............ back ] */
+	#brxe-wkfnav .wkf-mm-levelhead {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: var(--space-s);
+		flex: 0 0 auto;
+		border-bottom: 1px solid var(--wkf-grey-l-2);
+	}
+	#brxe-wkfnav .wkf-mm-levelhead__label {
+		display: flex;
+		align-items: center;
+		flex: 0 1 auto;
+		min-height: 48px;
+		padding: var(--space-xs) var(--space-m);
+		font-size: var(--text-l);
+		font-weight: 500;
+	}
+	/* width:auto overrides Bricks' .brx-multilevel-back{width:100%}. */
+	#brxe-wkfnav .wkf-mm-backbtn {
+		flex: 0 0 auto;
+		margin-left: auto;
+		width: auto;
+		display: inline-flex;
+		align-items: center;
+		justify-content: flex-end;
+		min-width: 44px;
+		min-height: 44px;
+		padding: 0 var(--space-m) 0 0;
+		background: none;
+		border: 0;
+		color: inherit;
+		cursor: pointer;
+	}
 
-  /* The 8 columns become 8 stacked, full-width rows. */
-  #brxe-wkfnav #brxe-digsuw {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0;
-    width: 100%;
-    min-width: 0;
-  }
-  #brxe-wkfnav .wkf-mm-col,
-  #brxe-wkfnav .wkf-mm-coltop,
-  #brxe-wkfnav .wkf-mm-sublist,
-  #brxe-wkfnav .wkf-mm-levelhead,
-  #brxe-wkfnav .wkf-mm-cta {
-    width: 100%;
-    min-width: 0;
-    max-width: 100%;
-  }
+	/* The 8 columns become 8 stacked, full-width rows. */
+	#brxe-wkfnav #brxe-digsuw {
+		display: flex;
+		flex-direction: column;
+		align-items: stretch;
+		gap: 0;
+		width: 100%;
+		min-width: 0;
+	}
+	#brxe-wkfnav .wkf-mm-col,
+	#brxe-wkfnav .wkf-mm-coltop,
+	#brxe-wkfnav .wkf-mm-sublist,
+	#brxe-wkfnav .wkf-mm-levelhead,
+	#brxe-wkfnav .wkf-mm-cta {
+		width: 100%;
+		min-width: 0;
+		max-width: 100%;
+	}
 
-  /* Macro row: [ name ............ > ] — the whole row is the control. */
-  #brxe-wkfnav .wkf-mm-coltop {
-    min-height: 44px;
-    padding: var(--space-xs) var(--space-m);
-    border-bottom: 1px solid var(--wkf-grey-l-2);
-    cursor: pointer;
-  }
-  #brxe-wkfnav .wkf-mm-coltop .brxe-heading {
-    font-size: var(--text-m);
-    font-weight: 600;
-  }
-  #brxe-wkfnav .wkf-mm-coltop a { padding: 0; min-height: 0; }
+	/* Macro row: [ name ............ > ] — the whole row is the control. */
+	#brxe-wkfnav .wkf-mm-coltop {
+		min-height: 44px;
+		padding: var(--space-xs) var(--space-m);
+		border-bottom: 1px solid var(--wkf-grey-l-2);
+		cursor: pointer;
+	}
+	#brxe-wkfnav .wkf-mm-coltop .brxe-heading {
+		font-size: var(--text-m);
+		font-weight: 600;
+	}
+	#brxe-wkfnav .wkf-mm-coltop a { padding: 0; min-height: 0; }
 
-  /* Level 3 category rows. .wkf-mm-sublist is the loop element, so it repeats
-     once per category: spacing belongs on the row, not on it or the column. */
-  #brxe-wkfnav .wkf-mm-col { row-gap: 0; }
-  #brxe-wkfnav .wkf-mm-sublist { padding: 0; gap: 0; }
-  #brxe-wkfnav .wkf-mm-sublist a {
-    display: flex;
-    align-items: center;
-    min-height: 32px;
-    padding: var(--space-2xs) var(--space-m);
-  }
-  #brxe-wkfnav .wkf-mm-sublist .brxe-heading { font-size: var(--text-m); font-weight: 400; }
-  #brxe-wkfnav .wkf-mm-sublist:last-of-type { padding-bottom: var(--space-s); }
+	/* Level 3 category rows. .wkf-mm-sublist is the loop element, so it repeats
+	once per category: spacing belongs on the row, not on it or the column. */
+	#brxe-wkfnav .wkf-mm-col { row-gap: 0; }
+	#brxe-wkfnav .wkf-mm-sublist { padding: 0; gap: 0; }
+	#brxe-wkfnav .wkf-mm-sublist a {
+		display: flex;
+		align-items: center;
+		min-height: 32px;
+		padding: var(--space-2xs) var(--space-m);
+	}
+	#brxe-wkfnav .wkf-mm-sublist .brxe-heading { font-size: var(--text-m); font-weight: 400; }
+	#brxe-wkfnav .wkf-mm-sublist:last-of-type { padding-bottom: var(--space-s); }
 
-  /* The level machine strips the panel's padding, so rows carry it. */
-  #brxe-wkfnav .wkf-mm-brand,
-  #brxe-wkfnav .wkf-mm-sector {
-    padding: var(--space-s) var(--space-m);
-  }
-  #brxe-wkfnav .wkf-mm-brand + .wkf-mm-brand {
-    border-top: 1px solid var(--wkf-grey-l-2);
-  }
-  #brxe-wkfnav .wkf-mm-brand__desc { font-size: var(--text-m); }
-  #brxe-wkfnav .wkf-mm-brand__cta {
-    font-size: var(--text-m);
-    color: inherit;
-  }
-  #brxe-wkfnav .wkf-mm-cta { padding: 0; }
-  #brxe-wkfnav .wkf-mm-cta > a {
-    display: flex;
-    align-items: center;
-    min-height: 48px;
-    padding: var(--space-xs) var(--space-m);
-    font-weight: 500;
-  }
+	/* The level machine strips the panel's padding, so rows carry it. */
+	#brxe-wkfnav .wkf-mm-brand,
+	#brxe-wkfnav .wkf-mm-sector {
+		padding: var(--space-s) var(--space-m);
+	}
+	#brxe-wkfnav .wkf-mm-brand + .wkf-mm-brand {
+		border-top: 1px solid var(--wkf-grey-l-2);
+	}
+	#brxe-wkfnav .wkf-mm-brand__desc { font-size: var(--text-m); }
+	#brxe-wkfnav .wkf-mm-brand__cta {
+		font-size: var(--text-m);
+		color: inherit;
+	}
+	#brxe-wkfnav .wkf-mm-cta { padding: 0; }
+	#brxe-wkfnav .wkf-mm-cta > a {
+		display: flex;
+		align-items: center;
+		min-height: 48px;
+		padding: var(--space-xs) var(--space-m);
+		font-weight: 500;
+	}
 
-  /* Title padding stays 0 so it aligns with its own description. */
-  #brxe-wkfnav .wkf-mm-sector > a {
-    padding: 0;
-    min-height: 0;
-    font-size: var(--text-l);
-    font-weight: 500;
-  }
-  #brxe-wkfnav .wkf-mm-brand__name {
-    font-size: var(--text-l);
-    font-weight: 500;
-  }
+	/* Title padding stays 0 so it aligns with its own description. */
+	#brxe-wkfnav .wkf-mm-sector > a {
+		padding: 0;
+		min-height: 0;
+		font-size: var(--text-l);
+		font-weight: 500;
+	}
+	#brxe-wkfnav .wkf-mm-brand__name {
+		font-size: var(--text-l);
+		font-weight: 500;
+	}
 
-  /* Level 2 — macro names only. The back button is hidden with its icon, or
-     its 44px box would keep the `>` off the right edge. */
-  #brxe-wkfnav[data-wkf-level="2"] .wkf-mm-sublist,
-  #brxe-wkfnav[data-wkf-level="2"] .wkf-mm-col .wkf-mm-backbtn,
-  #brxe-wkfnav[data-wkf-level="2"] .wkf-back-to-macro { display: none; }
-  #brxe-wkfnav[data-wkf-level="2"] .wkf-go-into-macro {
-    display: inline-flex;
-    margin-left: auto;
-  }
+	/* Level 2 — macro names only. The back button is hidden with its icon, or
+	its 44px box would keep the `>` off the right edge. */
+	#brxe-wkfnav[data-wkf-level="2"] .wkf-mm-sublist,
+	#brxe-wkfnav[data-wkf-level="2"] .wkf-mm-col .wkf-mm-backbtn,
+	#brxe-wkfnav[data-wkf-level="2"] .wkf-back-to-macro { display: none; }
+	#brxe-wkfnav[data-wkf-level="2"] .wkf-go-into-macro {
+		display: inline-flex;
+		margin-left: auto;
+	}
 
-  /* Level 3 — one macro: its header row, then its children. */
-  #brxe-wkfnav[data-wkf-level="3"] .wkf-mm-col:not(.wkf-is-open),
-  #brxe-wkfnav[data-wkf-level="3"] .wkf-mm-cta,
-  #brxe-wkfnav[data-wkf-level="3"] .wkf-mm-levelhead,
-  #brxe-wkfnav[data-wkf-level="3"] .wkf-go-into-macro { display: none; }
-  #brxe-wkfnav[data-wkf-level="3"] .wkf-is-open .wkf-mm-sublist { display: flex; }
-  #brxe-wkfnav[data-wkf-level="3"] .wkf-back-to-macro { display: inline-flex; }
-  #brxe-wkfnav[data-wkf-level="3"] .wkf-mm-backbtn { margin-left: auto; }
-  #brxe-wkfnav[data-wkf-level="3"] .wkf-is-open .wkf-mm-coltop { cursor: default; }
+	/* Level 3 — one macro: its header row, then its children. */
+	#brxe-wkfnav[data-wkf-level="3"] .wkf-mm-col:not(.wkf-is-open),
+	#brxe-wkfnav[data-wkf-level="3"] .wkf-mm-cta,
+	#brxe-wkfnav[data-wkf-level="3"] .wkf-mm-levelhead,
+	#brxe-wkfnav[data-wkf-level="3"] .wkf-go-into-macro { display: none; }
+	#brxe-wkfnav[data-wkf-level="3"] .wkf-is-open .wkf-mm-sublist { display: flex; }
+	#brxe-wkfnav[data-wkf-level="3"] .wkf-back-to-macro { display: inline-flex; }
+	#brxe-wkfnav[data-wkf-level="3"] .wkf-mm-backbtn { margin-left: auto; }
+	#brxe-wkfnav[data-wkf-level="3"] .wkf-is-open .wkf-mm-coltop { cursor: default; }
 
-  /* Bricks' own injected "Indietro" row, replaced by the level header. */
-  #brxe-wkfnav .brx-multilevel-back[hidden] { display: none !important; }
+	/* Bricks' own injected "Indietro" row, replaced by the level header. */
+	#brxe-wkfnav .brx-multilevel-back[hidden] { display: none !important; }
 }
 
 @media (max-width: 991px) and (prefers-reduced-motion: reduce) {
-  #brxe-wkfnav .brx-nav-nested-items { transition: none; clip-path: none; visibility: hidden; }
-  #brxe-wkfnav.brx-open .brx-nav-nested-items { visibility: visible; }
+	#brxe-wkfnav .brx-nav-nested-items { transition: none; clip-path: none; visibility: hidden; }
+	#brxe-wkfnav.brx-open .brx-nav-nested-items { visibility: visible; }
 }
 
 /* ============ 5. Site header (<= 991px) ============ */
 @media (max-width: 991px) {
-  /* logo | hamburger | account | cart */
-  #brxe-nebryp { display: flex; align-items: center; gap: var(--space-s); }
-  #brxe-aqqruf { order: 1; margin-right: auto; }
-  #brxe-wkfnav { order: 2; }
-  /* The flex child is the link wrapper, not the icon it wraps. */
-  #brxe-nebryp > a:has(> #brxe-donbzq) { order: 3; }
-  #brxe-gfhkoa { order: 4; }
-  /* Hidden only while still in the header; JS moves it into the open panel. */
-  #brxe-nebryp > #brxe-gjvbmv { display: none; }
+	/* logo | hamburger | account | cart */
+	#brxe-nebryp { display: flex; align-items: center; gap: var(--space-s); }
+	#brxe-aqqruf { order: 1; margin-right: auto; }
+	#brxe-wkfnav { order: 2; }
+	/* The flex child is the link wrapper, not the icon it wraps. */
+	#brxe-nebryp > a:has(> #brxe-donbzq) { order: 3; }
+	#brxe-gfhkoa { order: 4; }
+	/* Hidden only while still in the header; JS moves it into the open panel. */
+	#brxe-nebryp > #brxe-gjvbmv { display: none; }
 }
