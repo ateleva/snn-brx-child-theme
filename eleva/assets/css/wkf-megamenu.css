@@ -16,6 +16,18 @@
   border-radius: 2px;
 }
 
+/* Sector rows stack: title above its description, never side by side.
+   Bricks' own `.brx-has-multilevel .open.active>ul>li{display:flex}` sets
+   these <li> to flex with the default row direction, which is what put the
+   description next to the title. */
+#brxe-wkfnav .wkf-mm-sector {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2xs);
+}
+#brxe-wkfnav .wkf-mm-sector > p { margin: 0; }
+
 /* Whole trigger row is the button, caret drawn as a pseudo-element. */
 #brxe-wkfnav .wkf-mm-trigger > .brx-submenu-toggle {
   position: relative;
@@ -88,9 +100,17 @@
     overflow-y: auto;
   }
 
-  /* The per-column drill-in / go-back arrows are a mobile affordance only. */
+  /* The per-column drill-in / go-back arrows are a mobile affordance only,
+     and so is the level header row the JS builds for the mobile stack. */
   #brxe-wkfnav .wkf-go-into-macro,
   #brxe-wkfnav .wkf-back-to-macro {
+    display: none;
+  }
+
+  /* Needs the `.wkf-mm-panel > li` shape to outrank the section-2 override
+     `#brxe-wkfnav .wkf-mm-panel > li { display: list-item }`, which is
+     load-bearing for the columns and must not be edited. */
+  #brxe-wkfnav .wkf-mm-panel > li.wkf-mm-levelhead {
     display: none;
   }
 
@@ -361,6 +381,159 @@
   #brxe-wkfnav:not(.brx-open) .wkf-mm-mobile-foot {
     display: none;
   }
+}
+
+/* ---------- 3b. Mobile level machine ----------
+   The panel is three parts: a fixed header row, a fixed footer row, and a
+   center section that SWAPS between levels. Only one level is ever in the
+   center; a deeper level replaces the one before it, it does not expand
+   inside it (that would be an accordion).
+
+   State lives in `data-wkf-level` on the nav root, set by
+   wkf-megamenu-a11y.js:
+     1 = top-level items      2 = one dropdown's own content
+     3 = one Catalogo macro's children (`.wkf-is-open` marks which)
+
+   Bricks cannot express this: its own rule
+   `.brxe-nav-nested.brx-open .brxe-dropdown.open>.brx-dropdown-content
+    {position:static}` renders an opened level inline, and its multiLevel
+   rules only ever hide items *inside* a dropdown's own <ul> — never the
+   top-level siblings. So the covering behaviour is asserted here. */
+@media (max-width: 991px) {
+
+  /* Levels 2 and 3: every center row except the open one is gone.
+     The fixed header and footer are deliberately excluded — they never
+     change between levels. */
+  #brxe-wkfnav[data-wkf-level="2"] .brx-nav-nested-items > li:not(.wkf-mm-mobile-head):not(.wkf-mm-mobile-foot):not(.open),
+  #brxe-wkfnav[data-wkf-level="3"] .brx-nav-nested-items > li:not(.wkf-mm-mobile-head):not(.wkf-mm-mobile-foot):not(.open) {
+    display: none;
+  }
+
+  /* The open level owns the whole center section and scrolls inside itself. */
+  #brxe-wkfnav[data-wkf-level="2"] .brxe-dropdown.open,
+  #brxe-wkfnav[data-wkf-level="3"] .brxe-dropdown.open {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+
+  /* The trigger row ("Catalogo >") belongs to level 1. Inside the level it
+     opened, the same label is shown by the level header row instead. */
+  #brxe-wkfnav[data-wkf-level="2"] .brxe-dropdown.open > .brx-submenu-toggle,
+  #brxe-wkfnav[data-wkf-level="3"] .brxe-dropdown.open > .brx-submenu-toggle {
+    display: none;
+  }
+
+  #brxe-wkfnav[data-wkf-level="2"] .brxe-dropdown.open > .brx-dropdown-content,
+  #brxe-wkfnav[data-wkf-level="3"] .brxe-dropdown.open > .brx-dropdown-content {
+    position: static;
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 0;
+    max-height: none;
+    padding: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    background: var(--wkf-white);
+    box-shadow: none;
+    border-radius: 0;
+  }
+
+  /* The level header row: [ label ............ back arrow ] */
+  #brxe-wkfnav .wkf-mm-levelhead {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-s);
+    flex: 0 0 auto;
+    border-bottom: 1px solid var(--wkf-grey-l-2);
+  }
+  #brxe-wkfnav .wkf-mm-levelhead__label {
+    font-size: var(--text-m);
+    font-weight: 600;
+    flex: 1 1 auto;
+  }
+  #brxe-wkfnav .wkf-mm-backbtn {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 0 var(--space-m) 0 0;
+    background: none;
+    border: 0;
+    color: inherit;
+    cursor: pointer;
+  }
+
+  /* Catalogo: the 8 columns become 8 stacked, full-width rows. Bricks' own
+     flex defaults size these blocks to their content, which left ragged row
+     borders and pushed the panel wider than the viewport. */
+  #brxe-wkfnav #brxe-digsuw {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    width: 100%;
+    min-width: 0;
+  }
+  #brxe-wkfnav .wkf-mm-col,
+  #brxe-wkfnav .wkf-mm-coltop,
+  #brxe-wkfnav .wkf-mm-sublist,
+  #brxe-wkfnav .wkf-mm-levelhead,
+  #brxe-wkfnav .wkf-mm-cta {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+  }
+  #brxe-wkfnav .brxe-dropdown.open > .brx-dropdown-content {
+    overflow-x: hidden;
+  }
+
+  /* Each macro row: [ name ............ > ] — the whole row is the control. */
+  #brxe-wkfnav .wkf-mm-coltop {
+    min-height: 44px;
+    padding: var(--space-xs) var(--space-m);
+    border-bottom: 1px solid var(--wkf-grey-l-2);
+    cursor: pointer;
+  }
+  #brxe-wkfnav .wkf-mm-coltop .brxe-heading {
+    font-size: var(--text-m);
+    font-weight: 600;
+  }
+  #brxe-wkfnav .wkf-mm-coltop a { padding: 0; min-height: 0; }
+  #brxe-wkfnav .wkf-mm-sublist { padding: 0 0 var(--space-s) 0; gap: 0; }
+  #brxe-wkfnav .wkf-mm-sublist .brxe-heading { font-size: var(--text-s); font-weight: 400; }
+
+  /* LEVEL 2 — macro names only. No children anywhere on this level.
+     The back arrow's wrapping <button> must be hidden too, not just the
+     icon inside it: a 44px-wide empty button would otherwise sit at the
+     row's right edge and stop the `>` from reaching it. */
+  #brxe-wkfnav[data-wkf-level="2"] .wkf-mm-sublist,
+  #brxe-wkfnav[data-wkf-level="2"] .wkf-mm-col .wkf-mm-backbtn,
+  #brxe-wkfnav[data-wkf-level="2"] .wkf-back-to-macro { display: none; }
+  #brxe-wkfnav[data-wkf-level="2"] .wkf-go-into-macro {
+    display: inline-flex;
+    margin-left: auto;
+  }
+
+  /* LEVEL 3 — one macro only: its header row, then its children. */
+  #brxe-wkfnav[data-wkf-level="3"] .wkf-mm-col:not(.wkf-is-open),
+  #brxe-wkfnav[data-wkf-level="3"] .wkf-mm-cta,
+  #brxe-wkfnav[data-wkf-level="3"] .wkf-mm-levelhead,
+  #brxe-wkfnav[data-wkf-level="3"] .wkf-go-into-macro { display: none; }
+  #brxe-wkfnav[data-wkf-level="3"] .wkf-is-open .wkf-mm-sublist { display: flex; }
+  #brxe-wkfnav[data-wkf-level="3"] .wkf-back-to-macro { display: inline-flex; }
+  #brxe-wkfnav[data-wkf-level="3"] .wkf-mm-backbtn { margin-left: auto; }
+  #brxe-wkfnav[data-wkf-level="3"] .wkf-is-open .wkf-mm-coltop { cursor: default; }
+
+  /* Bricks injects its own "Indietro" row into every nested <ul>; the level
+     header row above replaces it. */
+  #brxe-wkfnav .brx-multilevel-back[hidden] { display: none !important; }
 }
 
 @media (max-width: 991px) and (prefers-reduced-motion: reduce) {
