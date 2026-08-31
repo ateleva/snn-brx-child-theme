@@ -11,6 +11,8 @@
  * @package Relevanssi Live Ajax Search
  */
 
+global $wp_query;
+
 ?>
 <?php if ( have_posts() ) : ?>
 	<p class="screen-reader-text" role="status" aria-live="polite">
@@ -34,9 +36,10 @@
 			continue;
 		}
 
-		$brand_terms     = get_the_terms( get_the_ID(), 'product_brand' );
-		$brand_term      = ( $brand_terms && ! is_wp_error( $brand_terms ) ) ? reset( $brand_terms ) : null;
-		$brand_thumb_id  = $brand_term ? (int) get_term_meta( $brand_term->term_id, 'thumbnail_id', true ) : 0;
+		$brand_terms   = get_the_terms( get_the_ID(), 'product_brand' );
+		$brand_term    = ( $brand_terms && ! is_wp_error( $brand_terms ) ) ? reset( $brand_terms ) : null;
+		$brand_icon    = $brand_term ? get_field( 'brand_icon', $brand_term ) : null;
+		$brand_icon_id = $brand_icon ? (int) $brand_icon['ID'] : 0;
 
 		// Respect the site's catalog mode (NP Quote Request for WooCommerce)
 		// instead of re-implementing its price-hiding rules here.
@@ -60,8 +63,8 @@
 					<span class="wkf-live-search-result-title"><?php the_title(); ?></span>
 					<?php if ( $brand_term ) : ?>
 						<span class="wkf-live-search-result-brand">
-							<?php if ( $brand_thumb_id ) : ?>
-								<?php echo wp_get_attachment_image( $brand_thumb_id, 'thumbnail', false, array( 'class' => 'wkf-live-search-result-brand-logo', 'alt' => esc_attr( $brand_term->name ) ) ); ?>
+							<?php if ( $brand_icon_id ) : ?>
+								<?php echo wp_get_attachment_image( $brand_icon_id, 'thumbnail', false, array( 'class' => 'wkf-live-search-result-brand-logo', 'alt' => $brand_term->name ) ); ?>
 							<?php else : ?>
 								<?php echo esc_html( $brand_term->name ); ?>
 							<?php endif; ?>

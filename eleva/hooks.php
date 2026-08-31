@@ -119,6 +119,143 @@ add_filter( 'relevanssi_live_search_template_dir', function() {
 } );
 
 /**
+ * Pick the product category template by the term's depth in the hierarchy:
+ *
+ *   depth 0 (macro, no parent)  -> "Categoria L1"      (1290)
+ *   depth 1 or 2 (L2 / L3)      -> "Categorie L2/L3"   (1277)
+ *   "Extra" (32) and anything deeper -> no template, default WooCommerce archive
+ *
+ * The category tree is designed to be three levels deep. L2 and L3 share one
+ * template because their only difference - L3 terms have no children, so the
+ * "Meta filtri" sub-category nav has nothing to list - is already handled by
+ * that nav's own {wkf_term_child_count} condition.
+ *
+ * Bricks template conditions can target a taxonomy, single terms, or "all terms
+ * + include children", but have no notion of depth, and listing every L2/L3
+ * term id by hand would need updating every time a category is added or moved.
+ * So both templates keep the broad "product_cat: all terms" condition and this
+ * filter decides between them, using the hook Bricks fires right after it
+ * resolves the active templates:
+ * @see https://academy.bricksbuilder.io/article/filter-bricks-active_templates/
+ *
+ * It must *assign*, not merely drop: Bricks resolves one template per area, so
+ * clearing the one it picked leaves the page with none rather than falling
+ * through to the other candidate. Only its own two templates (or an empty slot)
+ * are overwritten, so a future template with a narrower condition still wins.
+ * Builder/preview requests are left alone so both templates stay editable.
+ */
+add_filter( 'bricks/active_templates', function( $active_templates, $post_id, $content_type ) {
+    $category_templates = array(
+        'l1'    => 1290,
+        'l2_l3' => 1277,
+    );
+
+    if ( ( function_exists( 'bricks_is_builder' ) && bricks_is_builder() ) ||
+         ( function_exists( 'bricks_is_builder_call' ) && bricks_is_builder_call() ) ||
+         in_array( (int) $post_id, $category_templates, true ) ) {
+        return $active_templates;
+    }
+
+    if ( ! is_tax( 'product_cat' ) ) {
+        return $active_templates;
+    }
+
+    $term = get_queried_object();
+
+    if ( ! $term instanceof WP_Term ) {
+        return $active_templates;
+    }
+
+    $extra_term_id = 32;
+    $depth         = count( get_ancestors( $term->term_id, 'product_cat', 'taxonomy' ) );
+
+    if ( $term->term_id === $extra_term_id ) {
+        $template_id = 0;
+    } elseif ( 0 === $depth ) {
+        $template_id = $category_templates['l1'];
+    } elseif ( $depth <= 2 ) {
+        $template_id = $category_templates['l2_l3'];
+    } else {
+        $template_id = 0;
+    }
+
+    // 'content' plus the content-type alias Bricks copies it into (wc_archive).
+    $slots = array( 'content' );
+
+    if ( is_string( $content_type ) && '' !== $content_type && array_key_exists( $content_type, $active_templates ) ) {
+        $slots[] = $content_type;
+    }
+
+    foreach ( $slots as $slot ) {
+        $current = isset( $active_templates[ $slot ] ) && is_numeric( $active_templates[ $slot ] ) ? (int) $active_templates[ $slot ] : 0;
+
+        if ( 0 === $current || in_array( $current, $category_templates, true ) ) {
+            $active_templates[ $slot ] = $template_id;
+        }
+    }
+
+    return $active_templates;
+}, 10, 3 );
+
+/**
+ * Remove the bogus "Pagina 1" crumb from the WooCommerce breadcrumb.
+ *
+ * WC_Breadcrumb::paged_trail() appends a page crumb whenever the `paged` query
+ * var is truthy. On these archives it always is: a Bricks query loop set to
+ * "is archive main query" has its query vars merged into the main query by
+ * Bricks\Database::set_main_archive_query() (pre_get_posts, priority 10), and
+ * those vars always carry paged = 1, even on the first page with no /page/N/
+ * in the URL. So every category archive using the L2/L3 template ended its
+ * breadcrumb with "… / Pagina 1".
+ *
+ * Fixed here rather than by stopping Bricks from setting `paged`, which is what
+ * drives that loop's own pagination. Real page 2+ keeps its crumb.
+ */
+add_filter( 'woocommerce_get_breadcrumb', function( $crumbs ) {
+    if ( ! is_array( $crumbs ) || (int) get_query_var( 'paged' ) > 1 ) {
+        return $crumbs;
+    }
+
+    $last = end( $crumbs );
+    reset( $crumbs );
+
+    if ( ! is_array( $last ) || ! isset( $last[0] ) ) {
+        return $crumbs;
+    }
+
+    /* translators: %d: page number - must match WooCommerce's own paged crumb. */
+    if ( $last[0] === sprintf( __( 'Page %d', 'woocommerce' ), 1 ) ) {
+        array_pop( $crumbs );
+    }
+
+    return $crumbs;
+}, 20 );
+
+/**
+ * Drop the query trail markup from the two decorative loops of the "Categoria
+ * L2" template: the sub-category chips (mfchp1) and the brand badge inside each
+ * product card (cdbrnd).
+ *
+ * Bricks appends a hidden "query trail" node after every query loop to carry
+ * the query vars for infinite scroll / AJAX filtering. Neither of these loops
+ * is ever filtered or paginated - the chips are the term's children, the badge
+ * is the product's single brand - so the trail is dead markup, and the badge
+ * one is repeated once per card. The product grid loop keeps its trail: that
+ * query is the one AJAX filters would target.
+ *
+ * @see https://academy.bricksbuilder.io/article/filter-bricks-render_query_loop_trail/
+ */
+add_filter( 'bricks/render_query_loop_trail', function( $render, $element_instance ) {
+    $element_id = $element_instance->element['id'] ?? '';
+
+    if ( in_array( $element_id, array( 'mfchp1', 'cdbrnd' ), true ) ) {
+        return false;
+    }
+
+    return $render;
+}, 10, 2 );
+
+/**
  * Restrict "product category" Bricks query loops on brand archive pages to
  * only the categories that actually contain a product of that brand.
  *
