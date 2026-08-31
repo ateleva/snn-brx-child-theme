@@ -62,8 +62,8 @@ this file only supplies what Bricks controls cannot express. */
 	cursor: pointer;
 }
 
-/* ============ 2. Desktop (>= 992px) ============ */
-@media (min-width: 992px) {
+/* ============ 2. Desktop (>= 1151px) ============ */
+@media (min-width: 1151px) {
 
 	/* Bricks' unscoped `.brx-has-multilevel ul li:not(.open){display:none}`
 	also hides the CTA row; other rows outrank it via their own ID. */
@@ -192,8 +192,8 @@ this file only supplies what Bricks controls cannot express. */
 	#brxe-wkfnav .wkf-mm-mobile-foot { display: none; }
 }
 
-/* ============ 3. Mobile panel (<= 991px) ============ */
-@media (max-width: 991px) {
+/* ============ 3. Mobile panel (<= 1150px) ============ */
+@media (max-width: 1150px) {
 
 	#brxe-wkfnav .brx-nav-nested-items {
 		display: flex;
@@ -341,7 +341,7 @@ this file only supplies what Bricks controls cannot express. */
 data-wkf-level on the nav root: 1 = top level, 2 = a dropdown's content,
 3 = one Catalogo macro's children (.wkf-is-open marks which). Only the
 center section swaps; header and footer never move. */
-@media (max-width: 991px) {
+@media (max-width: 1150px) {
 
 	#brxe-wkfnav[data-wkf-level="2"] .brx-nav-nested-items > li:not(.wkf-mm-mobile-head):not(.wkf-mm-mobile-search):not(.wkf-mm-mobile-foot):not(.open),
 	#brxe-wkfnav[data-wkf-level="3"] .brx-nav-nested-items > li:not(.wkf-mm-mobile-head):not(.wkf-mm-mobile-search):not(.wkf-mm-mobile-foot):not(.open) {
@@ -519,13 +519,13 @@ center section swaps; header and footer never move. */
 	#brxe-wkfnav .brx-multilevel-back[hidden] { display: none !important; }
 }
 
-@media (max-width: 991px) and (prefers-reduced-motion: reduce) {
+@media (max-width: 1150px) and (prefers-reduced-motion: reduce) {
 	#brxe-wkfnav .brx-nav-nested-items { transition: none; clip-path: none; visibility: hidden; }
 	#brxe-wkfnav.brx-open .brx-nav-nested-items { visibility: visible; }
 }
 
-/* ============ 5. Site header (<= 991px) ============ */
-@media (max-width: 991px) {
+/* ============ 5. Site header (<= 1150px) ============ */
+@media (max-width: 1150px) {
 	/* logo | hamburger | account | cart */
 	#brxe-nebryp { display: flex; align-items: center; gap: var(--space-s); }
 	#brxe-aqqruf { order: 1; margin-right: auto; }
