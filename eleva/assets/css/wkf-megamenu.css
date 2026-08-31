@@ -11,7 +11,7 @@ this file only supplies what Bricks controls cannot express. */
 #brxe-wkfnav .brx-multilevel-back:focus-visible {
 	outline: 2px solid var(--wkf-primary);
 	outline-offset: 2px;
-	border-radius: 2px;
+	border-radius: var(--wkf-radius);
 }
 
 /* Bricks sets these <li> to flex-row; stack title over description. */
@@ -116,7 +116,7 @@ this file only supplies what Bricks controls cannot express. */
 		background: var(--wkf-white);
 		box-shadow: 0 8px 24px var(--wkf-black-t-2);
 		padding: var(--space-m);
-		border-radius: 0 0 var(--radius-s) var(--radius-s);
+		border-radius: 0 0 var(--wkf-radius) var(--wkf-radius);
 	}
 
 	#brxe-wkfnav .wkf-mm-sublist a {

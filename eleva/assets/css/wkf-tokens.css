@@ -1,0 +1,25 @@
+/* WKF design tokens — values Bricks' variable managers cannot express.
+   Colour tokens live in the Bricks Color Palette "Eleva Colors x WKF"
+   (compiled to uploads/bricks/css/style-manager.min.css); sizing/spacing/
+   radius/line-height in the Bricks Variables Manager. This file only adds
+   the handful of primitives neither store can hold. */
+:root {
+	--wkf-radius: 2px;
+	--wkf-shadow: 0 1px 2px rgba(23, 27, 33, .06), 0 8px 24px rgba(23, 27, 33, .07);
+	--wkf-container: 95%;
+	--wkf-font-display: 'Archivo', sans-serif;
+	--wkf-font-body: 'Hanken Grotesk', sans-serif;
+	--wkf-font-mono: 'JetBrains Mono', monospace;
+}
+
+/* "Filetto righello" — the design's signature section divider. */
+.wkf-righello {
+	margin: 56px 0 0;
+	border-top: 1px solid var(--wkf-grey-l-2);
+	height: 8px;
+	background-image:
+		repeating-linear-gradient(90deg, var(--wkf-grey-l-2) 0 1px, transparent 1px 40px),
+		repeating-linear-gradient(90deg, var(--wkf-grey-l-2) 0 1px, transparent 1px 8px);
+	background-size: 100% 8px, 100% 4px;
+	background-repeat: no-repeat;
+}
