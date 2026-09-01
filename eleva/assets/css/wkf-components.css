@@ -21,8 +21,10 @@ html {
 	letter-spacing: var(--wkf-tracking-tight);
 }
 
-/* "Filetto righello" — the design's signature section divider. */
+/* "Filetto righello" — the design's signature section divider.
+   (Bricks .brxe-div children of a flex parent collapse to 0 width without this.) */
 .wkf-righello {
+	width: 100%;
 	margin: 2rem 0 0 0;
 	border-top: 1px solid var(--wkf-grey-l-2);
 	height: 8px;
