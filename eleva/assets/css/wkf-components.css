@@ -69,16 +69,50 @@ html {
 	color: var(--wkf-grey-d-1);
 }
 
-:is(ul.list_square, .list_square ul) {
-	padding-left: 1rem;
-	list-style-type: square;
+/* ── list_square — two DOM shapes ──
+   A) list_square on a wrapper, raw <ul><li> inside (e.g. a text-basic element):
+      real list-items → native ::marker works.
+   B) list_square directly on a Bricks <ul>, each <li> a flex block wrapping a
+      display:list-item <span> (an ACF loop): ::marker on a flex-item list-item
+      renders cramped/misplaced, so draw the square with ::before on the flex <li>. */
+.list_square ul,
+ul.list_square {
 	font-size: var(--text-m);
-	line-height: var(--lh-l);
+	line-height: var(--lh-relaxed);
 }
-:is(ul.list_square, .list_square ul) li::marker,
-:is(ul.list_square, .list_square ul) li span::marker {
-	font-size: var(--text-l);
+
+/* A — native square marker */
+.list_square ul {
+	padding-left: 1.1em;
+	list-style: square;
+}
+.list_square ul > li::marker {
 	color: var(--wkf-primary);
+	font-size: var(--text-l);
+}
+
+/* B — drawn square */
+ul.list_square {
+	padding-left: 0;
+	list-style: none;
+}
+ul.list_square.brxe-block > li.brxe-block {
+	display: flex;
+	flex-direction: row;
+	align-items: flex-start;
+	gap: 0.6em;
+	list-style: none;
+}
+ul.list_square.brxe-block > li.brxe-block > * {
+	list-style: none;
+}
+ul.list_square.brxe-block > li.brxe-block::before {
+	content: "";
+	flex: 0 0 auto;
+	width: 0.4em;
+	height: 0.4em;
+	margin-top: 0.45em;
+	background: var(--wkf-primary);
 }
 
 .single-product form.cart {
