@@ -36,31 +36,34 @@ html {
 
 /* ── Product page — WooCommerce-generated markup ── */
 
-/* Breadcrumb — white bar, grey trail, dark current crumb.
-   Shared: the product templates (ITW 65 / Akifix 434 / Baufloor 439) use a
-   [rank_math_breadcrumb] shortcode inside a #breadcrumb cssId section; the
-   category archive (1277) uses a Bricks woocommerce-breadcrumbs element. */
+/* Breadcrumb — blue bar, translucent-white trail, solid-white bold current
+   crumb. Verified against all 3 brand artboards (ITW/Akifix/Baufloor single-
+   product) — every one has `background:var(--wf-blue)` + white text, not a
+   white bar. Shared: the product templates (ITW 65 / Akifix 434 / Baufloor
+   439) run a [rank_math_breadcrumb] shortcode inside a #breadcrumb cssId
+   section; the category archive (1277) wraps a Bricks woocommerce-breadcrumbs
+   element in the same blue-section pattern. */
 #breadcrumb .rank-math-breadcrumb,
 .brxe-woocommerce-breadcrumbs nav {
 	font-size: var(--text-2xs);
-	color: var(--wkf-black);
+	color: var(--wkf-white);
 }
 #breadcrumb .separator,
 .brxe-woocommerce-breadcrumbs .separator {
 	margin: 0 0.5ch;
-	color: var(--wkf-grey-d-1);
+	color: rgba(255, 255, 255, .5);
 }
 #breadcrumb a,
 .brxe-woocommerce-breadcrumbs a {
-	color: var(--wkf-grey-d-1);
+	color: rgba(255, 255, 255, .85);
 }
 #breadcrumb a:hover,
 .brxe-woocommerce-breadcrumbs a:hover {
-	color: var(--wkf-primary);
+	color: var(--wkf-white);
 }
 #breadcrumb .rank-math-breadcrumb .last {
 	font-weight: 600;
-	color: var(--wkf-black);
+	color: var(--wkf-white);
 }
 
 /* SKU / BRAND product-meta: eyebrow label + typed value.
