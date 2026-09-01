@@ -35,16 +35,63 @@ html {
 }
 
 /* ── Product page — WooCommerce-generated markup ── */
-:is(.product_sku, .product_brand) > span {
-	display: flex;
-	gap: 0.625rem;
+
+/* rank_math breadcrumb (#brxe-rcwyho): white bar, grey trail, dark last crumb */
+#brxe-rcwyho .separator {
+	margin: 0 0.5ch;
+	color: var(--wkf-grey-l-2);
 }
-.product_sku span.text {
-	font-family: var(--wkf-font-mono);
+#brxe-rcwyho a:hover {
+	color: var(--wkf-primary);
+}
+#brxe-rcwyho .last {
+	font-weight: 600;
 	color: var(--wkf-black);
 }
-.product_brand span.text {
+
+/* SKU / BRAND product-meta: eyebrow label + typed value.
+   Markup: .product_sku > .item > (.prefix + .text[> .sku | > a]) */
+:is(.product_sku, .product_brand) .item {
+	display: flex;
+	gap: 0.5rem;
+	align-items: baseline;
+}
+:is(.product_sku, .product_brand) .prefix {
+	font-family: var(--wkf-font-body);
+	font-size: var(--text-2xs);
+	font-weight: 600;
+	letter-spacing: var(--wkf-tracking-wide);
+	text-transform: uppercase;
+	color: var(--wkf-grey-d-1);
+}
+.product_sku .text,
+.product_sku .text .sku {
+	font-family: var(--wkf-font-mono);
+	font-size: var(--text-s);
+	font-weight: 500;
+	color: var(--wkf-black);
+}
+.product_brand .text a {
+	font-size: var(--text-s);
+	font-weight: 600;
 	color: var(--wkf-primary);
+}
+
+/* Main product gallery (#brxe-dtfpzi): steel-framed square, primary active thumb */
+#brxe-dtfpzi .woocommerce-product-gallery__image {
+	border: 1px solid var(--wkf-grey-l-2);
+	border-radius: var(--wkf-radius);
+	background: var(--wkf-white);
+}
+#brxe-dtfpzi .flex-control-thumbs {
+	gap: 10px;
+}
+#brxe-dtfpzi .flex-control-thumbs img {
+	border: 1px solid var(--wkf-grey-l-2);
+	border-radius: var(--wkf-radius);
+}
+#brxe-dtfpzi .flex-control-thumbs img.flex-active {
+	border-color: var(--wkf-primary);
 }
 
 .product_promise {
@@ -56,6 +103,8 @@ html {
 }
 .product_promise p {
 	font-style: italic;
+	font-size: var(--text-s);
+	line-height: var(--lh-snug);
 }
 .product_promise p::before {
 	content: '«';
@@ -64,6 +113,8 @@ html {
 	content: '»';
 }
 .product_promise span {
+	font-size: var(--text-2xs);
+	letter-spacing: var(--wkf-tracking-wide);
 	text-transform: uppercase;
 	font-weight: 600;
 	color: var(--wkf-grey-d-1);
@@ -77,7 +128,7 @@ html {
       renders cramped/misplaced, so draw the square with ::before on the flex <li>. */
 .list_square ul,
 ul.list_square {
-	font-size: var(--text-m);
+	font-size: var(--text-s);
 	line-height: var(--lh-relaxed);
 }
 
@@ -252,4 +303,56 @@ table#wkf-table tbody tr:nth-child(odd) {
 	margin: 0;
 	padding: 16px 0 4px;
 	color: var(--wkf-grey-d-1);
+}
+
+/* ── ITW product tabs — Consumabili / Accessori card hover ──
+   Border + radius are typed controls on the loop wrapper; the hover lives
+   here because an element _cssCustom flags Bricks' bricks-lazy-hidden, which
+   never reveals inside an initially-hidden tab panel. */
+#brxe-sdselv,
+#brxe-xaujka {
+	transition: border-color .16s ease-out;
+}
+#brxe-sdselv:hover,
+#brxe-xaujka:hover {
+	border-color: var(--wkf-primary);
+}
+
+/* ── ITW product tabs — Download panel (#brxe-piyvlq) ──
+   ~12 ACF loops of text-link elements; per-element control edits aren't
+   practical, so the row + eyebrow-heading treatment lives here. */
+#brxe-piyvlq h4 {
+	font-size: var(--text-2xs);
+	font-weight: 700;
+	letter-spacing: var(--wkf-tracking-wide);
+	text-transform: uppercase;
+	color: var(--wkf-grey-d-1);
+}
+#brxe-piyvlq .brxe-text-link {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	padding: 12px 0;
+	border-bottom: 1px solid var(--wkf-grey-l-2);
+	font-size: var(--text-s);
+	color: var(--wkf-black);
+	transition: color .16s ease-out;
+}
+#brxe-piyvlq .brxe-text-link:hover {
+	color: var(--wkf-primary);
+}
+#brxe-piyvlq .brxe-text-link svg,
+#brxe-piyvlq .brxe-text-link i {
+	color: var(--wkf-primary);
+}
+
+/* ── Product-card component (cid 2b807c) instances ──
+   Each instance loops inside a flex-column wrapper that is itself a grid
+   item; force the card to the wrapper's full height so the "Vedi scheda"
+   footer (margin-top:auto) bottom-aligns across a row. */
+#brxe-tgodca .brxe-wkfloop,
+#brxe-tgodca .brxe-2b807c,
+#brxe-wkfrelgrid .brxe-wkfrelloop,
+#brxe-wkfrelgrid .brxe-2b807c {
+	height: 100%;
 }

@@ -326,6 +326,97 @@ add_action( 'wp_enqueue_scripts', function() {
 }, 20 );
 
 /**
+ * ITW single-product template (65) — "Prodotti correlati" loop.
+ *
+ * Bricks' query-loop builder has no "related products" object type, so the
+ * loop element `wkfrelloop` carries only a placeholder product query and this
+ * filter swaps in the real id set: WooCommerce related products (shared
+ * category / tags), falling back to other products of the same product_brand
+ * when WC returns none — e.g. a product that is the only one in its category.
+ * The `bricks/element/render` gate below removes the whole section (heading +
+ * "filetto righello" included) when even the fallback is empty.
+ *
+ * IDs are resolved once per request and cached so the render gate and the
+ * loop query agree.
+ */
+function wkf_related_product_ids() {
+	static $cache = null;
+
+	$product_id = (int) get_the_ID();
+
+	if ( is_array( $cache ) && $cache['id'] === $product_id ) {
+		return $cache['ids'];
+	}
+
+	$ids = array();
+
+	if ( $product_id && function_exists( 'wc_get_related_products' ) ) {
+		$ids = wc_get_related_products( $product_id, 4 );
+	}
+
+	if ( $product_id && count( $ids ) < 4 ) {
+		$brands = wp_get_post_terms( $product_id, 'product_brand', array( 'fields' => 'ids' ) );
+
+		if ( ! is_wp_error( $brands ) && $brands ) {
+			$fill = get_posts(
+				array(
+					'post_type'      => 'product',
+					'posts_per_page' => 4 - count( $ids ),
+					'post__not_in'   => array_merge( array( $product_id ), $ids ),
+					'orderby'        => 'date',
+					'order'          => 'DESC',
+					'fields'         => 'ids',
+					'no_found_rows'  => true,
+					'tax_query'      => array(
+						array(
+							'taxonomy' => 'product_brand',
+							'field'    => 'term_id',
+							'terms'    => $brands,
+						),
+					),
+				)
+			);
+
+			$ids = array_merge( $ids, $fill );
+		}
+	}
+
+	$ids   = array_slice( array_values( array_unique( array_map( 'intval', $ids ) ) ), 0, 4 );
+	$cache = array( 'id' => $product_id, 'ids' => $ids );
+
+	return $ids;
+}
+
+add_filter( 'bricks/posts/query_vars', function ( $query_vars, $settings, $element_id ) {
+	if ( 'wkfrelloop' !== $element_id ) {
+		return $query_vars;
+	}
+
+	$ids = wkf_related_product_ids();
+
+	$query_vars['post_type']           = 'product';
+	$query_vars['post__in']            = $ids ? $ids : array( 0 );
+	$query_vars['posts_per_page']      = 4;
+	$query_vars['orderby']             = 'post__in';
+	$query_vars['ignore_sticky_posts'] = true;
+
+	unset( $query_vars['tax_query'], $query_vars['meta_query'], $query_vars['s'] );
+
+	return $query_vars;
+}, 10, 3 );
+
+add_filter( 'bricks/element/render', function ( $render, $element ) {
+	// Bricks passes the element OBJECT here, not the settings array.
+	$element_id = is_object( $element ) ? ( $element->element['id'] ?? '' ) : ( $element['id'] ?? '' );
+
+	if ( 'wkfrelsec' === $element_id ) {
+		return $render && ! empty( wkf_related_product_ids() );
+	}
+
+	return $render;
+}, 10, 2 );
+
+/**
  * Header «Preventivo» quote-list count.
  *
  * woo-rfq-for-woocommerce runs in RFQ-only mode here: the "Lista preventivo"
