@@ -154,12 +154,18 @@ this file only supplies what Bricks controls cannot express. */
 		overflow-y: auto;
 	}
 
-	/* Drill-in arrows and the level header row are mobile-only affordances. */
+	/* Drill-in arrows and the level header row are mobile-only affordances.
+	   The levelhead's own <a> is hidden too, not just its <li>: Bricks'
+	   bricksGetFocusables() filters by an element's OWN display, so a visible
+	   <a> inside a display:none <li> is still picked as "first focusable" in
+	   the open panel — then never becomes focusable (zero-size box), logging
+	   "Element never became focusable" every time a dropdown opens. */
 	#brxe-wkfnav .wkf-go-into-macro,
 	#brxe-wkfnav .wkf-back-to-macro {
 		display: none;
 	}
-	#brxe-wkfnav .wkf-mm-panel > li.wkf-mm-levelhead {
+	#brxe-wkfnav .wkf-mm-panel > li.wkf-mm-levelhead,
+	#brxe-wkfnav .wkf-mm-levelhead__label {
 		display: none;
 	}
 
@@ -176,14 +182,14 @@ this file only supplies what Bricks controls cannot express. */
 			right: 0 !important;
 			width: auto !important;
 			min-width: 0 !important;
-			top: var(--wkf-header-h) !important;
+			top: calc(var(--wkf-header-h) + 1px) !important;
 		}
 	}
 
 	#brxe-wkfnav .wkf-mm-panel {
 		background: var(--wkf-white);
-		box-shadow: 0 8px 24px var(--wkf-black-t-2);
-		padding: 28px 24px 32px;
+		box-shadow: 0 16px 32px var(--wkf-black-t-2);
+		padding: var(--space-xl) var(--space-l) var(--space-l) var(--space-l);
 		border-radius: 0 0 var(--wkf-radius) var(--wkf-radius);
 	}
 
