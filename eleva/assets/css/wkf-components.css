@@ -94,20 +94,54 @@ html {
 	color: var(--wkf-primary);
 }
 
-/* Main product gallery (#brxe-dtfpzi): steel-framed square, primary active thumb */
-#brxe-dtfpzi .woocommerce-product-gallery__image {
+/* Main product gallery: steel frame that hugs the photo, 12px inner gutter,
+   primary active thumb. Shared across the 3 brand product templates — ITW
+   #dtfpzi, Akifix #iwikdl, Baufloor #354c63 — each its own Bricks
+   product-gallery element.
+   hooks.php pins .woocommerce-product-gallery__image to aspect-ratio:1/1 with
+   an absolutely-positioned image (its square-wrapper hack). Product photos
+   here range from near-square (ITW) to ~7:1 planks (Baufloor), so a fixed
+   frame ratio leaves huge empty boxes. The #id selectors below outrank that
+   rule: undo the square, let the slide flow to the photo's own height, and
+   flexslider measures that on init. Frame the slide (border-box keeps its
+   outer height put so nothing clips). */
+#brxe-dtfpzi .woocommerce-product-gallery__image,
+#brxe-iwikdl .woocommerce-product-gallery__image,
+#brxe-354c63 .woocommerce-product-gallery__image {
+	aspect-ratio: auto;
+	box-sizing: border-box;
+	padding: 12px;
 	border: 1px solid var(--wkf-grey-l-2);
 	border-radius: var(--wkf-radius);
 	background: var(--wkf-white);
 }
-#brxe-dtfpzi .flex-control-thumbs {
-	gap: 10px;
+#brxe-dtfpzi .woocommerce-product-gallery__image img.wp-post-image,
+#brxe-iwikdl .woocommerce-product-gallery__image img.wp-post-image,
+#brxe-354c63 .woocommerce-product-gallery__image img.wp-post-image {
+	position: static;
+	inset: auto;
+	width: 100%;
+	height: auto;
 }
-#brxe-dtfpzi .flex-control-thumbs img {
+#brxe-dtfpzi .flex-control-thumbs,
+#brxe-iwikdl .flex-control-thumbs,
+#brxe-354c63 .flex-control-thumbs {
+	gap: 10px;
+	align-items: start;
+	margin-top: 10px;
+}
+#brxe-dtfpzi .flex-control-thumbs img,
+#brxe-iwikdl .flex-control-thumbs img,
+#brxe-354c63 .flex-control-thumbs img {
+	box-sizing: border-box;
+	display: block;
+	height: auto;
 	border: 1px solid var(--wkf-grey-l-2);
 	border-radius: var(--wkf-radius);
 }
-#brxe-dtfpzi .flex-control-thumbs img.flex-active {
+#brxe-dtfpzi .flex-control-thumbs img.flex-active,
+#brxe-iwikdl .flex-control-thumbs img.flex-active,
+#brxe-354c63 .flex-control-thumbs img.flex-active {
 	border-color: var(--wkf-primary);
 }
 
