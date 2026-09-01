@@ -16,21 +16,21 @@ this file only supplies what Bricks controls cannot express. */
 	border-radius: var(--wkf-radius);
 }
 
-/* Bricks sets these <li> to flex-row; stack title over description. */
+/* Bricks sets these <li> to flex-row; stack the (single) link. */
 #brxe-wkfnav .wkf-mm-sector {
 	display: flex;
 	flex-direction: column;
 	align-items: flex-start;
 	gap: var(--space-2xs);
 }
-#brxe-wkfnav .wkf-mm-sector > p { margin: 0; }
 
-/* Brand row: [ icon  name .......... Scopri ] + description beneath. */
+/* Brand row: [ icon | name ] — the "Scopri" link is hidden (name links). */
 #brxe-wkfnav .wkf-mm-brand__row > img {
 	flex: 0 0 auto;
-	width: 40px;
-	height: 40px;
+	width: 44px;
+	height: 44px;
 	object-fit: contain;
+	border-radius: var(--wkf-radius);
 }
 #brxe-wkfnav .wkf-mm-brand__name {
 	flex: 1 1 auto;
@@ -42,11 +42,6 @@ this file only supplies what Bricks controls cannot express. */
 	font-weight: 600;
 	color: var(--wkf-primary);
 	white-space: nowrap;
-}
-#brxe-wkfnav .wkf-mm-brand__desc {
-	margin: 0;
-	font-size: var(--text-s);
-	color: var(--wkf-grey-d-1);
 }
 
 /* The whole trigger row is the button. */
@@ -282,22 +277,24 @@ this file only supplies what Bricks controls cannot express. */
 		font-weight: 600;
 	}
 
-	/* Brand + Settori: compact vertical lists (not the wide grids), each a
-	   floating card with its own border + radius + shadow. */
+	/* Brand + Settori: compact vertical list cards (design: panel('250px') /
+	   panel('290px')) — border + radius + shadow, rows flush to the edges. */
 	#brxe-wkfnav .wkf-mm-panel--brand,
 	#brxe-wkfnav .wkf-mm-panel--settori {
 		display: flex;
 		flex-direction: column;
 		gap: 0;
-		padding: var(--space-2xs) 0;
+		padding: 0;
 		border: 1px solid var(--wkf-grey-l-2);
 		border-radius: var(--wkf-radius);
 		box-shadow: var(--wkf-shadow);
+		overflow: hidden;
 	}
 
 	#brxe-wkfnav .wkf-mm-brand,
 	#brxe-wkfnav .wkf-mm-sector {
-		padding: var(--space-xs) var(--space-m);
+		position: relative;
+		padding: 0;
 		border-bottom: 1px solid var(--wkf-grey-l-2);
 		transition: background .16s ease-out;
 	}
@@ -305,34 +302,55 @@ this file only supplies what Bricks controls cannot express. */
 	#brxe-wkfnav .wkf-mm-sector:last-child {
 		border-bottom: 0;
 	}
-	#brxe-wkfnav .wkf-mm-brand:hover,
-	#brxe-wkfnav .wkf-mm-sector:hover {
-		background: var(--wkf-surface);
-	}
 
-	/* Brand row: [logo | name], description beneath. The name links, so the
-	   separate "Scopri" link is redundant. */
+	/* Brand row — [ logo | name ]; the name's link covers the whole row,
+	   surface + primary on hover (design). */
 	#brxe-wkfnav .wkf-mm-brand__cta { display: none; }
-	#brxe-wkfnav .wkf-mm-brand__name { font-size: var(--text-m); font-weight: 700; }
-	#brxe-wkfnav .wkf-mm-brand__desc {
-		font-size: var(--text-2xs);
-		color: var(--wkf-grey-d-1);
-		line-height: 1.4;
-		margin-top: 2px;
+	#brxe-wkfnav .wkf-mm-brand__row {
+		align-items: center;
+		column-gap: var(--space-m);
+		padding: 11px 16px;
 	}
+	#brxe-wkfnav .wkf-mm-brand__name { font-size: var(--text-m); font-weight: 700; }
+	#brxe-wkfnav .wkf-mm-brand__name a {
+		color: var(--wkf-black);
+		text-decoration: none;
+	}
+	#brxe-wkfnav .wkf-mm-brand__name a::after {
+		content: "";
+		position: absolute;
+		inset: 0;
+	}
+	#brxe-wkfnav .wkf-mm-brand:hover { background: var(--wkf-surface); }
+	#brxe-wkfnav .wkf-mm-brand:hover .wkf-mm-brand__name a { color: var(--wkf-primary); }
 
-	/* Settori row: title + small description. */
+	/* Settori row — a single full-width padded link (design). */
+	#brxe-wkfnav .wkf-mm-sector { align-items: stretch; }
 	#brxe-wkfnav .wkf-mm-sector a {
 		display: block;
+		padding: 12px 16px;
 		font-size: var(--text-s);
 		font-weight: 600;
+		color: var(--wkf-black);
+		transition: background .16s ease-out, color .16s ease-out;
 	}
-	#brxe-wkfnav .wkf-mm-sector a:hover { color: var(--wkf-primary); }
-	#brxe-wkfnav .wkf-mm-sector p {
-		font-size: var(--text-2xs);
-		color: var(--wkf-grey-d-1);
-		line-height: 1.4;
-		margin: 2px 0 0;
+	#brxe-wkfnav .wkf-mm-sector a:hover {
+		background: var(--wkf-surface);
+		color: var(--wkf-primary);
+	}
+
+	/* Bricks moves focus to the first row when a panel opens — keep that
+	   keyboard ring hugging the whole row, not floating around the text. */
+	#brxe-wkfnav .wkf-mm-sector a:focus-visible {
+		outline-offset: -2px;
+	}
+	#brxe-wkfnav .wkf-mm-brand__name a:focus-visible {
+		outline: none;
+	}
+	#brxe-wkfnav .wkf-mm-brand:has(.wkf-mm-brand__name a:focus-visible) {
+		outline: 2px solid var(--wkf-primary);
+		outline-offset: -2px;
+		border-radius: var(--wkf-radius);
 	}
 
 	/* Anchor both panels to their own trigger, opening left-aligned just
@@ -359,8 +377,8 @@ this file only supplies what Bricks controls cannot express. */
 	#brxe-wkfsettul {
 		max-width: min(360px, calc(100vw - 2 * var(--space-l)));
 	}
-	#brxe-wkfbrandul { width: 300px; }
-	#brxe-wkfsettul { width: 320px; }
+	#brxe-wkfbrandul { width: 250px; }
+	#brxe-wkfsettul { width: 290px; }
 
 	/* Down-caret on the row; the element's own icon is hidden to avoid two. */
 	#brxe-wkfnav .wkf-mm-trigger > .brx-submenu-toggle > span::after {
@@ -662,7 +680,6 @@ center section swaps; header and footer never move. */
 	#brxe-wkfnav .wkf-mm-brand + .wkf-mm-brand {
 		border-top: 1px solid var(--wkf-grey-l-2);
 	}
-	#brxe-wkfnav .wkf-mm-brand__desc { font-size: var(--text-m); }
 	#brxe-wkfnav .wkf-mm-brand__cta {
 		font-size: var(--text-m);
 		color: inherit;
