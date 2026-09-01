@@ -326,15 +326,19 @@ add_action( 'wp_enqueue_scripts', function() {
 }, 20 );
 
 /**
- * ITW single-product template (65) — "Prodotti correlati" loop.
+ * Related-products loop for the three brand single-product templates —
+ * ITW (65) "Prodotti correlati", Akifix (434) "Prodotti correlati",
+ * Baufloor (439) "Altri clienti hanno acquistato anche".
  *
- * Bricks' query-loop builder has no "related products" object type, so the
- * loop element `wkfrelloop` carries only a placeholder product query and this
- * filter swaps in the real id set: WooCommerce related products (shared
- * category / tags), falling back to other products of the same product_brand
- * when WC returns none — e.g. a product that is the only one in its category.
- * The `bricks/element/render` gate below removes the whole section (heading +
- * "filetto righello" included) when even the fallback is empty.
+ * Bricks' query-loop builder has no "related products" object type, so each
+ * template's loop element (`wkfrelloop` / `akrelloop` / `bfrelloop`) carries
+ * only a placeholder product query and this filter swaps in the real id set:
+ * WooCommerce related products (shared category / tags), falling back to
+ * other products of the same product_brand when WC returns none — e.g. a
+ * product that is the only one in its category. The `bricks/element/render`
+ * gate below removes the whole section (heading + "filetto righello"
+ * included) — `wkfrelsec` / `akrelsec` / `bfrelsec` — when even the fallback
+ * is empty.
  *
  * IDs are resolved once per request and cached so the render gate and the
  * loop query agree.
@@ -388,7 +392,7 @@ function wkf_related_product_ids() {
 }
 
 add_filter( 'bricks/posts/query_vars', function ( $query_vars, $settings, $element_id ) {
-	if ( 'wkfrelloop' !== $element_id ) {
+	if ( ! in_array( $element_id, array( 'wkfrelloop', 'akrelloop', 'bfrelloop' ), true ) ) {
 		return $query_vars;
 	}
 
@@ -409,7 +413,7 @@ add_filter( 'bricks/element/render', function ( $render, $element ) {
 	// Bricks passes the element OBJECT here, not the settings array.
 	$element_id = is_object( $element ) ? ( $element->element['id'] ?? '' ) : ( $element['id'] ?? '' );
 
-	if ( 'wkfrelsec' === $element_id ) {
+	if ( in_array( $element_id, array( 'wkfrelsec', 'akrelsec', 'bfrelsec' ), true ) ) {
 		return $render && ! empty( wkf_related_product_ids() );
 	}
 
