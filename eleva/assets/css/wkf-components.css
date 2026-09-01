@@ -36,15 +36,29 @@ html {
 
 /* ── Product page — WooCommerce-generated markup ── */
 
-/* rank_math breadcrumb (#brxe-rcwyho): white bar, grey trail, dark last crumb */
-#brxe-rcwyho .separator {
-	margin: 0 0.5ch;
-	color: var(--wkf-grey-l-2);
+/* Breadcrumb — white bar, grey trail, dark current crumb.
+   Shared: the product templates (ITW 65 / Akifix 434 / Baufloor 439) use a
+   [rank_math_breadcrumb] shortcode inside a #breadcrumb cssId section; the
+   category archive (1277) uses a Bricks woocommerce-breadcrumbs element. */
+#breadcrumb .rank-math-breadcrumb,
+.brxe-woocommerce-breadcrumbs nav {
+	font-size: var(--text-2xs);
+	color: var(--wkf-black);
 }
-#brxe-rcwyho a:hover {
+#breadcrumb .separator,
+.brxe-woocommerce-breadcrumbs .separator {
+	margin: 0 0.5ch;
+	color: var(--wkf-grey-d-1);
+}
+#breadcrumb a,
+.brxe-woocommerce-breadcrumbs a {
+	color: var(--wkf-grey-d-1);
+}
+#breadcrumb a:hover,
+.brxe-woocommerce-breadcrumbs a:hover {
 	color: var(--wkf-primary);
 }
-#brxe-rcwyho .last {
+#breadcrumb .rank-math-breadcrumb .last {
 	font-weight: 600;
 	color: var(--wkf-black);
 }
