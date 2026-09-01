@@ -94,23 +94,24 @@ html {
 	color: var(--wkf-primary);
 }
 
-/* Main product gallery: steel frame that hugs the photo, 12px inner gutter,
-   primary active thumb. Shared across the 3 brand product templates — ITW
-   #dtfpzi, Akifix #iwikdl, Baufloor #354c63 — each its own Bricks
-   product-gallery element.
-   hooks.php pins .woocommerce-product-gallery__image to aspect-ratio:1/1 with
-   an absolutely-positioned image (its square-wrapper hack). Product photos
-   here range from near-square (ITW) to ~7:1 planks (Baufloor), so a fixed
-   frame ratio leaves huge empty boxes. The #id selectors below outrank that
-   rule: undo the square, let the slide flow to the photo's own height, and
-   flexslider measures that on init. Frame the slide (border-box keeps its
-   outer height put so nothing clips). */
-#brxe-dtfpzi .woocommerce-product-gallery__image,
-#brxe-iwikdl .woocommerce-product-gallery__image,
-#brxe-354c63 .woocommerce-product-gallery__image {
-	aspect-ratio: auto;
-	box-sizing: border-box;
-	padding: 12px;
+/* Main product gallery: fixed 1/1 steel-framed square, photo object-fit
+   contain, 12px inner gutter, primary active thumb. Shared across the 3
+   brand product templates — ITW #dtfpzi, Akifix #iwikdl, Baufloor #354c63 —
+   each its own Bricks product-gallery element.
+   hooks.php already squares the slide (aspect-ratio:1/1 + absolute image +
+   object-fit:contain). The one thing that breaks it: flexslider writes a
+   JS-measured pixel `height` inline on .flex-viewport and never re-reads it,
+   so the viewport and the square slides disagree and a border on either one
+   clips. Force the viewport square too — `height:auto !important` beats the
+   non-important inline height — then frame the viewport, and re-inset the
+   image to 12px (hooks.php pins it inset:0). The box is now a true square
+   whatever the source photo's ratio. */
+#brxe-dtfpzi .flex-viewport,
+#brxe-iwikdl .flex-viewport,
+#brxe-354c63 .flex-viewport {
+	height: auto !important;
+	aspect-ratio: 1 / 1;
+	overflow: hidden;
 	border: 1px solid var(--wkf-grey-l-2);
 	border-radius: var(--wkf-radius);
 	background: var(--wkf-white);
@@ -118,10 +119,7 @@ html {
 #brxe-dtfpzi .woocommerce-product-gallery__image img.wp-post-image,
 #brxe-iwikdl .woocommerce-product-gallery__image img.wp-post-image,
 #brxe-354c63 .woocommerce-product-gallery__image img.wp-post-image {
-	position: static;
-	inset: auto;
-	width: 100%;
-	height: auto;
+	inset: 12px;
 }
 #brxe-dtfpzi .flex-control-thumbs,
 #brxe-iwikdl .flex-control-thumbs,
