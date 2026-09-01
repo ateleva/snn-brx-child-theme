@@ -62,6 +62,72 @@ this file only supplies what Bricks controls cannot express. */
 	cursor: pointer;
 }
 
+/* The nav's uppercase typography is for the top-level triggers only —
+   dropdown/mega panel content (column titles, sub-items, brand + sector
+   names) is sentence case in the design. */
+#brxe-wkfnav .brx-dropdown-content {
+	text-transform: none;
+}
+
+/* Logo never compresses (Bricks drops _flexShrink on a non-flex element). */
+#brxe-aqqruf {
+	flex-shrink: 0;
+}
+
+/* Account icon button — 38x38 steel square, ink border on hover (design). */
+#brxe-donbzq {
+	transition: border-color .16s ease-out;
+}
+#brxe-donbzq:hover {
+	border-color: var(--wkf-black);
+}
+
+/* «Preventivo» quote-list button. The pill (bg / padding / radius / typography)
+   is styled with Bricks element controls on #brxe-wkfqt / -wkfqtl / -wkfqtc;
+   only what controls can't express lives here, #id-scoped because this file
+   loads before Bricks' own CSS (a bare .wkf-quote class would lose the cascade). */
+#brxe-wkfqt {
+	transition: background-color .16s ease-out;
+}
+#brxe-wkfqt:hover {
+	background-color: var(--wkf-primary-d-1);
+}
+#brxe-wkfqt:focus-within {
+	outline: 2px solid var(--wkf-primary);
+	outline-offset: 2px;
+}
+#brxe-wkfqtl {
+	text-decoration: none;
+}
+#brxe-wkfqtl::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	border-radius: var(--wkf-radius);
+}
+/* Count badge — styled here (not via Bricks controls: font-family can't take a
+   var() there, and the file loads before Bricks CSS so #id scoping is needed). */
+#brxe-wkfqtc {
+	position: relative;
+	z-index: 1;
+	padding: 2px 7px;
+	border-radius: var(--wkf-radius);
+	font-family: var(--wkf-font-mono);
+	font-size: var(--text-2xs);
+	line-height: 1;
+	color: var(--wkf-white);
+	background: var(--wkf-primary-d-1);
+}
+#brxe-wkfqtc > p {
+	margin: 0;
+	font: inherit;
+	color: inherit;
+}
+/* Hidden unless the shortcode emitted a count ([wkf_rfq_count wrap="1"]). */
+#brxe-wkfqtc:not(:has(.wkf-rfq-n)) {
+	display: none;
+}
+
 /* ============ 2. Desktop (>= 1151px) ============ */
 @media (min-width: 1151px) {
 
@@ -115,7 +181,7 @@ this file only supplies what Bricks controls cannot express. */
 	#brxe-wkfnav .wkf-mm-panel {
 		background: var(--wkf-white);
 		box-shadow: 0 8px 24px var(--wkf-black-t-2);
-		padding: var(--space-m);
+		padding: 28px 24px 32px;
 		border-radius: 0 0 var(--wkf-radius) var(--wkf-radius);
 	}
 
@@ -123,6 +189,58 @@ this file only supplies what Bricks controls cannot express. */
 		display: block;
 		font-size: var(--text-s);
 		padding: var(--space-2xs) 0;
+	}
+
+	/* Nav sits centered in the row's free space (design: flex:1, gap:4px). */
+	#brxe-wkfnav {
+		flex: 1 1 auto;
+	}
+	#brxe-wkfnav .brx-nav-nested-items {
+		justify-content: center;
+		gap: var(--space-2xs);
+	}
+
+	/* Trigger rows: pill padding + surface/primary on hover & open. */
+	#brxe-wkfnav .brx-nav-nested-items > li > .brxe-text-link,
+	#brxe-wkfnav .wkf-mm-trigger > .brx-submenu-toggle > span {
+		display: inline-flex;
+		align-items: center;
+		padding: 9px 13px;
+		border-radius: var(--wkf-radius);
+		transition: background .16s ease-out, color .16s ease-out;
+	}
+	#brxe-wkfnav .brx-nav-nested-items > li > .brxe-text-link:hover,
+	#brxe-wkfnav .wkf-mm-trigger:hover > .brx-submenu-toggle > span,
+	#brxe-wkfnav .wkf-mm-trigger.open > .brx-submenu-toggle > span {
+		background: var(--wkf-surface);
+		color: var(--wkf-primary);
+	}
+
+	/* Mega column title: Archivo 700 ~13px with a 2px primary underline. */
+	#brxe-wkfnav .wkf-mm-coltop .brxe-heading {
+		flex: 1 1 auto;
+		font-size: var(--text-s);
+		font-weight: 700;
+		color: var(--wkf-black);
+		line-height: 1.3;
+		border-bottom: 2px solid var(--wkf-primary);
+		padding-bottom: 7px;
+		transition: color .16s ease-out;
+	}
+	#brxe-wkfnav .wkf-mm-coltop .brxe-heading:hover {
+		color: var(--wkf-primary);
+	}
+
+	/* Mega sub-items: quiet grey, primary on hover (overrides element typo). */
+	#brxe-wkfnav .wkf-mm-sublist .brxe-heading {
+		font-size: var(--text-s);
+		font-weight: 400;
+		color: var(--wkf-grey-d-1);
+		line-height: 1.35;
+		transition: color .16s ease-out;
+	}
+	#brxe-wkfnav .wkf-mm-sublist a:hover .brxe-heading {
+		color: var(--wkf-primary);
 	}
 
 	#brxe-wkfnav .wkf-mm-cta {
@@ -285,6 +403,9 @@ this file only supplies what Bricks controls cannot express. */
 	#brxe-wkfnav .brx-nav-nested-items > li > .brxe-text-link {
 		display: flex;
 		align-items: center;
+		justify-content: center;
+		text-align: center;
+		width: 100%;
 		min-height: 48px;
 		padding: var(--space-xs) var(--space-m);
 		font-size: var(--text-l);
@@ -526,13 +647,19 @@ center section swaps; header and footer never move. */
 
 /* ============ 5. Site header (<= 1150px) ============ */
 @media (max-width: 1150px) {
-	/* logo | hamburger | account | cart */
-	#brxe-nebryp { display: flex; align-items: center; gap: var(--space-s); }
-	#brxe-aqqruf { order: 1; margin-right: auto; }
-	#brxe-wkfnav { order: 2; }
-	/* The flex child is the link wrapper, not the icon it wraps. */
-	#brxe-nebryp > a:has(> #brxe-donbzq) { order: 3; }
-	#brxe-gfhkoa { order: 4; }
-	/* Hidden only while still in the header; JS moves it into the open panel. */
-	#brxe-nebryp > #brxe-gjvbmv { display: none; }
+	/* burger | logo (centered) | Preventivo — design mobile header bar. */
+	#brxe-nebryp {
+		display: flex;
+		align-items: center;
+		gap: var(--space-s);
+		height: 56px;
+		padding-inline: 14px;
+	}
+	#brxe-wkfnav { order: 1; }
+	#brxe-aqqruf { order: 2; margin: 0 auto; }
+	#brxe-wkfqt { order: 3; flex: 0 0 auto; }
+	/* Search + account live only in the open drawer on mobile; JS moves the
+	   real elements there and back. The flex child is the link wrapper. */
+	#brxe-nebryp > #brxe-gjvbmv,
+	#brxe-nebryp > a:has(> #brxe-donbzq) { display: none; }
 }

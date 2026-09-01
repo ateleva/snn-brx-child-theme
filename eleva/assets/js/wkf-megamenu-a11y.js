@@ -55,7 +55,6 @@
 	var BORROWED = [
 		{ id: 'brxe-aqqruf', slot: '.wkf-mm-mobile-head', order: 1 },  /* logo    */
 		{ id: 'brxe-donbzq', slot: '.wkf-mm-mobile-head', order: 2 },  /* account */
-		{ id: 'brxe-gfhkoa', slot: '.wkf-mm-mobile-head', order: 3 },  /* cart    */
 		{ id: 'brxe-gjvbmv', slot: '.wkf-mm-mobile-search', order: 1 } /* search  */
 	];
 

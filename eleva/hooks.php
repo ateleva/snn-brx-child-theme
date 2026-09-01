@@ -326,6 +326,47 @@ add_action( 'wp_enqueue_scripts', function() {
 }, 20 );
 
 /**
+ * Header «Preventivo» quote-list count.
+ *
+ * woo-rfq-for-woocommerce runs in RFQ-only mode here: the "Lista preventivo"
+ * IS the WooCommerce cart (prices hidden), so the count is WC()->cart's item
+ * count. The plugin ships no live fragment, but every add-to-list reloads the
+ * page, so a server-rendered count is always current.
+ *
+ *   [wkf_rfq_count]           -> "" when empty, else zero-padded ("03").
+ *                               Reused by the Phase 5 modal header.
+ *   [wkf_rfq_count wrap="1"]  -> the header badge form: same value wrapped in
+ *                               <span class="wkf-rfq-n"> when non-empty, and
+ *                               nothing at all when empty — so the badge can
+ *                               hide itself with :not(:has(.wkf-rfq-n)).
+ */
+function wkf_rfq_count_value() {
+	$count = 0;
+
+	if ( function_exists( 'WC' ) && WC()->cart ) {
+		$count = (int) WC()->cart->get_cart_contents_count();
+	} elseif ( function_exists( 'gpls_woo_rfq_get_rfq_cart_quantity' ) ) {
+		$count = (int) gpls_woo_rfq_get_rfq_cart_quantity();
+	}
+
+	return $count > 0 ? str_pad( (string) $count, 2, '0', STR_PAD_LEFT ) : '';
+}
+
+add_shortcode( 'wkf_rfq_count', function ( $atts ) {
+	$value = wkf_rfq_count_value();
+
+	if ( '' === $value ) {
+		return '';
+	}
+
+	$atts = shortcode_atts( array( 'wrap' => '' ), $atts, 'wkf_rfq_count' );
+
+	return $atts['wrap']
+		? '<span class="wkf-rfq-n">' . esc_html( $value ) . '</span>'
+		: esc_html( $value );
+} );
+
+/**
  * Main navigation (mega menu) assets.
  */
 add_action(
