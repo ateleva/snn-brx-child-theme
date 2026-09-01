@@ -1,0 +1,111 @@
+/* WKF components — CSS the Bricks control layer can't express.
+   Design tokens live in the Bricks Color Palette + Variables Manager
+   (categories: WKF Tokens / WKF Tracking / WKF Text / WKF Headings /
+   WKF Spacing / WKF Radius / WKF Line Heights). This file is only for
+   rules that target WooCommerce / plugin / core markup Bricks doesn't
+   own: pseudo-elements, ::marker, generated wrappers, the ruler gradient. */
+
+/* Every Bricks heading element renders in the display face + tight tracking,
+   whatever its HTML tag (many are <span>/<div>). Eyebrows opt out via the
+   wkf-eyebrow global class. Real h1–h6 also get family/tracking from the
+   theme style; the values match, so the later cascade here is harmless. */
+.brxe-heading:not(.wkf-eyebrow) {
+	font-family: var(--wkf-font-display);
+	letter-spacing: var(--wkf-tracking-tight);
+}
+
+/* "Filetto righello" — the design's signature section divider. */
+.wkf-righello {
+	margin: 2rem 0 0 0;
+	border-top: 1px solid var(--wkf-grey-l-2);
+	height: 8px;
+	background-image:
+		repeating-linear-gradient(90deg, var(--wkf-grey-l-2) 0 1px, transparent 1px 40px),
+		repeating-linear-gradient(90deg, var(--wkf-grey-l-2) 0 1px, transparent 1px 8px);
+	background-size: 100% 8px, 100% 4px;
+	background-repeat: no-repeat;
+}
+
+/* ── Product page — WooCommerce-generated markup ── */
+:is(.product_sku, .product_brand) > span {
+	display: flex;
+	gap: 1rem;
+}
+.product_sku span.text {
+	font-family: var(--wkf-font-mono);
+	color: var(--wkf-black);
+}
+.product_brand span.text {
+	font-family: var(--wkf-font-mono);
+	color: var(--wkf-primary);
+}
+
+.product_promise {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-xs);
+	border-left: 2px solid var(--wkf-primary);
+	padding: 4px 0 4px 16px;
+}
+.product_promise p {
+	font-style: italic;
+}
+.product_promise p::before {
+	content: '«';
+}
+.product_promise p::after {
+	content: '»';
+}
+.product_promise span {
+	text-transform: uppercase;
+	font-weight: 600;
+	color: var(--wkf-grey-d-1);
+}
+
+:is(ul.list_square, .list_square ul) {
+	padding-left: 1.6rem;
+	list-style-type: square;
+	font-size: var(--text-m);
+	line-height: var(--lh-l);
+}
+:is(ul.list_square, .list_square ul) li::marker,
+:is(ul.list_square, .list_square ul) li span::marker {
+	font-size: var(--text-l);
+	color: var(--wkf-primary);
+}
+
+.single-product form.cart {
+	display: flex;
+	flex-wrap: wrap;
+	align-content: flex-start;
+	gap: 1rem;
+}
+form.cart .quantity,
+form.woocommerce-cart-form .quantity {
+	min-width: 20ch !important;
+	width: 20ch !important;
+	display: inline-flex;
+	color: var(--wkf-black);
+	height: 40px;
+}
+form.cart .quantity + button,
+form.woocommerce-cart-form .quantity + button {
+	margin-top: -2px;
+}
+
+/* ── Variations table — folded in from Bricks Settings → Custom Code ── */
+body.single.single-product table.variations > tbody > tr {
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-start;
+	gap: 0.75rem;
+	align-items: flex-start;
+	padding: 0.25rem 0;
+}
+table#wkf-table {
+	table-layout: fixed;
+	border-collapse: collapse;
+}
+table#wkf-table tbody tr:nth-child(odd) {
+	background-color: var(--wkf-surface);
+}

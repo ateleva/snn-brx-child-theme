@@ -335,16 +335,16 @@ add_action(
 		$path = get_stylesheet_directory() . '/eleva/assets';
 
 		wp_enqueue_style(
-			'wkf-tokens',
-			"$base/css/wkf-tokens.css",
+			'wkf-components',
+			"$base/css/wkf-components.css",
 			[],
-			file_exists( "$path/css/wkf-tokens.css" ) ? filemtime( "$path/css/wkf-tokens.css" ) : '1.0.0'
+			file_exists( "$path/css/wkf-components.css" ) ? filemtime( "$path/css/wkf-components.css" ) : '1.0.0'
 		);
 
 		wp_enqueue_style(
 			'wkf-megamenu',
 			"$base/css/wkf-megamenu.css",
-			[ 'wkf-tokens' ],
+			[ 'wkf-components' ],
 			file_exists( "$path/css/wkf-megamenu.css" ) ? filemtime( "$path/css/wkf-megamenu.css" ) : '1.0.0'
 		);
 
