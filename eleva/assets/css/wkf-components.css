@@ -99,17 +99,22 @@ html {
    product templates — ITW #dtfpzi, Akifix #iwikdl, Baufloor #354c63 — each
    its own Bricks product-gallery element.
    flexslider writes a stale JS-measured pixel `height` inline on
-   .flex-viewport and never re-reads it, so the viewport and the square
-   slides disagree and a border on either clips. Force the viewport square
-   too — `height:auto !important` beats the non-important inline height — and
-   frame it there.
-   The slide box (.woocommerce-product-gallery__image) becomes a flex centre:
-   the #id rules outrank hooks.php's square-wrapper hack (position:absolute
-   image on the slide), so the photo drops back to a static, contained child
-   that align/justify-center place dead-centre whatever its own ratio. */
-#brxe-dtfpzi .flex-viewport,
-#brxe-iwikdl .flex-viewport,
-#brxe-354c63 .flex-viewport {
+   .flex-viewport and never re-reads it, so viewport and square slides
+   disagree and a border on either clips. Force the viewport square too
+   (`height:auto !important` beats the non-important inline height) and frame
+   it. The slide box (.woocommerce-product-gallery__image) becomes a flex
+   centre; the image drops hooks.php's absolute square-wrapper hack and sits
+   as a static, contained child that align/justify-center place dead-centre.
+   ── SCOPING: with thumbnailSlider on (ITW/Akifix), Bricks renders a SECOND
+   .flex-viewport + a second batch of .woocommerce-product-gallery__image
+   inside .brx-product-gallery-thumbnail-slider. So the main-image rules must
+   only reach the MAIN slider: `> .woocommerce-product-gallery > .flex-viewport`
+   and `.woocommerce-product-gallery__wrapper > .woocommerce-product-gallery__image`
+   (thumbs use .brx-thumbnail-slider-wrapper >). Otherwise the aspect-ratio:1/1
+   + border landed on the 72px thumb strip's inner viewport → clipped. */
+#brxe-dtfpzi > .woocommerce-product-gallery > .flex-viewport,
+#brxe-iwikdl > .woocommerce-product-gallery > .flex-viewport,
+#brxe-354c63 > .woocommerce-product-gallery > .flex-viewport {
 	height: auto !important;
 	aspect-ratio: 1 / 1;
 	overflow: hidden;
@@ -117,9 +122,9 @@ html {
 	border-radius: var(--wkf-radius);
 	background: var(--wkf-white);
 }
-#brxe-dtfpzi .woocommerce-product-gallery__image,
-#brxe-iwikdl .woocommerce-product-gallery__image,
-#brxe-354c63 .woocommerce-product-gallery__image {
+#brxe-dtfpzi .woocommerce-product-gallery__wrapper > .woocommerce-product-gallery__image,
+#brxe-iwikdl .woocommerce-product-gallery__wrapper > .woocommerce-product-gallery__image,
+#brxe-354c63 .woocommerce-product-gallery__wrapper > .woocommerce-product-gallery__image {
 	/* !important beats the display flexslider writes inline per-slide */
 	display: flex !important;
 	align-items: center;
@@ -127,9 +132,9 @@ html {
 	box-sizing: border-box;
 	padding: 12px;
 }
-#brxe-dtfpzi .woocommerce-product-gallery__image img.wp-post-image,
-#brxe-iwikdl .woocommerce-product-gallery__image img.wp-post-image,
-#brxe-354c63 .woocommerce-product-gallery__image img.wp-post-image {
+#brxe-dtfpzi .woocommerce-product-gallery__wrapper > .woocommerce-product-gallery__image img.wp-post-image,
+#brxe-iwikdl .woocommerce-product-gallery__wrapper > .woocommerce-product-gallery__image img.wp-post-image,
+#brxe-354c63 .woocommerce-product-gallery__wrapper > .woocommerce-product-gallery__image img.wp-post-image {
 	position: static;
 	inset: auto;
 	width: auto;
@@ -138,15 +143,43 @@ html {
 	max-height: 100%;
 	object-fit: contain;
 }
-#brxe-dtfpzi .flex-control-thumbs,
-#brxe-iwikdl .flex-control-thumbs,
+
+/* Thumbnails — Bricks thumbnailSlider (ITW / Akifix). Bricks caps the strip
+   at thumbnailWrapperMaxHeight (72px) but lays the thumbs out at
+   stripWidth / maxItems (88px on ITW, 143px on Akifix with only 4 images) —
+   wider than the cap, so the bottom border was clipped by overflow:hidden.
+   Pin each thumb to a real 72px square (border-box, object-fit:cover),
+   left-aligned in whatever cell width flexslider gives it, and let the strip
+   height follow. */
+#brxe-dtfpzi .brx-product-gallery-thumbnail-slider,
+#brxe-iwikdl .brx-product-gallery-thumbnail-slider,
+#brxe-dtfpzi .brx-product-gallery-thumbnail-slider > .flex-viewport,
+#brxe-iwikdl .brx-product-gallery-thumbnail-slider > .flex-viewport {
+	height: auto !important;
+	max-height: none !important;
+}
+#brxe-dtfpzi .brx-thumbnail-slider-wrapper .woocommerce-product-gallery__image img,
+#brxe-iwikdl .brx-thumbnail-slider-wrapper .woocommerce-product-gallery__image img {
+	box-sizing: border-box;
+	display: block;
+	width: 100%;
+	max-width: 72px;
+	aspect-ratio: 1 / 1;
+	object-fit: cover;
+	border: 1px solid var(--wkf-grey-l-2);
+	border-radius: var(--wkf-radius);
+}
+#brxe-dtfpzi .brx-thumbnail-slider-wrapper .flex-active-slide img,
+#brxe-iwikdl .brx-thumbnail-slider-wrapper .flex-active-slide img {
+	border-color: var(--wkf-primary);
+}
+
+/* Thumbnails — plain flexslider nav (Baufloor, no thumbnailSlider): <ol><li><img> */
 #brxe-354c63 .flex-control-thumbs {
 	gap: 10px;
 	align-items: start;
 	margin-top: 10px;
 }
-#brxe-dtfpzi .flex-control-thumbs img,
-#brxe-iwikdl .flex-control-thumbs img,
 #brxe-354c63 .flex-control-thumbs img {
 	box-sizing: border-box;
 	display: block;
@@ -154,8 +187,6 @@ html {
 	border: 1px solid var(--wkf-grey-l-2);
 	border-radius: var(--wkf-radius);
 }
-#brxe-dtfpzi .flex-control-thumbs img.flex-active,
-#brxe-iwikdl .flex-control-thumbs img.flex-active,
 #brxe-354c63 .flex-control-thumbs img.flex-active {
 	border-color: var(--wkf-primary);
 }
