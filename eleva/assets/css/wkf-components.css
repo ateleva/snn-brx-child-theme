@@ -94,18 +94,19 @@ html {
 	color: var(--wkf-primary);
 }
 
-/* Main product gallery: fixed 1/1 steel-framed square, photo object-fit
-   contain, 12px inner gutter, primary active thumb. Shared across the 3
-   brand product templates — ITW #dtfpzi, Akifix #iwikdl, Baufloor #354c63 —
-   each its own Bricks product-gallery element.
-   hooks.php already squares the slide (aspect-ratio:1/1 + absolute image +
-   object-fit:contain). The one thing that breaks it: flexslider writes a
-   JS-measured pixel `height` inline on .flex-viewport and never re-reads it,
-   so the viewport and the square slides disagree and a border on either one
-   clips. Force the viewport square too — `height:auto !important` beats the
-   non-important inline height — then frame the viewport, and re-inset the
-   image to 12px (hooks.php pins it inset:0). The box is now a true square
-   whatever the source photo's ratio. */
+/* Main product gallery: fixed 1/1 steel-framed square, photo centred both
+   axes inside a 12px gutter, primary active thumb. Shared across the 3 brand
+   product templates — ITW #dtfpzi, Akifix #iwikdl, Baufloor #354c63 — each
+   its own Bricks product-gallery element.
+   flexslider writes a stale JS-measured pixel `height` inline on
+   .flex-viewport and never re-reads it, so the viewport and the square
+   slides disagree and a border on either clips. Force the viewport square
+   too — `height:auto !important` beats the non-important inline height — and
+   frame it there.
+   The slide box (.woocommerce-product-gallery__image) becomes a flex centre:
+   the #id rules outrank hooks.php's square-wrapper hack (position:absolute
+   image on the slide), so the photo drops back to a static, contained child
+   that align/justify-center place dead-centre whatever its own ratio. */
 #brxe-dtfpzi .flex-viewport,
 #brxe-iwikdl .flex-viewport,
 #brxe-354c63 .flex-viewport {
@@ -116,10 +117,26 @@ html {
 	border-radius: var(--wkf-radius);
 	background: var(--wkf-white);
 }
+#brxe-dtfpzi .woocommerce-product-gallery__image,
+#brxe-iwikdl .woocommerce-product-gallery__image,
+#brxe-354c63 .woocommerce-product-gallery__image {
+	/* !important beats the display flexslider writes inline per-slide */
+	display: flex !important;
+	align-items: center;
+	justify-content: center;
+	box-sizing: border-box;
+	padding: 12px;
+}
 #brxe-dtfpzi .woocommerce-product-gallery__image img.wp-post-image,
 #brxe-iwikdl .woocommerce-product-gallery__image img.wp-post-image,
 #brxe-354c63 .woocommerce-product-gallery__image img.wp-post-image {
-	inset: 12px;
+	position: static;
+	inset: auto;
+	width: auto;
+	height: auto;
+	max-width: 100%;
+	max-height: 100%;
+	object-fit: contain;
 }
 #brxe-dtfpzi .flex-control-thumbs,
 #brxe-iwikdl .flex-control-thumbs,
