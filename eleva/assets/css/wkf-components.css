@@ -5,6 +5,13 @@
    rules that target WooCommerce / plugin / core markup Bricks doesn't
    own: pseudo-elements, ::marker, generated wrappers, the ruler gradient. */
 
+/* Bricks core ships html{font-size:62.5%} (10px). We run a 16px root so
+   1rem = 16px; every Bricks fluid/radius variable was divided by 1.6 to
+   keep rendered pixels unchanged. */
+html {
+	font-size: 100%;
+}
+
 /* Every Bricks heading element renders in the display face + tight tracking,
    whatever its HTML tag (many are <span>/<div>). Eyebrows opt out via the
    wkf-eyebrow global class. Real h1–h6 also get family/tracking from the
@@ -29,7 +36,7 @@
 /* ── Product page — WooCommerce-generated markup ── */
 :is(.product_sku, .product_brand) > span {
 	display: flex;
-	gap: 1rem;
+	gap: 0.625rem;
 }
 .product_sku span.text {
 	font-family: var(--wkf-font-mono);
@@ -63,7 +70,7 @@
 }
 
 :is(ul.list_square, .list_square ul) {
-	padding-left: 1.6rem;
+	padding-left: 1rem;
 	list-style-type: square;
 	font-size: var(--text-m);
 	line-height: var(--lh-l);
@@ -78,7 +85,7 @@
 	display: flex;
 	flex-wrap: wrap;
 	align-content: flex-start;
-	gap: 1rem;
+	gap: 0.625rem;
 }
 form.cart .quantity,
 form.woocommerce-cart-form .quantity {
@@ -98,9 +105,9 @@ body.single.single-product table.variations > tbody > tr {
 	display: flex;
 	flex-direction: column;
 	justify-content: flex-start;
-	gap: 0.75rem;
+	gap: 0.46875rem;
 	align-items: flex-start;
-	padding: 0.25rem 0;
+	padding: 0.15625rem 0;
 }
 table#wkf-table {
 	table-layout: fixed;

@@ -2,7 +2,7 @@
 this file only supplies what Bricks controls cannot express. */
 
 :root {
-	--wkf-header-h: 4.25rem;
+	--wkf-header-h: 2.65625rem;
 }
 
 /* ============ 1. Shared ============ */
@@ -262,7 +262,7 @@ this file only supplies what Bricks controls cannot express. */
 	#brxe-wkfnav .wkf-mm-mobile-search > button.brxe-toggle {
 		flex: 0 0 auto;
 		order: 2;
-		margin-inline: 1rem;
+		margin-inline: 0.625rem;
 	}
 
 	#brxe-wkfnav .brx-nav-nested-items > li:not(.wkf-mm-mobile-head):not(.wkf-mm-mobile-search):not(.wkf-mm-mobile-foot) {
