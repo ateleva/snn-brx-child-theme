@@ -150,3 +150,106 @@ table#wkf-table {
 table#wkf-table tbody tr:nth-child(odd) {
 	background-color: var(--wkf-surface);
 }
+
+/* ── Quote-list modal (Phase 5) ──
+   .wkf-rfq is the popup panel (template 1412). Its body renders the
+   WooCommerce mini-cart ([wkf_mini_cart]); RFQ-only mode already suppresses
+   prices, this shapes the rows into the design's [ thumb | name + SKU | qty ]
+   and overrides wkf-calculator.css's stacked `.mini_cart_item` layout. */
+
+/* The popupContent* / popupPadding template settings don't compile for
+   MCP-created popups, so pin the panel size / shape / centring / viewport
+   gutter here. .brx-popup already centres its content. */
+.brxe-popup-1412 {
+	padding: 24px;
+}
+.brxe-popup-1412 .brx-popup-content {
+	width: 100%;
+	max-width: 540px;
+	padding: 0;
+	align-items: stretch;
+	overflow: hidden;
+	border-radius: var(--wkf-radius);
+	box-shadow: var(--wkf-shadow);
+}
+.wkf-rfq {
+	width: 100%;
+}
+.wkf-rfq__count p {
+	margin: 0;
+}
+.wkf-rfq__cta:hover {
+	background: var(--wkf-primary-d-1);
+}
+
+.wkf-rfq .widget_shopping_cart_content {
+	font-size: var(--text-s);
+}
+.wkf-rfq .woocommerce-mini-cart {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	max-height: 46vh;
+	overflow: hidden auto;
+}
+.wkf-rfq .woocommerce-mini-cart-item {
+	position: relative;
+	display: flex;
+	flex-wrap: nowrap;
+	align-items: center;
+	gap: 14px;
+	padding: 12px 8px;
+	margin: 0 -8px;
+	border-bottom: 1px solid var(--wkf-grey-l-2);
+	transition: background .16s ease-out;
+}
+.wkf-rfq .woocommerce-mini-cart-item:hover {
+	background: var(--wkf-surface);
+}
+.wkf-rfq .woocommerce-mini-cart-item > a:not(.remove) {
+	display: flex;
+	align-items: center;
+	gap: 14px;
+	flex: 1 1 auto;
+	width: auto;
+	min-width: 0;
+	text-decoration: none;
+	color: var(--wkf-black);
+	font-weight: 600;
+	line-height: 1.3;
+}
+.wkf-rfq .woocommerce-mini-cart-item img {
+	flex: 0 0 auto;
+	width: 42px;
+	height: 42px;
+	margin: 0;
+	object-fit: contain;
+	border-radius: var(--wkf-radius);
+}
+.wkf-rfq .wkf-rfq-sku {
+	display: block;
+	margin-top: 1px;
+	font-family: var(--wkf-font-mono);
+	font-size: 11.5px;
+	font-weight: 400;
+	color: var(--wkf-grey-d-1);
+}
+.wkf-rfq .woocommerce-mini-cart-item .quantity {
+	flex: 0 0 auto;
+	width: auto;
+	font-family: var(--wkf-font-mono);
+	font-size: 13px;
+	font-weight: 600;
+	white-space: nowrap;
+	color: var(--wkf-black);
+}
+.wkf-rfq .woocommerce-mini-cart-item .remove,
+.wkf-rfq .woocommerce-mini-cart__total,
+.wkf-rfq .woocommerce-mini-cart__buttons {
+	display: none;
+}
+.wkf-rfq .woocommerce-mini-cart__empty-message {
+	margin: 0;
+	padding: 16px 0 4px;
+	color: var(--wkf-grey-d-1);
+}

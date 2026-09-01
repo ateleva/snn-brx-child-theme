@@ -334,37 +334,92 @@ add_action( 'wp_enqueue_scripts', function() {
  * page, so a server-rendered count is always current.
  *
  *   [wkf_rfq_count]           -> "" when empty, else zero-padded ("03").
- *                               Reused by the Phase 5 modal header.
  *   [wkf_rfq_count wrap="1"]  -> the header badge form: same value wrapped in
  *                               <span class="wkf-rfq-n"> when non-empty, and
  *                               nothing at all when empty — so the badge can
  *                               hide itself with :not(:has(.wkf-rfq-n)).
+ *   [wkf_rfq_count plain="1"] -> the raw integer ("0" included). Phase 5 modal
+ *                               header ("N articoli").
  */
-function wkf_rfq_count_value() {
-	$count = 0;
-
+function wkf_rfq_cart_count() {
 	if ( function_exists( 'WC' ) && WC()->cart ) {
-		$count = (int) WC()->cart->get_cart_contents_count();
-	} elseif ( function_exists( 'gpls_woo_rfq_get_rfq_cart_quantity' ) ) {
-		$count = (int) gpls_woo_rfq_get_rfq_cart_quantity();
+		return (int) WC()->cart->get_cart_contents_count();
 	}
+	if ( function_exists( 'gpls_woo_rfq_get_rfq_cart_quantity' ) ) {
+		return (int) gpls_woo_rfq_get_rfq_cart_quantity();
+	}
+
+	return 0;
+}
+
+function wkf_rfq_count_value() {
+	$count = wkf_rfq_cart_count();
 
 	return $count > 0 ? str_pad( (string) $count, 2, '0', STR_PAD_LEFT ) : '';
 }
 
 add_shortcode( 'wkf_rfq_count', function ( $atts ) {
+	$atts = shortcode_atts( array( 'wrap' => '', 'plain' => '' ), $atts, 'wkf_rfq_count' );
+
+	if ( $atts['plain'] ) {
+		return (string) wkf_rfq_cart_count();
+	}
+
 	$value = wkf_rfq_count_value();
 
 	if ( '' === $value ) {
 		return '';
 	}
 
-	$atts = shortcode_atts( array( 'wrap' => '' ), $atts, 'wkf_rfq_count' );
-
 	return $atts['wrap']
 		? '<span class="wkf-rfq-n">' . esc_html( $value ) . '</span>'
 		: esc_html( $value );
 } );
+
+/**
+ * Phase 5 quote-cart modal — the modal body renders [wkf_mini_cart] (there is
+ * no core [woocommerce_mini_cart] shortcode; the mini-cart is a template
+ * function). RFQ-only mode: the cart IS the quote list, prices already
+ * suppressed by the plugin. Two mini-cart-only tweaks to match the design row
+ * [ thumb | name + SKU | qty ]:
+ *   - append the product SKU under the name
+ *   - reduce the quantity cell to the bare number (no "× price")
+ * Scoped with a flag so the full cart / checkout are untouched.
+ */
+add_shortcode( 'wkf_mini_cart', function () {
+	if ( ! function_exists( 'woocommerce_mini_cart' ) ) {
+		return '';
+	}
+
+	ob_start();
+	echo '<div class="widget_shopping_cart_content">';
+	woocommerce_mini_cart();
+	echo '</div>';
+
+	return ob_get_clean();
+} );
+
+add_action( 'woocommerce_before_mini_cart', function () { $GLOBALS['wkf_in_mini_cart'] = true; } );
+add_action( 'woocommerce_after_mini_cart', function () { unset( $GLOBALS['wkf_in_mini_cart'] ); } );
+
+add_filter( 'woocommerce_cart_item_name', function ( $name, $cart_item ) {
+	if ( empty( $GLOBALS['wkf_in_mini_cart'] ) ) {
+		return $name;
+	}
+
+	$product = $cart_item['data'] ?? null;
+	$sku     = ( $product instanceof WC_Product ) ? $product->get_sku() : '';
+
+	return $sku ? $name . '<span class="wkf-rfq-sku">' . esc_html( $sku ) . '</span>' : $name;
+}, 10, 2 );
+
+add_filter( 'woocommerce_widget_cart_item_quantity', function ( $html, $cart_item ) {
+	if ( empty( $GLOBALS['wkf_in_mini_cart'] ) ) {
+		return $html;
+	}
+
+	return '<span class="quantity">' . intval( $cart_item['quantity'] ) . '</span>';
+}, 200, 2 );
 
 /**
  * Main navigation (mega menu) assets.
