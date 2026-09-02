@@ -125,11 +125,21 @@ html {
 #brxe-dtfpzi .woocommerce-product-gallery__wrapper > .woocommerce-product-gallery__image,
 #brxe-iwikdl .woocommerce-product-gallery__wrapper > .woocommerce-product-gallery__image,
 #brxe-354c63 .woocommerce-product-gallery__wrapper > .woocommerce-product-gallery__image {
-	/* !important beats the display flexslider writes inline per-slide */
+	/* !important beats the display flexslider writes inline per-slide.
+	   box-sizing must be content-box: flexslider's doMath() computes each
+	   slide's inline `width` as viewport.width() MINUS this element's own
+	   padding+border ("boxPadding"), then sets that as the raw CSS width
+	   expecting the box model to add the padding back on top. border-box
+	   breaks that assumption — the slide renders `padding` narrower than the
+	   viewport, and since slides float left with no gap, that gap is the next
+	   slide peeking through on the right edge (photo reads left-shifted/
+	   off-centre). The theme resets `*{box-sizing:border-box}` sitewide, so
+	   content-box has to be forced back explicitly — omitting the property
+	   here still inherits border-box from that reset. */
 	display: flex !important;
 	align-items: center;
 	justify-content: center;
-	box-sizing: border-box;
+	box-sizing: content-box;
 	padding: 12px;
 }
 #brxe-dtfpzi .woocommerce-product-gallery__wrapper > .woocommerce-product-gallery__image img.wp-post-image,
