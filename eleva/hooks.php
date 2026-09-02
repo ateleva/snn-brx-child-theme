@@ -256,8 +256,8 @@ add_filter( 'bricks/render_query_loop_trail', function( $render, $element_instan
 }, 10, 2 );
 
 /**
- * Restrict "product category" Bricks query loops on brand archive pages to
- * only the categories that actually contain a product of that brand.
+ * Restrict the brand landing pages' own "Categorie" tile grid to only the
+ * categories that actually contain a product of that brand.
  *
  * Bricks' term query builder (bricks/includes/query.php, case 'term') only
  * supports the term's own tax_query/parent/child_of — there is no builder
@@ -267,11 +267,18 @@ add_filter( 'bricks/render_query_loop_trail', function( $render, $element_instan
  * for adding query vars it doesn't have UI for:
  * @see https://academy.bricksbuilder.io/article/filter-bricks-terms-query_vars/
  *
- * Scoped to product_cat term queries on a product_brand archive, so it
- * applies to all brand pages (Baufloor/Akifix/ITW) without hardcoding a
- * specific template or brand.
+ * Scoped by the loop-wrapper element id (wkf1189loop / wkf1185loop /
+ * wkf1182loop — the `dc9cc7` "Scheda Categoria" grids added in Phase B), NOT
+ * to "any product_cat term loop on a product_brand archive": the header mega
+ * menu's category sub-lists are product_cat term loops too and render on the
+ * brand archive, so an unscoped filter emptied the whole "Catalogo" mega menu
+ * on /marchio/* pages.
  */
-add_filter( 'bricks/terms/query_vars', function( $query_vars ) {
+add_filter( 'bricks/terms/query_vars', function( $query_vars, $settings = array(), $element_id = '' ) {
+    if ( ! in_array( $element_id, array( 'wkf1189loop', 'wkf1185loop', 'wkf1182loop' ), true ) ) {
+        return $query_vars;
+    }
+
     $taxonomies = (array) ( $query_vars['taxonomy'] ?? [] );
 
     if ( ! in_array( 'product_cat', $taxonomies, true ) || ! is_tax( 'product_brand' ) ) {
@@ -305,7 +312,7 @@ add_filter( 'bricks/terms/query_vars', function( $query_vars ) {
     $query_vars['object_ids'] = ! empty( $product_ids ) ? $product_ids : array( 0 );
 
     return $query_vars;
-} );
+}, 10, 3 );
 
 /**
  * Force the main product gallery image (not the thumbnail-slider thumbs) into a
