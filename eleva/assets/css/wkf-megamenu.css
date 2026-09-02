@@ -1,9 +1,7 @@
-/* wkf-megamenu.css — main navigation. Structure lives in Bricks (template 7);
-this file only supplies what Bricks controls cannot express. */
+/* wkf-megamenu.css — main navigation (structure in Bricks template 7). */
 
 :root {
-	/* Real header height after Phase 3 (#nebryp height:64px). Drives where the
-	   Catalogo mega + the Brand/Settori dropdowns start. */
+	/* Header height (#nebryp) — anchors the Catalogo mega + Brand/Settori panels. */
 	--wkf-header-h: 64px;
 }
 
@@ -59,9 +57,7 @@ this file only supplies what Bricks controls cannot express. */
 	cursor: pointer;
 }
 
-/* The nav's uppercase typography is for the top-level triggers only —
-   dropdown/mega panel content (column titles, sub-items, brand + sector
-   names) is sentence case in the design. */
+/* Nav uppercase typography is triggers-only; panel content is sentence case. */
 #brxe-wkfnav .brx-dropdown-content {
 	text-transform: none;
 }
@@ -71,7 +67,7 @@ this file only supplies what Bricks controls cannot express. */
 	flex-shrink: 0;
 }
 
-/* Account icon button — 38x38 steel square, ink border on hover (design). */
+/* Account icon button — 38x38 steel square, ink border on hover. */
 #brxe-donbzq {
 	transition: border-color .16s ease-out;
 }
@@ -79,10 +75,8 @@ this file only supplies what Bricks controls cannot express. */
 	border-color: var(--wkf-black);
 }
 
-/* «Preventivo» quote-list button. The pill (bg / padding / radius / typography)
-   is styled with Bricks element controls on #brxe-wkfqt / -wkfqtl / -wkfqtc;
-   only what controls can't express lives here, #id-scoped because this file
-   loads before Bricks' own CSS (a bare .wkf-quote class would lose the cascade). */
+/* «Preventivo» button — pill via Bricks controls on #brxe-wkfqt / -wkfqtl /
+   -wkfqtc; #id-scoped here because this file loads before Bricks' CSS. */
 #brxe-wkfqt {
 	transition: background-color .16s ease-out;
 }
@@ -102,8 +96,7 @@ this file only supplies what Bricks controls cannot express. */
 	inset: 0;
 	border-radius: var(--wkf-radius);
 }
-/* Count badge — styled here (not via Bricks controls: font-family can't take a
-   var() there, and the file loads before Bricks CSS so #id scoping is needed). */
+/* Count badge — here not via Bricks controls (font-family can't take a var()). */
 #brxe-wkfqtc {
 	position: relative;
 	z-index: 1;
@@ -125,11 +118,20 @@ this file only supplies what Bricks controls cannot express. */
 	display: none;
 }
 
-/* ============ 2. Desktop (>= 1151px) ============ */
-@media (min-width: 1151px) {
+/* Preventivo is borrowed into the drawer header (inside #brxe-wkfnav) when the
+   mobile menu opens — reset the inherited trigger typography to match the closed bar. */
+#brxe-wkfnav #brxe-wkfqt,
+#brxe-wkfnav #brxe-wkfqtl {
+	text-transform: none;
+	letter-spacing: normal;
+	font-size: var(--text-s);
+	font-weight: 600;
+}
 
-	/* Bricks' unscoped `.brx-has-multilevel ul li:not(.open){display:none}`
-	also hides the CTA row; other rows outrank it via their own ID. */
+/* ============ 2. Desktop (>= 1280px) ============ */
+@media (min-width: 1280px) {
+
+	/* Bricks' unscoped `li:not(.open){display:none}` also hides the CTA row. */
 	#brxe-wkfnav .wkf-mm-panel > li.wkf-mm-cta {
 		display: block;
 	}
@@ -138,8 +140,7 @@ this file only supplies what Bricks controls cannot express. */
 		display: none;
 	}
 
-	/* The 8-column grid lives on #brxe-digsuw; the panel holds columns + CTA.
-	max-width:none is required: Bricks only ever sets min-width on megamenus. */
+	/* 8-column grid on #brxe-digsuw; max-width:none — Bricks only sets min-width here. */
 	#brxe-wkfnav .wkf-mm-panel--catalogo {
 		display: grid;
 		grid-template-columns: 1fr;
@@ -149,12 +150,8 @@ this file only supplies what Bricks controls cannot express. */
 		overflow-y: auto;
 	}
 
-	/* Drill-in arrows and the level header row are mobile-only affordances.
-	   The levelhead's own <a> is hidden too, not just its <li>: Bricks'
-	   bricksGetFocusables() filters by an element's OWN display, so a visible
-	   <a> inside a display:none <li> is still picked as "first focusable" in
-	   the open panel — then never becomes focusable (zero-size box), logging
-	   "Element never became focusable" every time a dropdown opens. */
+	/* Drill-in arrows + level header row are mobile-only (hide the levelhead <a>
+	   too — else it's picked as first-focusable in the open panel). */
 	#brxe-wkfnav .wkf-go-into-macro,
 	#brxe-wkfnav .wkf-back-to-macro {
 		display: none;
@@ -164,9 +161,7 @@ this file only supplies what Bricks controls cannot express. */
 		display: none;
 	}
 
-	/* Panels anchor to the full-width header, not to their own trigger <li>:
-	static trigger + same @layer as Bricks, whose layered !important would
-	otherwise beat any unlayered rule regardless of specificity. */
+	/* Panels anchor to the full-width header: static trigger + same @layer as Bricks. */
 	#brxe-wkfcat {
 		position: static;
 	}
@@ -194,9 +189,7 @@ this file only supplies what Bricks controls cannot express. */
 		padding: 0;
 	}
 
-	/* Tighten the L2 lists so the Catalogo panel fits without an inner
-	   scrollbar (design: 9px between items, no per-row padding). The gaps
-	   come from element _rowGap settings (~10px), overridden here. */
+	/* Tighten L2 lists so the panel fits without an inner scrollbar (overrides _rowGap). */
 	#brxe-wkfnav .wkf-mm-sublist {
 		row-gap: 8px;
 	}
@@ -204,10 +197,8 @@ this file only supplies what Bricks controls cannot express. */
 		row-gap: 10px;
 	}
 
-	/* Nav sits centered in the row's free space (design: flex:1, gap:4px) and
-	   the nav / list / items all fill the full 64px header height, so the
-	   Brand + Settori panels (anchored top:100% of their <li>) start flush
-	   with the header's bottom edge. */
+	/* Nav centered in the row's free space; nav/list/items fill the full header
+	   height so Brand + Settori panels start flush with its bottom edge. */
 	#brxe-wkfnav {
 		flex: 1 1 auto;
 		align-self: stretch;
@@ -216,7 +207,7 @@ this file only supplies what Bricks controls cannot express. */
 		justify-content: center;
 		align-items: stretch;
 		align-self: stretch;
-		gap: var(--space-2xs);
+		gap: 2px;
 	}
 	#brxe-wkfnav .brx-nav-nested-items > li:not(.wkf-mm-mobile-head):not(.wkf-mm-mobile-search):not(.wkf-mm-mobile-foot) {
 		display: flex;
@@ -226,12 +217,13 @@ this file only supplies what Bricks controls cannot express. */
 		min-height: 100%;
 	}
 
-	/* Trigger rows: pill padding + surface/primary on hover & open. */
+	/* Trigger rows: pill padding + surface/primary on hover & open; padding kept
+	   tight so all six items fit one row down to 1280px. */
 	#brxe-wkfnav .brx-nav-nested-items > li > .brxe-text-link,
 	#brxe-wkfnav .wkf-mm-trigger > .brx-submenu-toggle > span {
 		display: inline-flex;
 		align-items: center;
-		padding: 9px 13px;
+		padding: 9px 10px;
 		border-radius: var(--wkf-radius);
 		transition: background .16s ease-out, color .16s ease-out;
 	}
@@ -277,8 +269,7 @@ this file only supplies what Bricks controls cannot express. */
 		font-weight: 600;
 	}
 
-	/* Brand + Settori: compact vertical list cards (design: panel('250px') /
-	   panel('290px')) — border + radius + shadow, rows flush to the edges. */
+	/* Brand + Settori: compact vertical list cards, rows flush to the edges. */
 	#brxe-wkfnav .wkf-mm-panel--brand,
 	#brxe-wkfnav .wkf-mm-panel--settori {
 		display: flex;
@@ -303,8 +294,7 @@ this file only supplies what Bricks controls cannot express. */
 		border-bottom: 0;
 	}
 
-	/* Brand row — [ logo | name ]; the name's link covers the whole row,
-	   surface + primary on hover (design). */
+	/* Brand row — [ logo | name ]; the name's link covers the row. */
 	#brxe-wkfnav .wkf-mm-brand__cta { display: none; }
 	#brxe-wkfnav .wkf-mm-brand__row {
 		align-items: center;
@@ -324,7 +314,7 @@ this file only supplies what Bricks controls cannot express. */
 	#brxe-wkfnav .wkf-mm-brand:hover { background: var(--wkf-surface); }
 	#brxe-wkfnav .wkf-mm-brand:hover .wkf-mm-brand__name a { color: var(--wkf-primary); }
 
-	/* Settori row — a single full-width padded link (design). */
+	/* Settori row — a single full-width padded link. */
 	#brxe-wkfnav .wkf-mm-sector { align-items: stretch; }
 	#brxe-wkfnav .wkf-mm-sector a {
 		display: block;
@@ -339,8 +329,7 @@ this file only supplies what Bricks controls cannot express. */
 		color: var(--wkf-primary);
 	}
 
-	/* Bricks moves focus to the first row when a panel opens — keep that
-	   keyboard ring hugging the whole row, not floating around the text. */
+	/* Keep the keyboard ring hugging the whole row Bricks focuses on panel open. */
 	#brxe-wkfnav .wkf-mm-sector a:focus-visible {
 		outline-offset: -2px;
 	}
@@ -353,10 +342,7 @@ this file only supplies what Bricks controls cannot express. */
 		border-radius: var(--wkf-radius);
 	}
 
-	/* Anchor both panels to their own trigger, opening left-aligned just
-	   below it (the nav now sits left, so right-anchoring is wrong). The
-	   <li> already stretch to the full 64px row (rule above), so top:100%
-	   on the panel clears the header. */
+	/* Anchor both panels to their own trigger, opening left-aligned just below it. */
 	#brxe-wkfbrand,
 	#brxe-wkfsett {
 		position: relative;
@@ -370,9 +356,8 @@ this file only supplies what Bricks controls cannot express. */
 			top: 100% !important;
 		}
 	}
-	/* Fixed width via the panel's own #id, unlayered so it beats Bricks'
-	   layered rules. max-width:none undoes Bricks' [class*="brxe-"]{max-width:
-	   100%}, which otherwise clamps the panel to its narrow <li> context. */
+	/* Fixed width via the panel's own #id, unlayered to beat Bricks; max-width:none
+	   undoes Bricks' [class*="brxe-"]{max-width:100%}. */
 	#brxe-wkfbrandul,
 	#brxe-wkfsettul {
 		max-width: min(360px, calc(100vw - 2 * var(--space-l)));
@@ -400,8 +385,8 @@ this file only supplies what Bricks controls cannot express. */
 	#brxe-wkfnav .wkf-mm-mobile-foot { display: none; }
 }
 
-/* ============ 3. Mobile panel (<= 1150px) ============ */
-@media (max-width: 1150px) {
+/* ============ 3. Mobile panel (<= 1279px) ============ */
+@media (max-width: 1279px) {
 
 	#brxe-wkfnav .brx-nav-nested-items {
 		display: flex;
@@ -422,40 +407,58 @@ this file only supplies what Bricks controls cannot express. */
 		clip-path: circle(150% at 100% 0%);
 	}
 
-	/* Row order: logo | account | cart | close.
-	The first three are the site header's own elements, relocated here by JS with an inline `order`. */
+	/* Drawer header row — mirrors the closed bar */
 	#brxe-wkfnav .wkf-mm-mobile-head {
+		position: relative;
 		display: flex;
 		align-items: center;
 		gap: var(--space-s);
-		padding: var(--space-m);
+		min-height: 56px;
+		padding: 0 14px;
 		border-bottom: 1px solid var(--wkf-grey-l-2);
 		flex: 0 0 auto;
 	}
-	#brxe-wkfnav .wkf-mm-mobile-head .brxe-logo { margin-right: auto; }
-	#brxe-wkfnav .wkf-mm-mobile-head > button.brxe-toggle { order: 4; }
+	#brxe-wkfnav .wkf-mm-mobile-head > .brxe-logo { order: 1; }
+	/* absolutely centred on the row, nudged right to match the closed bar. */
+	#brxe-wkfnav .wkf-mm-mobile-head > #brxe-wkfqt {
+		order: 2;
+		position: absolute;
+		left: calc(50% + 12px);
+		transform: translateX(-50%);
+	}
+	#brxe-wkfnav .wkf-mm-mobile-head > a:has(> #brxe-donbzq),
+	#brxe-wkfnav .wkf-mm-mobile-head > #brxe-donbzq { order: 3; margin-left: auto; }
+	#brxe-wkfnav .wkf-mm-mobile-head > .brxe-toggle { order: 4; flex: 0 0 auto; }
 
-	/* Search row: [ input, icon inside ] [ close ]. */
+	/* Search row — the full-width field only. */
 	#brxe-wkfnav .wkf-mm-mobile-search {
 		display: flex;
-		align-items: center;
-		gap: var(--space-s);
-		padding: var(--space-s) var(--space-m);
+		/* Extra bottom padding separates the search field from the nav list. */
+		padding: var(--space-m) 14px var(--space-l);
 		flex: 0 0 auto;
 	}
-	#brxe-wkfnav .wkf-mm-mobile-search > .brxe-search { flex: 1 1 auto; min-width: 0; }
+	#brxe-wkfnav .wkf-mm-mobile-search > .brxe-search {
+		flex: 1 1 100%;
+		width: 100%;
+		min-width: 0;
+	}
 	#brxe-wkfnav .wkf-mm-mobile-search .bricks-search-form { position: relative; width: 100%; }
 	#brxe-wkfnav .wkf-mm-mobile-search input[name="s"] {
 		width: 100%;
-		min-height: 44px;
-		padding-right: 44px;
+		height: 36px;
+		min-height: 36px;
+		padding-top: 0;
+		padding-bottom: 0;
+		padding-right: 36px;
+		font-size: var(--text-s);
+		line-height: 1.2;
 	}
 	#brxe-wkfnav .wkf-mm-mobile-search .bricks-search-form > button {
 		position: absolute;
 		right: 0;
 		top: 0;
 		bottom: 0;
-		width: 44px;
+		width: 36px;
 		display: grid;
 		place-items: center;
 		background: none;
@@ -464,13 +467,7 @@ this file only supplies what Bricks controls cannot express. */
 	}
 	#brxe-wkfnav .wkf-mm-mobile-search .bricks-search-form
 	[class*=" ti-"], [class^=ti-] {
-		font-size: var(--text-xl);
-	}
-	/* The search element is appended by JS, so the close button needs an explicit order to stay to its right. */
-	#brxe-wkfnav .wkf-mm-mobile-search > button.brxe-toggle {
-		flex: 0 0 auto;
-		order: 2;
-		margin-inline: 0.625rem;
+		font-size: var(--text-m);
 	}
 
 	#brxe-wkfnav .brx-nav-nested-items > li:not(.wkf-mm-mobile-head):not(.wkf-mm-mobile-search):not(.wkf-mm-mobile-foot) {
@@ -486,15 +483,15 @@ this file only supplies what Bricks controls cannot express. */
 		--wkf-mm-chevron: 16px;
 	}
 
-	/* Level 1 rows. Padding is per row type: a blanket `a` rule double-padded
-	links nested inside already-padded rows. */
+	/* Level 1 rows — padding is per row type (a blanket `a` rule double-pads nested links). */
 	#brxe-wkfnav .wkf-mm-trigger > .brx-submenu-toggle { min-height: 48px; }
+	/* All level-1 rows share one style, left-aligned. */
 	#brxe-wkfnav .wkf-mm-trigger > .brx-submenu-toggle > span,
 	#brxe-wkfnav .brx-nav-nested-items > li > .brxe-text-link {
 		display: flex;
 		align-items: center;
-		justify-content: center;
-		text-align: center;
+		justify-content: flex-start;
+		text-align: left;
 		width: 100%;
 		min-height: 48px;
 		padding: var(--space-xs) var(--space-m);
@@ -502,16 +499,30 @@ this file only supplies what Bricks controls cannot express. */
 		font-weight: 500;
 	}
 
-	/* The chevron lives in the full-row overlay, so the overlay positions it. */
+	/* The chevron lives in the full-row overlay button, pinned right. */
 	#brxe-wkfnav .wkf-mm-trigger > .brx-submenu-toggle > button {
 		display: flex;
 		align-items: center;
 		justify-content: flex-end;
 		padding-right: var(--space-m);
 	}
+	/* One identical CSS chevron per level-1 dropdown row — hide the shipped
+	   ionicon / themify glyphs, draw our own so they match. */
+	#brxe-wkfnav .wkf-mm-trigger > .brx-submenu-toggle > button > i {
+		display: none;
+	}
+	#brxe-wkfnav .wkf-mm-trigger > .brx-submenu-toggle > button::after {
+		content: "";
+		flex: 0 0 auto;
+		width: 7px;
+		height: 7px;
+		border-right: 2px solid currentColor;
+		border-bottom: 2px solid currentColor;
+		transform: rotate(-45deg);
+		opacity: .5;
+	}
 
-	/* One chevron style everywhere. */
-	#brxe-wkfnav .wkf-mm-trigger > .brx-submenu-toggle > button > i,
+	/* Level 2/3 macro drill + back arrows (themify glyphs). */
 	#brxe-wkfnav .wkf-go-into-macro,
 	#brxe-wkfnav .wkf-back-to-macro,
 	#brxe-wkfnav .wkf-mm-chevron {
@@ -525,7 +536,7 @@ this file only supplies what Bricks controls cannot express. */
 		gap: var(--space-2xs);
 		min-height: 44px;
 		padding: var(--space-xs) var(--space-m);
-		font-weight: 600;
+		font-weight: 500;
 		border-bottom: 1px solid var(--wkf-grey-l-2);
 	}
 	#brxe-wkfnav .brx-multilevel-back::before { content: none; }
@@ -541,18 +552,16 @@ this file only supplies what Bricks controls cannot express. */
 	}
 	#brxe-wkfnav .wkf-mm-mobile-foot a { min-width: 44px; min-height: 44px; display: grid; place-items: center; }
 
-	/* clip-path only hides paint, so the closed panel's footer would otherwise
-	still occupy layout in the header. */
+	/* clip-path only hides paint — hide the closed footer so it doesn't occupy layout. */
 	#brxe-wkfnav:not(.brx-open) .wkf-mm-mobile-foot {
 		display: none;
 	}
 }
 
 /* ============ 4. Mobile level machine ============
-data-wkf-level on the nav root: 1 = top level, 2 = a dropdown's content,
-3 = one Catalogo macro's children (.wkf-is-open marks which). Only the
-center section swaps; header and footer never move. */
-@media (max-width: 1150px) {
+   data-wkf-level on the nav root: 1 = top, 2 = a dropdown's content, 3 = one
+   Catalogo macro's children. Only the center section swaps. */
+@media (max-width: 1279px) {
 
 	#brxe-wkfnav[data-wkf-level="2"] .brx-nav-nested-items > li:not(.wkf-mm-mobile-head):not(.wkf-mm-mobile-search):not(.wkf-mm-mobile-foot):not(.open),
 	#brxe-wkfnav[data-wkf-level="3"] .brx-nav-nested-items > li:not(.wkf-mm-mobile-head):not(.wkf-mm-mobile-search):not(.wkf-mm-mobile-foot):not(.open) {
@@ -567,8 +576,7 @@ center section swaps; header and footer never move. */
 		min-height: 0;
 	}
 
-	/* The trigger row belongs to level 1; inside the level it opened, the
-	header row shows the same label. */
+	/* The trigger row belongs to level 1; the header row shows the same label. */
 	#brxe-wkfnav[data-wkf-level="2"] .brxe-dropdown.open > .brx-submenu-toggle,
 	#brxe-wkfnav[data-wkf-level="3"] .brxe-dropdown.open > .brx-submenu-toggle {
 		display: none;
@@ -592,7 +600,7 @@ center section swaps; header and footer never move. */
 		border-radius: 0;
 	}
 
-	/* Level header row: [ label ............ back ] */
+	/* Level header row */
 	#brxe-wkfnav .wkf-mm-levelhead {
 		display: flex;
 		align-items: center;
@@ -655,12 +663,11 @@ center section swaps; header and footer never move. */
 	}
 	#brxe-wkfnav .wkf-mm-coltop .brxe-heading {
 		font-size: var(--text-m);
-		font-weight: 600;
+		font-weight: 500;
 	}
 	#brxe-wkfnav .wkf-mm-coltop a { padding: 0; min-height: 0; }
 
-	/* Level 3 category rows. .wkf-mm-sublist is the loop element, so it repeats
-	once per category: spacing belongs on the row, not on it or the column. */
+	/* Level 3 category rows — .wkf-mm-sublist is the loop element, spacing on the row. */
 	#brxe-wkfnav .wkf-mm-col { row-gap: 0; }
 	#brxe-wkfnav .wkf-mm-sublist { padding: 0; gap: 0; }
 	#brxe-wkfnav .wkf-mm-sublist a {
@@ -690,7 +697,7 @@ center section swaps; header and footer never move. */
 		align-items: center;
 		min-height: 48px;
 		padding: var(--space-xs) var(--space-m);
-		font-weight: 500;
+		font-weight: 700;
 	}
 
 	/* Title padding stays 0 so it aligns with its own description. */
@@ -705,8 +712,8 @@ center section swaps; header and footer never move. */
 		font-weight: 500;
 	}
 
-	/* Level 2 — macro names only. The back button is hidden with its icon, or
-	its 44px box would keep the `>` off the right edge. */
+	/* Level 2 — macro names only; back button hidden with its icon (44px box
+	   would push the `>` off the right edge). */
 	#brxe-wkfnav[data-wkf-level="2"] .wkf-mm-sublist,
 	#brxe-wkfnav[data-wkf-level="2"] .wkf-mm-col .wkf-mm-backbtn,
 	#brxe-wkfnav[data-wkf-level="2"] .wkf-back-to-macro { display: none; }
@@ -729,26 +736,52 @@ center section swaps; header and footer never move. */
 	#brxe-wkfnav .brx-multilevel-back[hidden] { display: none !important; }
 }
 
-@media (max-width: 1150px) and (prefers-reduced-motion: reduce) {
+@media (max-width: 1279px) and (prefers-reduced-motion: reduce) {
 	#brxe-wkfnav .brx-nav-nested-items { transition: none; clip-path: none; visibility: hidden; }
 	#brxe-wkfnav.brx-open .brx-nav-nested-items { visibility: visible; }
 }
 
-/* ============ 5. Site header (<= 1150px) ============ */
-@media (max-width: 1150px) {
-	/* burger | logo (centered) | Preventivo — design mobile header bar. */
+/* ============ 5. Site header (<= 1279px) ============ */
+@media (max-width: 1279px) {
+	/* logo (left) · Preventivo (near-centred) · burger (right) — 3-track grid so
+	   the middle item stays centred regardless of side widths. */
 	#brxe-nebryp {
-		display: flex;
+		display: grid;
+		grid-template-columns: 1fr auto 1fr;
 		align-items: center;
-		gap: var(--space-s);
+		column-gap: var(--space-s);
 		height: 56px;
-		padding-inline: 14px;
+		padding-inline: 4px;
 	}
-	#brxe-wkfnav { order: 1; }
-	#brxe-aqqruf { order: 2; margin: 0 auto; }
-	#brxe-wkfqt { order: 3; flex: 0 0 auto; }
-	/* Search + account live only in the open drawer on mobile; JS moves the
-	   real elements there and back. The flex child is the link wrapper. */
+	#brxe-aqqruf { order: 1; justify-self: start; }
+	#brxe-wkfqt  { order: 2; justify-self: center; transform: translateX(12px); }
+	#brxe-wkfnav { order: 3; justify-self: end; }
+	/* Search + account live only in the open drawer on mobile; JS moves them there and back. */
 	#brxe-nebryp > #brxe-gjvbmv,
 	#brxe-nebryp > a:has(> #brxe-donbzq) { display: none; }
+
+	/* Both toggles (☰ open, × close) get the same steel-bordered square as the account icon. */
+	#brxe-wkfnav .brxe-toggle {
+		box-sizing: border-box;
+		width: 38px;
+		height: 38px;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		padding: 0;
+		border: 1px solid var(--wkf-grey-l-2);
+		border-radius: var(--wkf-radius);
+		background: none;
+		flex: 0 0 auto;
+	}
+}
+
+/* Smartphone: a slightly smaller logo in both header states (same element).
+   !important beats Bricks' own #brxe-aqqruf .bricks-site-logo height rule. */
+@media (max-width: 767px) {
+	#brxe-aqqruf .bricks-site-logo,
+	#brxe-aqqruf img {
+		height: 38px !important;
+		width: auto !important;
+	}
 }

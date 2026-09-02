@@ -23,7 +23,10 @@
 	'use strict';
 
 	var NAV_ID = 'brxe-wkfnav';
-	var MOBILE = '(max-width: 991px)';
+	/* Must match #wkfnav's Bricks mobileMenuCustomBreakpoint (1279) and
+	   wkf-megamenu.css §2–5 — the level machine / widget borrowing engage
+	   exactly when the hamburger drawer is the active nav. */
+	var MOBILE = '(max-width: 1279px)';
 
 	function isMobile() {
 		return window.matchMedia( MOBILE ).matches;
@@ -53,9 +56,10 @@
 	 * ------------------------------------------------------------------ */
 
 	var BORROWED = [
-		{ id: 'brxe-aqqruf', slot: '.wkf-mm-mobile-head', order: 1 },  /* logo    */
-		{ id: 'brxe-donbzq', slot: '.wkf-mm-mobile-head', order: 2 },  /* account */
-		{ id: 'brxe-gjvbmv', slot: '.wkf-mm-mobile-search', order: 1 } /* search  */
+		{ id: 'brxe-aqqruf', slot: '.wkf-mm-mobile-head', order: 1 },  /* logo       */
+		{ id: 'brxe-wkfqt',  slot: '.wkf-mm-mobile-head', order: 2 },  /* Preventivo */
+		{ id: 'brxe-donbzq', slot: '.wkf-mm-mobile-head', order: 3 },  /* account    */
+		{ id: 'brxe-gjvbmv', slot: '.wkf-mm-mobile-search', order: 1 } /* search     */
 	];
 
 	var borrowedHome = {};
@@ -115,6 +119,55 @@
 			node.style.order = '';
 			marker.parentNode.replaceChild( node, marker );
 		} );
+	}
+
+	/* The × close toggle ships inside the search <li> (Bricks structure), but
+	   the design puts it in the drawer's header row — same top-right spot as
+	   the ☰ open toggle in the closed bar. Move it there once, at init; the
+	   whole nav <ul> is persistent DOM so it never needs moving back. */
+	function relocateCloseToggle( root ) {
+		var close = root.querySelector( '.wkf-mm-mobile-search > .brxe-toggle' );
+		var head = root.querySelector( '.wkf-mm-mobile-head' );
+
+		if ( close && head && close.parentNode !== head ) {
+			head.appendChild( close );
+		}
+	}
+
+	/* Move the borrowed widgets into the drawer header the instant the ☰ is
+	   pressed — before Bricks flips .brx-open and the panel starts revealing.
+	   Otherwise the MutationObserver (async) borrows them a frame or two late
+	   and the logo / Preventivo visibly pop in. borrowWidgets is idempotent,
+	   so the observer's own later call is a harmless no-op. */
+	function preBorrowOnOpen( root ) {
+		var openToggle = root.querySelector( ':scope > .brxe-toggle' );
+
+		if ( ! openToggle ) {
+			return;
+		}
+
+		openToggle.addEventListener( 'click', function () {
+			if ( isMobile() && ! root.classList.contains( 'brx-open' ) ) {
+				borrowWidgets( root );
+			}
+		}, true );
+	}
+
+	/* Mirror of preBorrowOnOpen for closing: return the widgets to the bar the
+	   instant any toggle is pressed while the panel is open. Bricks sets the
+	   panel `visibility:hidden` immediately on close but the class-mutation
+	   observer runs ~180ms later, so without this the logo / Preventivo are
+	   invisible (in the now-hidden panel, not yet back in the bar) for a beat.
+	   returnWidgets is guarded against a double call, so the observer's later
+	   run is a no-op. */
+	function preReturnOnClose( root ) {
+		root.addEventListener( 'click', function ( event ) {
+			var toggle = event.target.closest ? event.target.closest( '.brxe-toggle' ) : null;
+
+			if ( toggle && root.classList.contains( 'brx-open' ) ) {
+				returnWidgets();
+			}
+		}, true );
 	}
 
 	/* ------------------------------------------------------------------ *
@@ -444,6 +497,9 @@
 		wireAriaControls( root );
 		wireSectorDescriptions( root );
 		suppressBricksBackRows( root );
+		relocateCloseToggle( root );
+		preBorrowOnOpen( root );
+		preReturnOnClose( root );
 
 		Array.prototype.forEach.call( root.querySelectorAll( '.wkf-mm-trigger' ), buildLevelHead );
 

@@ -1,27 +1,17 @@
-/* WKF components — CSS the Bricks control layer can't express.
-   Design tokens live in the Bricks Color Palette + Variables Manager
-   (categories: WKF Tokens / WKF Tracking / WKF Text / WKF Headings /
-   WKF Spacing / WKF Radius / WKF Line Heights). This file is only for
-   rules that target WooCommerce / plugin / core markup Bricks doesn't
-   own: pseudo-elements, ::marker, generated wrappers, the ruler gradient. */
+/* WKF components — CSS Bricks controls can't reach (Woo / plugin / core markup, pseudo-elements). */
 
-/* Bricks core ships html{font-size:62.5%} (10px). We run a 16px root so
-   1rem = 16px; every Bricks fluid/radius variable was divided by 1.6 to
-   keep rendered pixels unchanged. */
+/* 16px root (Bricks ships 62.5%; fluid/radius vars pre-divided by 1.6). */
 html {
 	font-size: 100%;
 }
 
-/* Every Bricks heading element renders in the display face + tight tracking,
-   whatever its HTML tag (many are <span>/<div>). Eyebrows opt out via the
-   wkf-eyebrow global class. Real h1–h6 also get family/tracking from the
-   theme style; the values match, so the later cascade here is harmless. */
+/* Bricks headings: display face + tight tracking on any tag; eyebrows opt out. */
 .brxe-heading:not(.wkf-eyebrow) {
 	font-family: var(--wkf-font-display);
 	letter-spacing: var(--wkf-tracking-tight);
 }
 
-/* "Filetto righello" — the design's signature section divider */
+/* "Filetto righello" — section divider */
 .wkf-righello {
 	width: 100%;
 	height: 8px;
@@ -34,15 +24,9 @@ html {
 	background-repeat: no-repeat;
 }
 
-/* ── Product page — WooCommerce-generated markup ── */
+/* ── Product page — WooCommerce markup ── */
 
-/* Breadcrumb — blue bar, translucent-white trail, solid-white bold current
-   crumb. Verified against all 3 brand artboards (ITW/Akifix/Baufloor single-
-   product) — every one has `background:var(--wf-blue)` + white text, not a
-   white bar. Shared: the product templates (ITW 65 / Akifix 434 / Baufloor
-   439) run a [rank_math_breadcrumb] shortcode inside a #breadcrumb cssId
-   section; the category archive (1277) wraps a Bricks woocommerce-breadcrumbs
-   element in the same blue-section pattern. */
+/* Breadcrumb — blue bar, white trail, bold current crumb. */
 #breadcrumb .rank-math-breadcrumb,
 .brxe-woocommerce-breadcrumbs nav {
 	font-size: var(--text-2xs);
@@ -66,8 +50,7 @@ html {
 	color: var(--wkf-white);
 }
 
-/* SKU / BRAND product-meta: eyebrow label + typed value.
-   Markup: .product_sku > .item > (.prefix + .text[> .sku | > a]) */
+/* SKU / BRAND meta — .product_sku > .item > (.prefix + .text[> .sku | > a]) */
 :is(.product_sku, .product_brand) .item {
 	display: flex;
 	gap: 0.5rem;
@@ -94,36 +77,9 @@ html {
 	color: var(--wkf-primary);
 }
 
-/* Main product gallery: fixed 1/1 steel-framed square, photo centred both
-   axes inside a 12px gutter, primary active thumb. Shared across the 3 brand
-   product templates — ITW #dtfpzi, Akifix #iwikdl, Baufloor #354c63 — each
-   its own Bricks product-gallery element.
-   flexslider writes a stale JS-measured pixel `height` inline on
-   .flex-viewport and never re-reads it, so viewport and square slides
-   disagree and a border on either clips. Force the viewport square too
-   (`height:auto !important` beats the non-important inline height) and frame
-   it. The slide box (.woocommerce-product-gallery__image) becomes a flex
-   centre; the image drops hooks.php's absolute square-wrapper hack and sits
-   as a static, contained child that align/justify-center place dead-centre.
-   ── SCOPING: with thumbnailSlider on (ITW/Akifix), Bricks renders a SECOND
-   .flex-viewport + a second batch of .woocommerce-product-gallery__image
-   inside .brx-product-gallery-thumbnail-slider. So the main-image rules must
-   only reach the MAIN slider: `> .woocommerce-product-gallery > .flex-viewport`
-   and `.woocommerce-product-gallery__wrapper > .woocommerce-product-gallery__image`
-   (thumbs use .brx-thumbnail-slider-wrapper >). Otherwise the aspect-ratio:1/1
-   + border landed on the 72px thumb strip's inner viewport → clipped.
-   ── GUTTER LIVES ON THE VIEWPORT, NOT THE SLIDE: flexslider's doMath() sets
-   each slide's inline width from `viewport.width() - slide.boxPadding` (its
-   own padding+border), then steps translate3d() between slides using that
-   SAME width WITHOUT adding boxPadding back — so a non-zero padding on the
-   slide itself is invisible to the step distance while still being visible
-   to the rendered width, and the two drift apart by `boxPadding` per slide
-   index (slide N lands N × boxPadding short of the viewport window — at
-   N=2/12px padding that's a 48px miss). That drift IS the "next/prev image
-   peeking in, current one reads cropped" bug. Padding must therefore be 0 on
-   the slide; the 12px gutter is drawn by the (flexslider-uninvolved) viewport
-   instead, and the slide simply fills the viewport's resulting content box
-   edge to edge. */
+/* Main product gallery — 1/1 steel-framed square, photo centred in a 12px gutter.
+   ITW #dtfpzi / Akifix #iwikdl / Baufloor #354c63. Gutter on .flex-viewport, not
+   the slide: slide padding drifts flexslider's translate3d step. */
 #brxe-dtfpzi > .woocommerce-product-gallery > .flex-viewport,
 #brxe-iwikdl > .woocommerce-product-gallery > .flex-viewport,
 #brxe-354c63 > .woocommerce-product-gallery > .flex-viewport {
@@ -139,10 +95,7 @@ html {
 #brxe-dtfpzi .woocommerce-product-gallery__wrapper > .woocommerce-product-gallery__image,
 #brxe-iwikdl .woocommerce-product-gallery__wrapper > .woocommerce-product-gallery__image,
 #brxe-354c63 .woocommerce-product-gallery__wrapper > .woocommerce-product-gallery__image {
-	/* !important beats the display flexslider writes inline per-slide.
-	   No padding/border here — see the gutter note above; boxPadding must
-	   stay 0 or flexslider's per-slide translate3d() step drifts off the
-	   viewport window. */
+	/* !important beats flexslider's inline per-slide display; keep boxPadding 0. */
 	display: flex !important;
 	align-items: center;
 	justify-content: center;
@@ -150,11 +103,7 @@ html {
 #brxe-dtfpzi .woocommerce-product-gallery__wrapper > .woocommerce-product-gallery__image img,
 #brxe-iwikdl .woocommerce-product-gallery__wrapper > .woocommerce-product-gallery__image img,
 #brxe-354c63 .woocommerce-product-gallery__wrapper > .woocommerce-product-gallery__image img {
-	/* Targets every gallery image, not just img.wp-post-image — that class is
-	   WooCommerce's marker for the product's SET featured image only; every
-	   other gallery photo renders as a bare <img> and was silently skipping
-	   this whole rule (falling through to Bricks' own `width:100%` default,
-	   no object-fit) until this was broadened. */
+	/* Every gallery <img>, not just img.wp-post-image (that's the featured one). */
 	position: static;
 	inset: auto;
 	width: auto;
@@ -164,13 +113,7 @@ html {
 	object-fit: contain;
 }
 
-/* Thumbnails — Bricks thumbnailSlider (ITW / Akifix). Bricks caps the strip
-   at thumbnailWrapperMaxHeight (72px) but lays the thumbs out at
-   stripWidth / maxItems (88px on ITW, 143px on Akifix with only 4 images) —
-   wider than the cap, so the bottom border was clipped by overflow:hidden.
-   Pin each thumb to a real 72px square (border-box, object-fit:cover),
-   left-aligned in whatever cell width flexslider gives it, and let the strip
-   height follow. */
+/* Thumbnails — Bricks thumbnailSlider (ITW / Akifix). Pin to a 72px square. */
 #brxe-dtfpzi .brx-product-gallery-thumbnail-slider,
 #brxe-iwikdl .brx-product-gallery-thumbnail-slider,
 #brxe-dtfpzi .brx-product-gallery-thumbnail-slider > .flex-viewport,
@@ -194,7 +137,7 @@ html {
 	border-color: var(--wkf-primary);
 }
 
-/* Thumbnails — plain flexslider nav (Baufloor, no thumbnailSlider): <ol><li><img> */
+/* Thumbnails — plain flexslider nav (Baufloor): <ol><li><img> */
 #brxe-354c63 .flex-control-thumbs {
 	gap: 10px;
 	align-items: start;
@@ -237,12 +180,8 @@ html {
 	color: var(--wkf-grey-d-1);
 }
 
-/* ── list_square — two DOM shapes ──
-   A) list_square on a wrapper, raw <ul><li> inside (e.g. a text-basic element):
-      real list-items → native ::marker works.
-   B) list_square directly on a Bricks <ul>, each <li> a flex block wrapping a
-      display:list-item <span> (an ACF loop): ::marker on a flex-item list-item
-      renders cramped/misplaced, so draw the square with ::before on the flex <li>. */
+/* ── list_square — A) wrapper + raw <ul><li> → native ::marker.  B) Bricks <ul>
+   of flex <li> (ACF loop) → drawn square via ::before. ── */
 .list_square ul,
 ul.list_square {
 	font-size: var(--text-s);
@@ -319,15 +258,10 @@ table#wkf-table tbody tr:nth-child(odd) {
 	background-color: var(--wkf-surface);
 }
 
-/* ── Quote-list modal (Phase 5) ──
-   .wkf-rfq is the popup panel (template 1412). Its body renders the
-   WooCommerce mini-cart ([wkf_mini_cart]); RFQ-only mode already suppresses
-   prices, this shapes the rows into the design's [ thumb | name + SKU | qty ]
-   and overrides wkf-calculator.css's stacked `.mini_cart_item` layout. */
+/* ── Quote-list modal — .wkf-rfq = popup panel (template 1412), body renders
+   [wkf_mini_cart]; shapes rows into [ thumb | name + SKU | qty ]. ── */
 
-/* The popupContent* / popupPadding template settings don't compile for
-   MCP-created popups, so pin the panel size / shape / centring / viewport
-   gutter here. .brx-popup already centres its content. */
+/* popupContent* / popupPadding don't compile for MCP-created popups. */
 .brxe-popup-1412 {
 	padding: 24px;
 }
@@ -422,10 +356,7 @@ table#wkf-table tbody tr:nth-child(odd) {
 	color: var(--wkf-grey-d-1);
 }
 
-/* ── ITW product tabs — Consumabili / Accessori card hover ──
-   Border + radius are typed controls on the loop wrapper; the hover lives
-   here because an element _cssCustom flags Bricks' bricks-lazy-hidden, which
-   never reveals inside an initially-hidden tab panel. */
+/* ── ITW product tabs — Consumabili / Accessori card hover ── */
 #brxe-sdselv,
 #brxe-xaujka {
 	transition: border-color .16s ease-out;
@@ -435,23 +366,23 @@ table#wkf-table tbody tr:nth-child(odd) {
 	border-color: var(--wkf-primary);
 }
 
-/* ── ITW product tabs — Download panel (#brxe-piyvlq) ──
-   ~12 ACF loops of text-link elements; per-element control edits aren't
-   practical, so the row + eyebrow-heading treatment lives here. */
+/* ── ITW product tabs — Download panel (#brxe-piyvlq) ── */
 #brxe-piyvlq h4 {
-	font-size: var(--text-2xs);
+	font-size: var(--text-s);
 	font-weight: 700;
 	letter-spacing: var(--wkf-tracking-wide);
 	text-transform: uppercase;
-	color: var(--wkf-grey-d-1);
+	color: var(--wkf-primary);
+	margin-bottom: var(--space-2xs);
 }
 #brxe-piyvlq .brxe-text-link {
 	display: flex;
 	align-items: center;
-	gap: 12px;
-	padding: 12px 0;
+	gap: 10px;
+	padding: var(--space-2xs) 0;
 	border-bottom: 1px solid var(--wkf-grey-l-2);
-	font-size: var(--text-s);
+	font-size: var(--text-2xs);
+	line-height: 1.35;
 	color: var(--wkf-black);
 	transition: color .16s ease-out;
 }
@@ -463,10 +394,7 @@ table#wkf-table tbody tr:nth-child(odd) {
 	color: var(--wkf-primary);
 }
 
-/* ── Product-card component (cid 2b807c) instances ──
-   Each instance loops inside a flex-column wrapper that is itself a grid
-   item; force the card to the wrapper's full height so the "Vedi scheda"
-   footer (margin-top:auto) bottom-aligns across a row. */
+/* ── Product-card component (cid 2b807c) — full-height card so the footer bottom-aligns. ── */
 #brxe-tgodca .brxe-wkfloop,
 #brxe-tgodca .brxe-2b807c,
 #brxe-wkfrelgrid .brxe-wkfrelloop,
@@ -474,11 +402,7 @@ table#wkf-table tbody tr:nth-child(odd) {
 	height: 100%;
 }
 
-/* ══ Phase H — Homepage (post 2) ══════════════════════════════════════
-   Gradient / repeating-linear-gradient backgrounds live here, not in
-   element _cssCustom: Bricks flags a _cssCustom `background` with
-   `bricks-lazy-hidden` and the element can stay invisible (same reason
-   the righello gradient moved out in Phase 2.5c). */
+/* ══ Homepage ══ */
 
 /* Hero slide scrim — dark → transparent, left to right. */
 #brxe-hpsl1ov,
@@ -494,7 +418,7 @@ table#wkf-table tbody tr:nth-child(odd) {
 	background-image: repeating-linear-gradient(90deg, rgba(255, 255, 255, .035) 0 1px, transparent 1px 52px);
 }
 
-/* Settori poster cards — diagonal hatch over a per-sector vertical ramp to ink. */
+/* Settori poster cards — diagonal hatch over a per-sector ramp to ink. */
 #brxe-hpsc1,
 #brxe-hpsc2,
 #brxe-hpsc3,
@@ -508,8 +432,7 @@ table#wkf-table tbody tr:nth-child(odd) {
 #brxe-hpsc3 { --wkf-hpsc-tint: #4C5A50; }
 #brxe-hpsc4 { --wkf-hpsc-tint: #5B4E44; }
 
-/* Card hover lift shadow (brand teasers + settori) — native _transform:hover
-   handles the translate; box-shadow has no discoverable native control. */
+/* Card hover lift shadow (brand teasers + settori). */
 #brxe-hpbc1:hover,
 #brxe-hpbc2:hover,
 #brxe-hpbc3:hover,
@@ -518,4 +441,41 @@ table#wkf-table tbody tr:nth-child(odd) {
 #brxe-hpsc3:hover,
 #brxe-hpsc4:hover {
 	box-shadow: var(--wkf-shadow);
+}
+
+/* ══ Responsive — only what a Bricks per-breakpoint control can't express. ══ */
+
+/* Homepage hero studio-slide — pull the H1 in where the product panel still overlaps it. */
+@media (min-width: 992px) and (max-width: 1220px) {
+	#brxe-hpsl2c .brxe-heading,
+	#brxe-hpsl3c .brxe-heading {
+		max-width: 460px;
+	}
+}
+
+/* Homepage hero slider — arrows to a centred pair above the dots on phones. */
+@media (max-width: 767px) {
+	#brxe-hpslider .splide__arrow {
+		top: auto;
+		bottom: 72px;
+	}
+	/* Position from the bottom; keep prev's scaleX(-1) flip. */
+	#brxe-hpslider .splide__arrow--prev {
+		left: 38%;
+		right: auto;
+		transform: scaleX(-1);
+	}
+	#brxe-hpslider .splide__arrow--next {
+		left: auto;
+		right: 38%;
+		transform: none;
+	}
+}
+
+/* Product tabs — wrap the title row on narrow screens */
+@media (max-width: 767px) {
+	.brxe-tabs-nested > .tab-menu {
+		flex-wrap: wrap;
+		row-gap: 2px;
+	}
 }
