@@ -443,6 +443,47 @@ table#wkf-table tbody tr:nth-child(odd) {
 	box-shadow: var(--wkf-shadow);
 }
 
+/* ══ Guide tecniche — single post content ══ */
+
+/* WP core/editor markup inside the post-content element — no Bricks control
+   reaches it. Headings/body type already inherit the theme style. */
+.brxe-post-content > * + * {
+	margin-top: var(--space-m);
+}
+.brxe-post-content h2 {
+	margin-top: var(--space-xl);
+}
+.brxe-post-content h3 {
+	margin-top: var(--space-l);
+}
+.brxe-post-content ul,
+.brxe-post-content ol {
+	padding-left: 1.2em;
+}
+.brxe-post-content ul {
+	list-style: square;
+}
+.brxe-post-content li::marker {
+	color: var(--wkf-primary);
+}
+.brxe-post-content li + li {
+	margin-top: var(--space-2xs);
+}
+.brxe-post-content a {
+	color: var(--wkf-primary);
+	text-decoration: underline;
+	text-underline-offset: 2px;
+}
+.brxe-post-content blockquote {
+	margin-left: 0;
+	padding-left: var(--space-m);
+	border-left: 2px solid var(--wkf-primary);
+	color: var(--wkf-grey-d-1);
+}
+.brxe-post-content img {
+	border-radius: var(--wkf-radius);
+}
+
 /* ══ Responsive — only what a Bricks per-breakpoint control can't express. ══ */
 
 /* Homepage hero studio-slide — pull the H1 in where the product panel still overlaps it. */

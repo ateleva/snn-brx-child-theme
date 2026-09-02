@@ -524,6 +524,62 @@ add_filter( 'woocommerce_widget_cart_item_quantity', function ( $html, $cart_ite
 }, 200, 2 );
 
 /**
+ * "Prodotti collegati" section on the single guide template — hidden unless
+ * the ACF relationship field `wkf_guide_products` both exists AND has values
+ * on the current post.
+ *
+ * A Bricks `_conditions` dynamic-data "is not empty" check can't do this on
+ * its own: when the field isn't registered in ACF yet, `{acf_wkf_guide_products}`
+ * matches no dynamic-data provider tag and Bricks passes the raw string through
+ * unchanged (see Providers::render_content()) — a non-empty string, so the
+ * condition always evaluates true and the section never hides. get_field()
+ * returns false/null in both the "field doesn't exist" and "field exists but
+ * empty" cases, so gating here (same `bricks/element/render` pattern as
+ * wkfrelsec/akrelsec/bfrelsec above) is correct in both. The element's own
+ * `_conditions` is left empty — once the user creates the field this filter
+ * alone is still sufficient, no dual gate needed.
+ */
+add_filter( 'bricks/element/render', function ( $render, $element ) {
+	$element_id = is_object( $element ) ? ( $element->element['id'] ?? '' ) : ( $element['id'] ?? '' );
+
+	if ( 'gsprodsec' !== $element_id ) {
+		return $render;
+	}
+
+	if ( ! function_exists( 'get_field' ) ) {
+		return false;
+	}
+
+	$products = get_field( 'wkf_guide_products', get_the_ID() );
+
+	return $render && ! empty( $products );
+}, 10, 2 );
+
+/**
+ * Related-guides loop for the single guide template ("Altre guide") —
+ * same category as the current post, current post excluded. Bricks' query-loop
+ * builder has no "related posts" object type, so `gsrelloop`'s query is only a
+ * placeholder and this filter swaps in the real vars, same pattern as the
+ * product related-loops above.
+ */
+add_filter( 'bricks/posts/query_vars', function ( $query_vars, $settings, $element_id ) {
+	if ( 'gsrelloop' !== $element_id || ! is_singular( 'post' ) ) {
+		return $query_vars;
+	}
+
+	$cats = wp_get_post_categories( get_the_ID() );
+
+	if ( $cats ) {
+		$query_vars['category__in'] = $cats;
+	}
+
+	$query_vars['post__not_in']        = array( get_the_ID() );
+	$query_vars['ignore_sticky_posts'] = true;
+
+	return $query_vars;
+}, 10, 3 );
+
+/**
  * Main navigation (mega menu) assets.
  */
 add_action(
