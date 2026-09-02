@@ -473,3 +473,49 @@ table#wkf-table tbody tr:nth-child(odd) {
 #brxe-wkfrelgrid .brxe-2b807c {
 	height: 100%;
 }
+
+/* ══ Phase H — Homepage (post 2) ══════════════════════════════════════
+   Gradient / repeating-linear-gradient backgrounds live here, not in
+   element _cssCustom: Bricks flags a _cssCustom `background` with
+   `bricks-lazy-hidden` and the element can stay invisible (same reason
+   the righello gradient moved out in Phase 2.5c). */
+
+/* Hero slide scrim — dark → transparent, left to right. */
+#brxe-hpsl1ov,
+#brxe-hpsl2ov,
+#brxe-hpsl3ov {
+	background: linear-gradient(90deg, rgba(29, 33, 38, .82) 0%, rgba(29, 33, 38, .55) 45%, rgba(29, 33, 38, .12) 100%);
+}
+
+/* "Studio" hero slides (ITW / Akifix) — ink ground + faint vertical rule. */
+#brxe-hpsl2,
+#brxe-hpsl3 {
+	background-color: var(--wkf-black);
+	background-image: repeating-linear-gradient(90deg, rgba(255, 255, 255, .035) 0 1px, transparent 1px 52px);
+}
+
+/* Settori poster cards — diagonal hatch over a per-sector vertical ramp to ink. */
+#brxe-hpsc1,
+#brxe-hpsc2,
+#brxe-hpsc3,
+#brxe-hpsc4 {
+	background-image:
+		repeating-linear-gradient(135deg, rgba(255, 255, 255, .05) 0 1px, transparent 1px 14px),
+		linear-gradient(180deg, var(--wkf-hpsc-tint) 0%, var(--wkf-black) 100%);
+}
+#brxe-hpsc1 { --wkf-hpsc-tint: #3A424C; }
+#brxe-hpsc2 { --wkf-hpsc-tint: #44506B; }
+#brxe-hpsc3 { --wkf-hpsc-tint: #4C5A50; }
+#brxe-hpsc4 { --wkf-hpsc-tint: #5B4E44; }
+
+/* Card hover lift shadow (brand teasers + settori) — native _transform:hover
+   handles the translate; box-shadow has no discoverable native control. */
+#brxe-hpbc1:hover,
+#brxe-hpbc2:hover,
+#brxe-hpbc3:hover,
+#brxe-hpsc1:hover,
+#brxe-hpsc2:hover,
+#brxe-hpsc3:hover,
+#brxe-hpsc4:hover {
+	box-shadow: var(--wkf-shadow);
+}
