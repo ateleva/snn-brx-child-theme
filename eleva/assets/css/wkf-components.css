@@ -111,40 +111,50 @@ html {
    only reach the MAIN slider: `> .woocommerce-product-gallery > .flex-viewport`
    and `.woocommerce-product-gallery__wrapper > .woocommerce-product-gallery__image`
    (thumbs use .brx-thumbnail-slider-wrapper >). Otherwise the aspect-ratio:1/1
-   + border landed on the 72px thumb strip's inner viewport → clipped. */
+   + border landed on the 72px thumb strip's inner viewport → clipped.
+   ── GUTTER LIVES ON THE VIEWPORT, NOT THE SLIDE: flexslider's doMath() sets
+   each slide's inline width from `viewport.width() - slide.boxPadding` (its
+   own padding+border), then steps translate3d() between slides using that
+   SAME width WITHOUT adding boxPadding back — so a non-zero padding on the
+   slide itself is invisible to the step distance while still being visible
+   to the rendered width, and the two drift apart by `boxPadding` per slide
+   index (slide N lands N × boxPadding short of the viewport window — at
+   N=2/12px padding that's a 48px miss). That drift IS the "next/prev image
+   peeking in, current one reads cropped" bug. Padding must therefore be 0 on
+   the slide; the 12px gutter is drawn by the (flexslider-uninvolved) viewport
+   instead, and the slide simply fills the viewport's resulting content box
+   edge to edge. */
 #brxe-dtfpzi > .woocommerce-product-gallery > .flex-viewport,
 #brxe-iwikdl > .woocommerce-product-gallery > .flex-viewport,
 #brxe-354c63 > .woocommerce-product-gallery > .flex-viewport {
 	height: auto !important;
 	aspect-ratio: 1 / 1;
 	overflow: hidden;
+	box-sizing: border-box;
 	border: 1px solid var(--wkf-grey-l-2);
 	border-radius: var(--wkf-radius);
 	background: var(--wkf-white);
+	padding: 12px;
 }
 #brxe-dtfpzi .woocommerce-product-gallery__wrapper > .woocommerce-product-gallery__image,
 #brxe-iwikdl .woocommerce-product-gallery__wrapper > .woocommerce-product-gallery__image,
 #brxe-354c63 .woocommerce-product-gallery__wrapper > .woocommerce-product-gallery__image {
 	/* !important beats the display flexslider writes inline per-slide.
-	   box-sizing must be content-box: flexslider's doMath() computes each
-	   slide's inline `width` as viewport.width() MINUS this element's own
-	   padding+border ("boxPadding"), then sets that as the raw CSS width
-	   expecting the box model to add the padding back on top. border-box
-	   breaks that assumption — the slide renders `padding` narrower than the
-	   viewport, and since slides float left with no gap, that gap is the next
-	   slide peeking through on the right edge (photo reads left-shifted/
-	   off-centre). The theme resets `*{box-sizing:border-box}` sitewide, so
-	   content-box has to be forced back explicitly — omitting the property
-	   here still inherits border-box from that reset. */
+	   No padding/border here — see the gutter note above; boxPadding must
+	   stay 0 or flexslider's per-slide translate3d() step drifts off the
+	   viewport window. */
 	display: flex !important;
 	align-items: center;
 	justify-content: center;
-	box-sizing: content-box;
-	padding: 12px;
 }
-#brxe-dtfpzi .woocommerce-product-gallery__wrapper > .woocommerce-product-gallery__image img.wp-post-image,
-#brxe-iwikdl .woocommerce-product-gallery__wrapper > .woocommerce-product-gallery__image img.wp-post-image,
-#brxe-354c63 .woocommerce-product-gallery__wrapper > .woocommerce-product-gallery__image img.wp-post-image {
+#brxe-dtfpzi .woocommerce-product-gallery__wrapper > .woocommerce-product-gallery__image img,
+#brxe-iwikdl .woocommerce-product-gallery__wrapper > .woocommerce-product-gallery__image img,
+#brxe-354c63 .woocommerce-product-gallery__wrapper > .woocommerce-product-gallery__image img {
+	/* Targets every gallery image, not just img.wp-post-image — that class is
+	   WooCommerce's marker for the product's SET featured image only; every
+	   other gallery photo renders as a bare <img> and was silently skipping
+	   this whole rule (falling through to Bricks' own `width:100%` default,
+	   no object-fit) until this was broadened. */
 	position: static;
 	inset: auto;
 	width: auto;
