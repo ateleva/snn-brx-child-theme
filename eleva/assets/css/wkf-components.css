@@ -11,17 +11,12 @@ html {
 	letter-spacing: var(--wkf-tracking-tight);
 }
 
-/* "Filetto righello" — section divider */
+/* "Filetto righello" — section divider. Height/border/margin/background all
+   come from the Global Class `qxelsw` (higher-specificity `.wkf-righello.brxe-div`
+   compound selector always wins those). Only `width` isn't covered by the class —
+   without it a `.brxe-div` in a flex parent collapses to 0 and nothing paints. */
 .wkf-righello {
 	width: 100%;
-	height: 8px;
-	margin-block: 1rem;
-	border-top: 1px solid var(--wkf-grey-l-2);
-	background-image:
-		repeating-linear-gradient(90deg, var(--wkf-grey-l-2) 0 1px, transparent 1px 40px),
-		repeating-linear-gradient(90deg, var(--wkf-grey-l-2) 0 1px, transparent 1px 8px);
-	background-size: 100% 8px, 100% 4px;
-	background-repeat: no-repeat;
 }
 
 /* ── Product page — WooCommerce markup ── */
