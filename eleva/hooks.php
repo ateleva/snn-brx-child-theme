@@ -232,23 +232,25 @@ add_filter( 'woocommerce_get_breadcrumb', function( $crumbs ) {
 }, 20 );
 
 /**
- * Drop the query trail markup from the two decorative loops of the "Categoria
- * L2" template: the sub-category chips (mfchp1) and the brand badge inside each
- * product card (cdbrnd).
+ * Drop the query trail markup from decorative loops:
+ *   - "Categorie L2/L3" template: the brand badge inside each product card
+ *     (cdbrnd), and the per-current-category L3 sub-tree (sbcl3p) that hangs
+ *     off the current row of the sidebar "Categorie" siblings list.
+ *   - "Scheda Categoria L1" component (fa3f9c): the per-card L3 sub-category
+ *     list (l1l3lp), repeated once per L2 card in the Categoria L1 grid.
  *
  * Bricks appends a hidden "query trail" node after every query loop to carry
- * the query vars for infinite scroll / AJAX filtering. Neither of these loops
- * is ever filtered or paginated - the chips are the term's children, the badge
- * is the product's single brand - so the trail is dead markup, and the badge
- * one is repeated once per card. The product grid loop keeps its trail: that
- * query is the one AJAX filters would target.
+ * the query vars for infinite scroll / AJAX filtering. None of these loops is
+ * ever filtered or paginated - the rows are the term's children, the badge is
+ * the product's single brand - so the trail is dead markup. The product grid
+ * loop keeps its trail: that query is the one AJAX filters target.
  *
  * @see https://academy.bricksbuilder.io/article/filter-bricks-render_query_loop_trail/
  */
 add_filter( 'bricks/render_query_loop_trail', function( $render, $element_instance ) {
     $element_id = $element_instance->element['id'] ?? '';
 
-    if ( in_array( $element_id, array( 'mfchp1', 'cdbrnd' ), true ) ) {
+    if ( in_array( $element_id, array( 'cdbrnd', 'l1l3lp', 'sbcl3p' ), true ) ) {
         return false;
     }
 
