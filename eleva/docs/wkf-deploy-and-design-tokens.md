@@ -297,11 +297,14 @@ Three fixes from the final (Phase 8) responsive audit are DB-only and easy to lo
 
 **General rule this exposes:** whenever a flex container gets a `_direction:<breakpoint>: column`, audit every child for a base `_width` / `_widthMax` / `_alignSelf` that assumed the row layout. Bricks does not reset them.
 
-### One piece of dead code in `hooks.php` (known, harmless)
+### Where the brand pages' category scoping actually lives
 
-`add_filter( 'bricks/terms/query_vars', … )` scopes its work to element ids `wkf1189loop` / `wkf1185loop` / `wkf1182loop`. **None of those ids exists any more** — the brand pages' "Categorie" grids were rebuilt around the `cgbrnd` component and their loop wrappers are now `cgebkd` (1189) / `sfnnxr` (1185) / `rysskp` (1182). The filter is therefore a no-op, and its docblock describes behaviour that no longer happens.
+The brand landing pages show only the categories that contain a product of the viewed brand. That is **not** done in PHP. It is:
 
-Output is still correct: brand scoping is now done by `cgbrnd`'s own root condition (`{wkf_cat_product_count_number} != 0`, brand-scoped on a `product_brand` archive) plus the `:not(:has(.brxe-cgbrnd))` collapse rule. Left in place deliberately rather than re-pointed — re-pointing would put the same rule in two places. If it's ever cleaned up, **delete it**, don't update the ids.
+1. `cgbrnd`'s root `_conditions`: `{wkf_cat_product_count_number} != 0`. That tag is brand-scoped on a `product_brand` archive, so the tile suppresses itself for a category with none of the brand's products.
+2. A `.brxe-<loopid>:not(:has(.brxe-cgbrnd)) { display: none }` rule that collapses the leftover empty loop-iteration wrapper.
+
+A `bricks/terms/query_vars` filter used to do this in `hooks.php`, keyed on the Phase B wrapper ids `wkf1189loop` / `wkf1185loop` / `wkf1182loop`. The `cgbrnd` rebuild renamed those wrappers (`cgebkd` / `sfnnxr` / `rysskp`) and took over the job, leaving the filter a silent no-op with a docblock describing scoping it wasn't doing. **Removed in `848e9eb`** — a comment at that spot in `hooks.php` records the history. If the tiles ever start showing brand-irrelevant categories, check the component condition, not PHP.
 
 ### Two standing Bricks gotchas (Phase G, apply to any future component/template work)
 
