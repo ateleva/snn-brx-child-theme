@@ -239,12 +239,17 @@ The gradient CSS itself (either in the class's `_cssCustom` or the file, functio
 
 ### Component map
 
-Three reusable Bricks Components, all in the "Loop Items" category, all built with **zero `properties`** (every field is dynamic data, so any instance works unconfigured):
+**Six** reusable WKF Bricks Components, all in the "Loop Items" category, all built with **zero `properties`** (every field is dynamic data, so any instance works unconfigured). All six live in the single `bricks_components` option — migrating that option moves all of them together (Part 3).
 
-| Component | Id | Used on | Notes |
+`get_option('bricks_components')` also holds a seventh entry, **`kwirni` "Sample Card"** — a theme/framework demo used only by SNN's own sample templates (20 "Framework Preview", 40/43/50/60/62, 238–243, 1235). It is **not** WKF work; don't style it, don't delete it as part of a WKF cleanup.
+
+| Component | Id | Used on (verified live) | Notes |
 |---|---|---|---|
-| Scheda Prodotto (product card) | `2b807c` | Category archives (1277/1290/1201), brand pages, ITW "Prodotti correlati", homepage-adjacent | Framed image, brand eyebrow, product name, mono SKU, price/"Su richiesta", "Vedi scheda →". Hover: typed `_border:hover` + `_transform:hover` (`translateY(-2px)`), plus one hardcoded-class `_cssCustom` line for the shadow: `.brxe-2b807c:hover{box-shadow:var(--wkf-shadow)}` — a component instance never renders an `id` attribute in the DOM (only the `brxe-2b807c` class), so an `#brxe-` or `%root%` selector silently matches nothing; the class must be hardcoded. |
-| Scheda Categoria (category tile) | `dc9cc7` | Categoria L1 (1290), Catalogo (1201), all 3 brand pages, Homepage | Restyled once, in place, from an original blue-poster skin to the current **stacked white card** (framed 16/10 image, term name, plain mono post-count, "Esplora →") — because it's a single component, that restyle applied to every instance simultaneously. The blue-poster description in older plan text is superseded; the white card is what's live everywhere today. |
+| Scheda Prodotto (product card) | `2b807c` | ITW (65), Akifix (434), Baufloor (439), all 3 brand pages (1182/1185/1189), Categorie L2/L3 (**1277**), single guide "Prodotti collegati" (1478) | Framed image, brand eyebrow, product name, mono SKU, price/"Su richiesta", "Vedi scheda →". Hover: typed `_border:hover` + `_transform:hover` (`translateY(-2px)`), plus one hardcoded-class `_cssCustom` line for the shadow: `.brxe-2b807c:hover{box-shadow:var(--wkf-shadow)}` — a component instance never renders an `id` attribute in the DOM (only the `brxe-2b807c` class), so an `#brxe-` or `%root%` selector silently matches nothing; the class must be hardcoded. **Not** used on 1290 or 1201 (earlier drafts of this doc said it was). |
+| Scheda Categoria (category tile) | `dc9cc7` | Homepage (post 2), Catalogo (**1201**) — those two only | Restyled once, in place, from an original blue-poster skin to the current **stacked white card** (framed 16/10 image, term name, plain mono post-count, "Esplora →"). The blue-poster description in older plan text is superseded. It was **replaced** on Categoria L1 (1290) by `fa3f9c`, and on the brand pages by `cgbrnd` — earlier drafts of this doc still listed those surfaces. |
+| Scheda Categoria L1 | `fa3f9c` | Categoria L1 (**1290**) only | 14 elements. The richest tile: 16/10 media box with `{term_meta:thumbnail_id}` background, absolutely-positioned brand chip `{wkf_cat_brands}` (`empty_not`), title + `{wkf_cat_product_count_number} prod.`, `{term_description}` (`empty_not`, 3-line clamp), a **nested L3 term loop** (`l1l3lp`, `parent:"{term_id}"`) rendering `↳ name / count` rows gated by `{wkf_term_child_count} != 0`, and an "Esplora la categoria" CTA. Child ids: `l1med0 l1chp0 l1cnt0 l1ttr0 l1ttl0 l1cnt1 l1dsc0 l1l3bk l1l3lp l1l3rw l1l3nm l1l3ct l1cta0` — all ≤6 chars per gotcha #1. `_cssCustom` uses hardcoded `.brxe-<childid>` selectors (the MCP "%root% missing" warning is a false positive for component children). |
+| Scheda Categoria Brand | `cgbrnd` | Brand pages 1182 / 1185 / 1189 | 9 elements. The brand pages' "Categorie" grid tile. Its **root carries `_conditions`: `{wkf_cat_product_count_number} != 0`** — since that tag is brand-scoped on a `product_brand` archive, the tile self-suppresses for categories with no products of the viewed brand. The leftover empty loop-iteration wrapper is then collapsed by a `.brxe-<loopid>:not(:has(.brxe-cgbrnd)){display:none}` rule. **This pair is the live brand-scoping mechanism** — see the "dead filter" note under Part 1/hooks. |
+| Scheda Documento | `docbrd` | Brand pages 1182 / 1185 / 1189 | 9 elements. The "Cataloghi e documentazione" grid tile: uses `{wkf_document_file_format}` (derived from the attachment **filename extension**, not the MIME subtype) and `{wkf_document_file_size}`. |
 | Scheda Guida (blog/guide card) | `ffffd3` | Guide Tecniche index (1468), category archive (1476), single guide "Altre guide" (1478) | Full-bleed image (no padded frame — an interim padded-frame version was tried and reverted per user feedback), category eyebrow, `h3` title, word-limited excerpt (`{post_excerpt:22}`, no CSS line-clamp), mono date + "Leggi la guida →". All internal element ids are ≤6 characters (`ggimg`, `ggcont`, `ggeyeb`, `ggtitl`, `ggexce`, `ggfoot`, `ggdate`, `gglink`) — see gotcha #1. |
 
 ### Template & page map
@@ -256,12 +261,12 @@ Three reusable Bricks Components, all in the "Loop Items" category, all built wi
 | 434 | Single Product — Akifix | `wc_product` | 2-col layout, no technical aside |
 | 439 | Single Product — Baufloor | `wc_product` | 3-col layout, calculator-driven info column |
 | 592 | Popup – Legenda Simboli | `popup` | Badge/symbol legend |
-| 1019 | Quick View — Akifix | `popup` | |
-| 1084 | Quick View — Baufloor | `popup` | brand-35 only |
+| 1019 | Quick View — Akifix | `popup` | Conditioned to `product_brand::35` (Akifix) |
+| 1084 | Quick View — Baufloor | `popup` | Baufloor's own Quick View — the "brand-35 only" note belonged to 1019, not this one |
 | 1153 | Area Download | `archive` (scoped `wkf_document`) | Explicitly deferred — unstyled |
-| 1201 | Catalogo | `wc_archive` | Tree root, no breadcrumb |
-| 1277 | Categorie L2/L3 | `wc_archive` | |
-| 1290 | Categoria L1 | `wc_archive` | |
+| 1201 | Catalogo | `wc_archive` | Tree root, no breadcrumb. Tile grid `lhvbmy` uses `dc9cc7` |
+| 1277 | Categorie L2/L3 | `wc_archive` | Sidebar `kgdjbk` holds the full local category tree: siblings loop `sbcclp` (`parent:{wkf_term_parent_id}`) with, on the current row only, a nested L3 loop `sbcl3p` gated by **AND** of `{wkf_term_is_current} == 1` and `{wkf_term_child_count} > 0`. The old horizontal L3 chip nav (`xieawm`/`mfchp1`/`mflbl1`) above the product grid was deleted. Product grid `tgodca` uses `2b807c` |
+| 1290 | Categoria L1 | `wc_archive` | Grid `92c7ca` = `repeat(auto-fit, minmax(450px,1fr))` (→ 2 columns at 1440, deliberate: the card is tall), loop `wkf1290loop` holds a single `fa3f9c` instance. Hero eyebrow `mbupig` = `{wkf_cat_product_count_number} prodotti · {wkf_term_child_count} categorie · {wkf_cat_brands}` (use the `_number` tag — `{wkf_cat_product_count}` self-renders "N prodotti" and doubles the word) |
 | 1182 / 1185 / 1189 | Brand pages — Baufloor / Akifix / ITW | `wc_archive` | |
 | 1362 | Footer | `footer` | |
 | 1412 | Popup – Lista Preventivo | `popup` (`[{main:"any"}]`) | Quote-cart modal |
@@ -275,6 +280,28 @@ Full element-id vocabularies for cloning or auditing a specific template live in
 ### Breakpoints
 
 Header/nav drawer breakpoint is a **custom 1279px** (`#wkfnav`: `mobileMenu:"custom"`, `mobileMenuCustomBreakpoint:"1279"`). This value has a history — it was 1150, then briefly tried at 1200 and 1320 (1320 broke the logic, since Bricks inverts the min/max comparison above the theme's `desktop` base width, which is 1279 on this site) — 1279 is final. Everything else uses Bricks defaults: `tablet_portrait` 991 / `mobile_landscape` 767 / `mobile_portrait` 478.
+
+### Responsive settings live in the DB, not in CSS
+
+Almost every responsive move on this site is a **Bricks per-breakpoint element control** (`_gridTemplateColumns:tablet_portrait`, `_direction:tablet_portrait`, `_width:mobile_portrait`, …) stored inside the template's serialized element tree. They therefore migrate with a template export/import and with a `wp_posts`/`wp_postmeta` move — **but not with a git pull**. A template restored from an older export silently loses them, and the failure looks like "the layout broke on mobile", not like a missing file.
+
+CSS-file `@media` blocks exist only where a Bricks control can't reach: a min/max range with no matching global breakpoint (`992–1220px` H1 cap on the homepage), Splide/WooCommerce generated markup, and pseudo-elements.
+
+Three fixes from the final (Phase 8) responsive audit are DB-only and easy to lose:
+
+| Template | Element | Setting | Why |
+|---|---|---|---|
+| 1189 / 1185 / 1182 | `brvmzc` / `szyafl` / `cfkikt` ("Cataloghi e documentazione" `h2`) | `_widthMin:mobile_portrait` = `auto` | The base `_widthMin: max-content` combined with `.pre-title-line`'s flex `::before` bar forced the heading ~52px wider than its column at ≤478px, pushing 30px of horizontal page scroll. `min-width` beats `max-width:100%`, so the `100%` cap didn't save it. |
+| 1277 | `kgdjbk` (sidebar column) | `_width:tablet_portrait` = `100%`, `_widthMax:tablet_portrait` = `100%`, `_alignSelf:tablet_portrait` = `stretch` | Its base `_width:15%` / `_widthMax:32ch` / `_alignSelf:flex-start` stayed in force after `hcnmis` flips to `_direction:column` at ≤991, collapsing the whole category tree into a **65px** column. Latent since Phase R — the column was empty then; it became visible only when the sidebar tree was built into it. |
+| 1277 | `qlcnxn` (main column) · `hcnmis` (row) | `_width:tablet_portrait` = `100%` · `_alignItems:tablet_portrait` = `stretch` | Same cause: `_width:75%` survived the row→column flip, leaving 25% dead space beside the stacked product grid. |
+
+**General rule this exposes:** whenever a flex container gets a `_direction:<breakpoint>: column`, audit every child for a base `_width` / `_widthMax` / `_alignSelf` that assumed the row layout. Bricks does not reset them.
+
+### One piece of dead code in `hooks.php` (known, harmless)
+
+`add_filter( 'bricks/terms/query_vars', … )` scopes its work to element ids `wkf1189loop` / `wkf1185loop` / `wkf1182loop`. **None of those ids exists any more** — the brand pages' "Categorie" grids were rebuilt around the `cgbrnd` component and their loop wrappers are now `cgebkd` (1189) / `sfnnxr` (1185) / `rysskp` (1182). The filter is therefore a no-op, and its docblock describes behaviour that no longer happens.
+
+Output is still correct: brand scoping is now done by `cgbrnd`'s own root condition (`{wkf_cat_product_count_number} != 0`, brand-scoped on a `product_brand` archive) plus the `:not(:has(.brxe-cgbrnd))` collapse rule. Left in place deliberately rather than re-pointed — re-pointing would put the same rule in two places. If it's ever cleaned up, **delete it**, don't update the ids.
 
 ### Two standing Bricks gotchas (Phase G, apply to any future component/template work)
 
