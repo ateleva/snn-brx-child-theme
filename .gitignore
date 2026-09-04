@@ -1,0 +1,6 @@
+# Agent working files — never shipped.
+.superpowers/
+
+# Local working documentation (deploy runbook, design-token reference).
+# Kept on disk, deliberately not published to the fork.
+eleva/docs/
