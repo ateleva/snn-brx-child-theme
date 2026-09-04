@@ -19,7 +19,17 @@ html {
 	width: 100%;
 }
 
-/* BRANDS Styling */
+/* ===== BRANDS STYLING ===== */
+
+/* PRODUCT BRAND TERM */
+.term-itw .product-brand-cat-tree > a {
+    background-color: var(--itw-primary);
+}
+
+.term-itw .product-brand-cat-tree > a > span:last-child {
+	color: var(--wkf-white);
+}
+
 .pre-title-line {
 	display: flex;
   	align-items: center;
