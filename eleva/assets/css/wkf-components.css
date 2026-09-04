@@ -19,6 +19,41 @@ html {
 	width: 100%;
 }
 
+/* BRANDS Styling */
+.pre-title-line {
+	display: flex;
+  	align-items: center;
+}
+
+.pre-title-line:before {
+  position: relative;
+  content: '';
+  display: inline-flex;
+  width: var(--space-2xl);
+  height: 4px;
+  margin-right: var(--space-m);
+  background-color: var(--wkf-grey-d-3);
+}
+
+.pre-title-line.akifix:before { background-color: var(--akifix-primary); }
+.pre-title-line.baufloor:before { background-color: var(--baufloor-primary); }
+.pre-title-line.itw:before { background-color: var(--itw-primary); }
+
+.product_card:has(.wkf-eyebrow > a[href$="/marchio/akifix/"]) .top-product {
+    color: var(--wkf-black);
+    background-color: var(--akifix-primary);
+}
+
+.product_card:has(.wkf-eyebrow > a[href$="/marchio/baufloor/"]) .top-product {
+    color: var(--wkf-black);
+    background-color: var(--baufloor-primary);
+}
+
+.product_card:has(.wkf-eyebrow > a[href$="/marchio/itw/"]) .top-product {
+    color: var(--wkf-white);
+    background-color: var(--itw-primary);
+}
+
 /* ── Product page — WooCommerce markup ── */
 
 /* Breadcrumb — blue bar, white trail, bold current crumb. */
