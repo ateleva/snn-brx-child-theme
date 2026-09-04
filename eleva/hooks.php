@@ -582,6 +582,52 @@ add_filter( 'bricks/posts/query_vars', function ( $query_vars, $settings, $eleme
 }, 10, 3 );
 
 /**
+ * "Altre guide" section — removed when the current guide is the only post in
+ * its categories, so the heading never renders above an empty grid. Mirrors
+ * the `gsrelloop` query above (same categories, current post excluded); same
+ * `bricks/element/render` pattern as wkfrelsec/gsprodsec.
+ */
+function wkf_has_related_guides() {
+	static $cache = null;
+
+	$post_id = (int) get_the_ID();
+
+	if ( is_array( $cache ) && $cache['id'] === $post_id ) {
+		return $cache['has'];
+	}
+
+	$cats = $post_id ? wp_get_post_categories( $post_id ) : array();
+	$has  = false;
+
+	if ( $post_id && $cats ) {
+		$has = (bool) get_posts(
+			array(
+				'post_type'      => 'post',
+				'posts_per_page' => 1,
+				'category__in'   => $cats,
+				'post__not_in'   => array( $post_id ),
+				'fields'         => 'ids',
+				'no_found_rows'  => true,
+			)
+		);
+	}
+
+	$cache = array( 'id' => $post_id, 'has' => $has );
+
+	return $has;
+}
+
+add_filter( 'bricks/element/render', function ( $render, $element ) {
+	$element_id = is_object( $element ) ? ( $element->element['id'] ?? '' ) : ( $element['id'] ?? '' );
+
+	if ( 'gsrelsec' !== $element_id ) {
+		return $render;
+	}
+
+	return $render && wkf_has_related_guides();
+}, 10, 2 );
+
+/**
  * Main navigation (mega menu) assets.
  */
 add_action(
