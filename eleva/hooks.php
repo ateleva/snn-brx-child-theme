@@ -445,51 +445,6 @@ add_shortcode( 'wkf_rfq_count', function ( $atts ) {
 } );
 
 /**
- * Phase 5 quote-cart modal — the modal body renders [wkf_mini_cart] (there is
- * no core [woocommerce_mini_cart] shortcode; the mini-cart is a template
- * function). RFQ-only mode: the cart IS the quote list, prices already
- * suppressed by the plugin. Two mini-cart-only tweaks to match the design row
- * [ thumb | name + SKU | qty ]:
- *   - append the product SKU under the name
- *   - reduce the quantity cell to the bare number (no "× price")
- * Scoped with a flag so the full cart / checkout are untouched.
- */
-add_shortcode( 'wkf_mini_cart', function () {
-	if ( ! function_exists( 'woocommerce_mini_cart' ) ) {
-		return '';
-	}
-
-	ob_start();
-	echo '<div class="widget_shopping_cart_content">';
-	woocommerce_mini_cart();
-	echo '</div>';
-
-	return ob_get_clean();
-} );
-
-add_action( 'woocommerce_before_mini_cart', function () { $GLOBALS['wkf_in_mini_cart'] = true; } );
-add_action( 'woocommerce_after_mini_cart', function () { unset( $GLOBALS['wkf_in_mini_cart'] ); } );
-
-add_filter( 'woocommerce_cart_item_name', function ( $name, $cart_item ) {
-	if ( empty( $GLOBALS['wkf_in_mini_cart'] ) ) {
-		return $name;
-	}
-
-	$product = $cart_item['data'] ?? null;
-	$sku     = ( $product instanceof WC_Product ) ? $product->get_sku() : '';
-
-	return $sku ? $name . '<span class="wkf-rfq-sku">' . esc_html( $sku ) . '</span>' : $name;
-}, 10, 2 );
-
-add_filter( 'woocommerce_widget_cart_item_quantity', function ( $html, $cart_item ) {
-	if ( empty( $GLOBALS['wkf_in_mini_cart'] ) ) {
-		return $html;
-	}
-
-	return '<span class="quantity">' . intval( $cart_item['quantity'] ) . '</span>';
-}, 200, 2 );
-
-/**
  * "Prodotti collegati" section on the single guide template — hidden unless
  * the ACF relationship field `wkf_guide_products` both exists AND has values
  * on the current post.
