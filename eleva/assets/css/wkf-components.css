@@ -324,16 +324,26 @@ table#wkf-table tbody tr:nth-child(odd) {
 	background: var(--wkf-primary-d-1);
 }
 
-/* Second CTA — "Completa la richiesta" (#brxe-fdspdc) shares .wkf-rfq__cta
-   with the primary "Vedi lista completa" (#brxe-rfqbtn); id-scoped here to
-   give it the system's on-light secondary/outline treatment instead of a
-   second identical filled-primary block. */
+/* Two CTAs share .wkf-rfq__cta — checkout is the primary action, view-cart
+   is secondary, so both are id-scoped to give each its correct treatment
+   instead of two identical filled-blue blocks. */
 #brxe-fdspdc {
+	/* "Completa la richiesta" → checkout — primary, filled. */
+	background: var(--wkf-primary);
+	color: var(--wkf-white);
+	border: 1px solid var(--wkf-primary);
+}
+#brxe-fdspdc:hover {
+	background: var(--wkf-primary-d-1);
+	border-color: var(--wkf-primary-d-1);
+}
+#brxe-rfqbtn {
+	/* "Vedi lista completa" → cart page — secondary, outline. */
 	background: transparent;
 	border: 1px solid var(--wkf-grey-l-2);
 	color: var(--wkf-primary);
 }
-#brxe-fdspdc:hover {
+#brxe-rfqbtn:hover {
 	background: var(--wkf-surface);
 }
 
