@@ -324,6 +324,13 @@ table#wkf-table tbody tr:nth-child(odd) {
 	background: var(--wkf-primary-d-1);
 }
 
+/* Cart page (54) summary-panel CTA — same primary-button treatment as
+   .wkf-rfq__cta's filled variant (#brxe-fdspdc below), own class because
+   this button lives outside the RFQ popup markup. */
+.wkf-cart-cta:hover {
+	background: var(--wkf-primary-d-1);
+}
+
 /* Two CTAs share .wkf-rfq__cta — checkout is the primary action, view-cart
    is secondary, so both are id-scoped to give each its correct treatment
    instead of two identical filled-blue blocks. */
