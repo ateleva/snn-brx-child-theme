@@ -43,6 +43,12 @@ function wkf_link_brand_to_document_cpt() {
  * (Bricks compiles that control's `%root%` selector to `#brxe-<id>`, a
  * descendant selector that only matches inside the element itself) — so
  * the dropdown can be styled from Bricks instead of a theme stylesheet.
+ *
+ * Scoped to the header element (#brxe-gjvbmv) on purpose: the per-section
+ * search inputs on the "Risultati di ricerca" template (srpsearch /
+ * srgsearch) are plain submit-on-enter forms, each already scoped by its
+ * own hidden wkf_in param — binding the product-only live dropdown to the
+ * guide input would show the wrong post type.
  */
 add_action( 'wp_enqueue_scripts', function() {
     if ( ! wp_script_is( 'relevanssi-live-search-client', 'registered' ) ) {
@@ -51,7 +57,7 @@ add_action( 'wp_enqueue_scripts', function() {
     wp_add_inline_script(
         'relevanssi-live-search-client',
         'jQuery(function($){' .
-        '$(".bricks-search-form input[name=\"s\"]").each(function(){' .
+        '$("#brxe-gjvbmv .bricks-search-form input[name=\"s\"]").each(function(){' .
         'var $input=$(this),$wrap=$input.closest(".brxe-search");' .
         'if(!$wrap.length){return;}' .
         'var rid="wkf-live-search-results-"+($wrap.attr("id")||"x");' .
@@ -62,6 +68,65 @@ add_action( 'wp_enqueue_scripts', function() {
         '});'
     );
 }, 20 );
+
+/**
+ * Header search box never renders prefilled with the current query.
+ *
+ * Bricks' searchform.php fills the input from get_search_query(), so on
+ * /?s=X the header box shows X. That box is products-only (it submits
+ * wkf_in=prodotti, and its live dropdown is forced to post_type=product),
+ * but a filled box reads as "this bar searches whatever you last looked
+ * for" — so from a guide results page users retype into it and get nothing.
+ * The per-section inputs on the results template keep their prefill; they
+ * are correctly scoped.
+ *
+ * Deliberately its own tiny script rather than a line inside the Relevanssi
+ * Live Ajax bind above: that one early-returns when the plugin is inactive,
+ * which would silently take the fix with it. Runs on both DOMContentLoaded
+ * and pageshow, because Firefox/Safari restore form values from bfcache on
+ * back-navigation after DOM ready. autocomplete="off" stops the browser
+ * re-offering the value on its own.
+ *
+ * Server-side alternative considered and rejected: Bricks' search element
+ * does `include locate_template( 'searchform.php' )`, so a child-theme
+ * searchform.php would win and avoid the brief flash of the prefilled
+ * value. It would mean forking an upstream template into the theme root,
+ * against this project's rule that customizations live under eleva/.
+ */
+add_action( 'wp_enqueue_scripts', function () {
+    wp_register_script( 'wkf-header-search', false, array(), null, true );
+    wp_enqueue_script( 'wkf-header-search' );
+    wp_add_inline_script(
+        'wkf-header-search',
+        '(function(){' .
+        'var sel="#brxe-gjvbmv .bricks-search-form input[name=\'s\']";' .
+        'function clear(){var i=document.querySelector(sel);if(i){i.value="";i.setAttribute("autocomplete","off");}}' .
+        'if(document.readyState!=="loading"){clear();}else{document.addEventListener("DOMContentLoaded",clear);}' .
+        'window.addEventListener("pageshow",clear);' .
+        '})();'
+    );
+}, 20 );
+
+/**
+ * Clean up Relevanssi's auto-generated excerpts before they hit the cards.
+ *
+ * With relevanssi_excerpts on, Relevanssi overwrites $post->post_excerpt with
+ * a highlighted excerpt stitched together from matching passages. Because it
+ * slices mid-document it drags along unbalanced block markup — a stray </p>,
+ * a section heading spliced into the middle of a sentence — which then lands
+ * inside the "Scheda Guida" card's text-basic <div> on the search results
+ * page. (The blog index is unaffected: it renders the hand-written excerpt.)
+ *
+ * Keep the highlighting, drop the structure: allow only the inline emphasis
+ * tags Relevanssi uses for the matched terms, and collapse whitespace so the
+ * card text reads as one paragraph.
+ */
+add_filter( 'relevanssi_excerpt', function ( $excerpt ) {
+    $excerpt = strip_tags( $excerpt, '<strong><em><b><i><mark><span>' );
+    $excerpt = preg_replace( '/\s+/u', ' ', $excerpt );
+
+    return trim( $excerpt );
+} );
 
 /**
  * Custom Relevanssi Live Ajax Search config for the header product search.
@@ -545,6 +610,36 @@ add_filter( 'bricks/element/render', function ( $render, $element ) {
 
 	return $render && wkf_has_related_guides();
 }, 10, 2 );
+
+/*
+ * "Risultati di ricerca" template (1713) — why there is NO Relevanssi filter here.
+ *
+ * The template's two per-section loops (`srploop` products / `srgloop` guide
+ * posts) are secondary WP_Query objects, so the obvious worry is that
+ * Relevanssi — which only replaces the *main* query — would leave them on a
+ * core `LIKE` search and miss everything indexed via `_wkf_search_blob` /
+ * `_sku`. A `bricks/posts/query_vars` filter injecting `s` + `relevanssi` was
+ * written for exactly that, then removed: it is a no-op here.
+ *
+ * Two upstream pieces already cover it, in this order on the same hook:
+ *   1. Bricks merges the main query's vars (including `s`) into every loop on
+ *      an `is_search()` page — see Query::prepare_query_vars_from_settings().
+ *   2. Relevanssi ships a Bricks shim, `relevanssi_bricks_enable()` in
+ *      relevanssi/lib/compatibility/bricks.php, hooked to the same
+ *      `bricks/posts/query_vars` and running last, which sets
+ *      `$query_vars['relevanssi'] = true` whenever `s` is present.
+ *
+ * Verified by A/B on the live site: with the filter and with it neutered,
+ * `?s=spc` → 3 products + 2 guides, `?s=posa&wkf_in=guide` → 3 guides,
+ * `?s=colla&wkf_in=guide` → 1 guide. Identical.
+ *
+ * What actually broke before was step 1: the loops originally carried
+ * `is_archive_main_query: true`, which sets Bricks' `skip_main_query` and
+ * suppresses that merge, so `s` never arrived and the shim never fired.
+ * Dropping `is_archive_main_query` from both loops was the whole fix. If
+ * search results ever come back empty or LIKE-shaped again, check that
+ * setting on the loops before reaching for a filter.
+ */
 
 /**
  * Main navigation (mega menu) assets.
