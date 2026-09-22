@@ -222,16 +222,17 @@ html {
 
 /* ── list_square — A) wrapper + raw <ul><li> → native ::marker.  B) Bricks <ul>
    of flex <li> (ACF loop) → drawn square via ::before. ── */
-.list_square ul,
-ul.list_square {
-	font-size: var(--text-s);
-	line-height: var(--lh-relaxed);
+.list_square :is(ul, p), ul.list_square {
+    font-size: var(--text-s);
+    line-height: var(--lh-relaxed);
+    margin: 0;
 }
 
 /* A — native square marker */
 .list_square ul {
-	padding-left: 1.1em;
-	list-style: square;
+    padding-left: 1.2rem;
+    list-style: square;
+    margin-block: var(--space-xs);
 }
 .list_square ul > li::marker {
 	color: var(--wkf-primary);
