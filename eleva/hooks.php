@@ -478,7 +478,10 @@ function wkf_rfq_cart_count() {
 	if ( function_exists( 'WC' ) && WC()->cart ) {
 		return (int) WC()->cart->get_cart_contents_count();
 	}
-	if ( function_exists( 'gpls_woo_rfq_get_rfq_cart_quantity' ) ) {
+	// Only call into the RFQ session if it's already running — calling it cold
+	// would start it (and mint its cookie) on every anonymous page view.
+	if ( function_exists( 'gpls_woo_rfq_get_rfq_cart_quantity' )
+		&& defined( 'RFQTK_WP_SESSION_COOKIE' ) && isset( $_COOKIE[ RFQTK_WP_SESSION_COOKIE ] ) ) {
 		return (int) gpls_woo_rfq_get_rfq_cart_quantity();
 	}
 
