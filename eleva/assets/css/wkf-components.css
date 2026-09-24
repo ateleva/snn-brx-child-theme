@@ -177,6 +177,28 @@ html {
 	border-color: var(--wkf-primary);
 }
 
+/* CLS: reserve the gallery's final size before flexslider runs. Until it inits, every
+   slide and thumb is stacked (10,000px+ with 20 slides); it then collapses in two steps
+   (init, and ~60ms after `load` when the thumbs get float:left), pulling the summary up
+   into view. Pin what the rules above produce afterwards: square main box, 72px thumb
+   strip, thumbs 2..N display:none (clipped ones still get lazy-loaded and delay the
+   scripts on slow links). Each pin drops out by itself (wrapper moves into .flex-viewport;
+   slides get inline float:left). Multi-slide only; without :has() = today's layout. */
+#brxe-dtfpzi > .woocommerce-product-gallery > .woocommerce-product-gallery__wrapper:has(> .woocommerce-product-gallery__image:nth-child(2)),
+#brxe-iwikdl > .woocommerce-product-gallery > .woocommerce-product-gallery__wrapper:has(> .woocommerce-product-gallery__image:nth-child(2)) {
+	aspect-ratio: 1 / 1;
+	overflow: hidden;
+}
+#brxe-dtfpzi > .brx-product-gallery-thumbnail-slider:not(:has(.woocommerce-product-gallery__image[style*="float"])),
+#brxe-iwikdl > .brx-product-gallery-thumbnail-slider:not(:has(.woocommerce-product-gallery__image[style*="float"])) {
+	height: 72px !important;
+	overflow: hidden;
+}
+#brxe-dtfpzi > .brx-product-gallery-thumbnail-slider:not(:has(.woocommerce-product-gallery__image[style*="float"])) .woocommerce-product-gallery__image:nth-child(n+2),
+#brxe-iwikdl > .brx-product-gallery-thumbnail-slider:not(:has(.woocommerce-product-gallery__image[style*="float"])) .woocommerce-product-gallery__image:nth-child(n+2) {
+	display: none !important;
+}
+
 /* Thumbnails — plain flexslider nav (Baufloor): <ol><li><img> */
 #brxe-354c63 .flex-control-thumbs {
 	gap: 10px;
