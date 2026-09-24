@@ -677,3 +677,41 @@ add_action(
 	},
 	20
 );
+
+/**
+ * Front end: don't print WordPress's block-editor CSS on pages that never
+ * output Gutenberg content.
+ *
+ * Core prints `global-styles` (~30 KB: --wp--preset variables, .has-* colour /
+ * font-size / gradient classes, .is-layout-* rules) and `classic-theme-styles`
+ * on every page. The whole front end is Bricks, which uses none of it: on the
+ * local and staging pages no element carries a .has-*, .is-layout-* or
+ * .wp-element-button class, no loaded CSS/JS reads a --wp--* variable, and
+ * computed styles are identical with and without the two stylesheets.
+ *
+ * The exception is Bricks' Post Content element (template "Guida – Articolo
+ * singolo"), which prints WordPress content that may be written with blocks:
+ * single posts keep both stylesheets, and so does the Bricks builder canvas.
+ * If another template ever gets a Post Content element or {post_content} tag,
+ * add its pages to the condition below.
+ *
+ * The core enqueue callbacks are unhooked instead of dequeuing the handles:
+ * classic themes now load block assets on demand, so `global-styles` is
+ * enqueued from wp_footer (priority 1), after wp_enqueue_scripts:100 — a
+ * wp_dequeue_style() there removes classic-theme-styles but leaves
+ * global-styles in place. Priority 1 runs before core's own priority-10 hook.
+ */
+add_action(
+	'wp_enqueue_scripts',
+	function () {
+		if ( is_singular( 'post' ) || ( function_exists( 'bricks_is_builder' ) && bricks_is_builder() ) ) {
+			return;
+		}
+
+		remove_action( 'wp_enqueue_scripts', 'wp_enqueue_global_styles' );
+		remove_action( 'wp_footer', 'wp_enqueue_global_styles', 1 );
+		remove_action( 'wp_enqueue_scripts', 'wp_enqueue_classic_theme_styles' );
+		remove_action( 'enqueue_block_assets', 'wp_enqueue_classic_theme_styles' );
+	},
+	1
+);
