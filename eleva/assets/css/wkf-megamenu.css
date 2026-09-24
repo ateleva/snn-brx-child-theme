@@ -506,20 +506,18 @@
 		justify-content: flex-end;
 		padding-right: var(--space-m);
 	}
-	/* One identical CSS chevron per level-1 dropdown row — hide the shipped
-	   ionicon / themify glyphs, draw our own so they match. */
+	/* One identical chevron per level-1 dropdown row — hide the shipped ionicon /
+	   themify glyphs and draw the themify angle-right (U+e649, 16px) that the level
+	   2/3 drill-in chevrons use, so every menu level looks the same. */
 	#brxe-wkfnav .wkf-mm-trigger > .brx-submenu-toggle > button > i {
 		display: none;
 	}
 	#brxe-wkfnav .wkf-mm-trigger > .brx-submenu-toggle > button::after {
-		content: "";
+		content: "\e649";
 		flex: 0 0 auto;
-		width: 7px;
-		height: 7px;
-		border-right: 2px solid currentColor;
-		border-bottom: 2px solid currentColor;
-		transform: rotate(-45deg);
-		opacity: .5;
+		font-family: "themify";
+		font-size: var(--wkf-mm-chevron);
+		line-height: 1;
 	}
 
 	/* Level 2/3 macro drill + back arrows (themify glyphs). */
