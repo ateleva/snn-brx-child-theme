@@ -551,6 +551,8 @@
 		flex: 0 0 auto;
 	}
 	#brxe-wkfnav .wkf-mm-mobile-foot a { min-width: 44px; min-height: 44px; display: grid; place-items: center; }
+	/* The 24px lives only in Bricks' <=478px breakpoint; above it Bricks' 60px icon default showed up. */
+	#brxe-wkfnav .wkf-mm-mobile-foot .brxe-icon { font-size: 24px; }
 
 	/* clip-path only hides paint — hide the closed footer so it doesn't occupy layout. */
 	#brxe-wkfnav:not(.brx-open) .wkf-mm-mobile-foot {
