@@ -715,3 +715,18 @@ add_action(
 	},
 	1
 );
+
+/**
+ * The child theme's style.css holds only the theme header comment, yet the
+ * upstream SNN code (includes/features/enqueue-scripts.php) enqueues it on every
+ * page: one extra render-blocking stylesheet request for zero rules. Dequeued
+ * after upstream's priority-10 enqueue; nothing depends on the 'bricks-child'
+ * handle. If real CSS is ever added to style.css, drop this.
+ */
+add_action(
+	'wp_enqueue_scripts',
+	function () {
+		wp_dequeue_style( 'bricks-child' );
+	},
+	20
+);
