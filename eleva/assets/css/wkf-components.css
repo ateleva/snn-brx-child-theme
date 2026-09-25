@@ -505,6 +505,7 @@ table#wkf-table tbody tr:nth-child(odd) {
 	text-underline-offset: 2px;
 }
 .brxe-post-content blockquote {
+	font-family: var(--wkf-font-body); /* Bricks' own blockquote rule is Georgia, serif */
 	margin-left: 0;
 	padding-left: var(--space-m);
 	border-left: 2px solid var(--wkf-primary);
